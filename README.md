@@ -10,13 +10,12 @@
 
 [Core Wars](http://corewar.co.uk/cwg.txt) for the Javascript Generation.  
 Board is a circular memory buffer of 8192 locations.  
-RedScript is eval()'able Javascript bindings for RedCode.  
 Client is javascript hosted via GitHub pages.  
 
 ## Client
 
 A Player edits their PlayerScript in the client.  
-A RedScript reference is provided.  
+An assembler reference is provided.  
 Players can Store/Load their PlayerScript from LocalStorage or ```<input type="file">```.  
 Players identify themselves to the Referee with their Battle Preference:  
 
@@ -46,7 +45,7 @@ Client can replay the match at the user's desired speed to visualize the match a
   <tr><th>Opcode</th><th>RedAsm</th><th>RedCode</th><th>Action</th></tr>
   <tr>
     <td>00</td>
-    <td>.BYTE b<td>
+    <td>.BYTE b</td>
     <td>DAT B</td>
     <td>Store value b at current location. Terminates process when evaluated.</td>
   </tr>
