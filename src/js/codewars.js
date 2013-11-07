@@ -79,10 +79,15 @@ AsmEditor = Backbone.View.extend({
     var lastLineStart = this.contents.lastIndexOf('\n', cursorPosition-1);
     var lastLine = this.contents.slice(lastLineStart+1, cursorPosition);
     var spaceCount = 0;
+
+    var hasColon = lastLine.indexOf(':') != -1
+    var seenColon = false
     for (var i=0; i<lastLine.length; i++) {
-      if (lastLine[i] == ' ') {
+      if (lastLine[i] == ' ' || (hasColon && !seenColon) ) {
         spaceCount++;
         this.contents.splice(++cursorPosition, 0, ' ')
+        if (lastLine[i] == ':')
+          seenColon = true;
       } else {
         break;
       }
