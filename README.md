@@ -2,7 +2,7 @@
 
  > Your script must change itself in memory to survive.
 
-<cite>GitHub Game Off 2013</cite>
+<cite>&mdash; GitHub Game Off 2013</cite>
 
 
 
@@ -36,5 +36,40 @@ Referee returns to all participating Players Match Information:
   - starting memory location
 
 Client can replay the match at the user's desired speed to visualize the match and verify the result.
+
+
+## RedScript
+
+
+<table>
+  <tr><th>RedScript</th><th>RedCode</th><th>Action</th></tr>
+  <tr>
+    <td>data(value);</td>
+    <td>DAT B</td>
+    <td>Store value at loc(0). Terminates process when evaluated.</td>
+  </tr>
+  <tr>
+    <td>b = a;</td>
+    <td>MOV A,B</td>
+    <td>Move a into location b.</td>
+  </tr>
+  <tr>
+    <td>b -= a;</td>
+    <td>SUB A,B</td>
+    <td>Subtract a from b and store in location b.</td>
+  </tr>
+  <tr>
+    <td>PC = b;</td>
+    <td>JMP B</td>
+    <td>Jump to location b. (Set Program Counter)</td>
+  </tr>
+  <tr>
+    <td>if (a) b(); </td>
+    <td>JMZ A,B</td>
+    <td>If operand A is 0, jump to location b.</td>
+  </tr>
+
+</table>
+
 
 
