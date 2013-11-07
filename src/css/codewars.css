@@ -1,0 +1,14 @@
+textarea:focus, input:focus {
+  outline: 0;
+}
+
+
+.editor {
+  min-height: 25em;
+  font-family: monospace;
+  border: 1px solid black;
+}
+
+.output.compiled {
+  min-height: 25em;
+}
