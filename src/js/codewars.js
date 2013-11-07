@@ -13,7 +13,6 @@ AsmEditor = Backbone.View.extend({
   initialize: function() {
 
     this.contents = []
-
   },
 
   render: function() {
@@ -28,6 +27,9 @@ AsmEditor = Backbone.View.extend({
     else if (evt.keyCode == 8) {
       return this.performBackspace(evt);
     }
+    else if (evt.keyCode == 13) {
+      return this.performReturn(evt);
+    }
     // console.log("code", evt.keyCode);
 
     return true;
@@ -41,7 +43,7 @@ AsmEditor = Backbone.View.extend({
   },
   updateContents: function() {
     this.contents = this.$el.val().split('');
-  }
+  },
 
 
   performTab: function() {
@@ -68,6 +70,26 @@ AsmEditor = Backbone.View.extend({
   },
 
   performReturn: function() {
+    var cursorPosition = this.$el.prop("selectionStart");
+
+    //insert carriage return
+    this.contents.splice(cursorPosition, 0, '\n');
+
+    //insert spaces to do auto indent
+    var lastLineStart = this.contents.lastIndexOf('\n', cursorPosition-1);
+    var lastLine = this.contents.slice(lastLineStart+1, cursorPosition);
+    var spaceCount = 0;
+    for (var i=0; i<lastLine.length; i++) {
+      if (lastLine[i] == ' ') {
+        spaceCount++;
+        this.contents.splice(++cursorPosition, 0, ' ')
+      } else {
+        break;
+      }
+    }
+
+    this.render();
+    return false;
 
   },
 
