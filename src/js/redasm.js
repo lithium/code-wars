@@ -106,14 +106,44 @@ RedAsm = {
 
     return {
       'success': true,
-      'output': output,
+      'compiledBytes': output,
     }
+  },
+
+  disassemble: function(compiledBytes) {
+    var _bytehex = function(number, padding) {
+      var padding = padding || 2;
+      var number = number.toString(16);
+      if (padding > 2 && number < 32) 
+        number = "0"+number;
+      if (padding > 1 && number < 16) 
+        number = "0"+number;
+      return number;
+    }
+    var rows=[]
+    for (var i=0; i<compiledBytes.length; i++) {
+      var word  = compiledBytes[i];
+      var opcode = (word & 0xF0000000)>>28;
+      var mode1 =  (word & 0x0C000000)>>26;
+      var mode2 =  (word & 0x03000000)>>24;
+      var operand1 = (word & 0x00FFF000)>>12;
+      var operand2 = (word & 0x0000FFF);
+      var row =  [_bytehex(i,4),
+                  _bytehex(opcode),
+                  _bytehex(mode1, 1),
+                  _bytehex(mode2, 1),
+                  _bytehex(operand1, 3),
+                  _bytehex(operand2, 3)];
+      rows.push(row);
+    }
+    return rows;
   },
 
   decompile: function(compiled_bytes) {
     //TODO
     return compiled_bytes.join('');
   },
+
 
 
 

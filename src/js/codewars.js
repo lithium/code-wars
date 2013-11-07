@@ -26,9 +26,12 @@ CodeWarsConsole = Backbone.View.extend({
     var playerScript = this.editor.getValue();
     var result = RedAsm.compile(playerScript);
     if (result.success) {
-      this.output.html(result.output.join("\n"));
-      console.log(result.output)
-
+      var disasm = RedAsm.disassemble(result.compiledBytes);
+      var o = [];
+      for (var i=0; i < disasm.length; i++) {
+        o.push(disasm[i].join(" "));
+      }
+      this.output.html(o.join("\n"));
     } else {
       this.errors.html(result.error);
     }
