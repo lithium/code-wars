@@ -12,10 +12,8 @@ title: Code Wars - GitHubGameOff 2013
 
   <div class="row">
     <div class="col-md-6">
-      <div class="editor"># Dwarf from CoreWarsGuide
-
-addr:   .BYTE 0
-loop:   add addr, $4
+      <div class="editor">addr:   .BYTE 0
+loop:   add (-1), $4
         ld @addr, $0
         jmp loop
         </div>

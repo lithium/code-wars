@@ -12,6 +12,7 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.editor = ace.edit(this.$(".editor")[0]);
     this.editor.setTheme("ace/theme/github");
+    this.editor.setOption("firstLineNumber", 0);
     this.editor.focus();
   },
 
