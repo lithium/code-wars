@@ -8,14 +8,11 @@ CodeWarsConsole = Backbone.View.extend({
   },
 
   initialize: function() {
-
-    // this.editor = new AsmEditor({el: this.$(".editor")});
-    this.editor = ace.edit(this.$(".editor")[0]);
-    this.editor.setTheme("ace/theme/github");
-
     this.output = this.$(".output.compiled");
 
-    this.editor.el.focus();
+    this.editor = ace.edit(this.$(".editor")[0]);
+    this.editor.setTheme("ace/theme/github");
+    this.editor.focus();
   },
 
   render: function() {
@@ -23,7 +20,7 @@ CodeWarsConsole = Backbone.View.extend({
   },
 
   saveEditor: function() {
-    var playerScript = this.editor.val();
+    var playerScript = this.editor.getValue();
     var compiledScript = RedAsm.compile(playerScript);
 
     this.output.html(compiledScript);
