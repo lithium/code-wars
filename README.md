@@ -91,10 +91,10 @@ Client can replay the match at the user's desired speed to visualize the match a
 ### Addressing Modes
 
 <table>
-  <tr><th>Addressing Mode</th><th>Examples</th></tr>
+  <tr><th></th><th>Addressing Mode</th><th>Examples</th></tr>
   <tr>
-    <td>Immediate</td>
-    <td><em>$42, $-5, $0xff, $'a'</em></td>
+    <td>Immediate (constants)</td>
+    <td><em>42, -5, 0xf0, $ff</em></td>
   </tr>
   <tr>
     <td>Relative</td>
@@ -102,7 +102,7 @@ Client can replay the match at the user's desired speed to visualize the match a
   </tr>
   <tr>
     <td>Indirect</td>
-    <td><em>@(-5), @label</em></td>
+    <td><em>@42, @(-5), @$ff, @label</em></td>
   </tr>
 
 </table>
