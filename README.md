@@ -1,7 +1,9 @@
 # Code Wars
-#### GitHub Game Off 2013 Entry
 
-### Your script must change itself in memory to survive.
+ > Your script must change itself in memory to survive.
+
+<cite>GitHub Game Off 2013</cite>
+
 
 
 ## Idea
