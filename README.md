@@ -8,9 +8,10 @@
 
 ## Idea
 
-[Core Wars](http://corewar.co.uk/cwg.txt) for the Javascript Generation.  
+[Core Wars](http://corewar.co.uk/cwg.txt) with a modern bent.  
 Board is a circular memory buffer of 8192 locations.  
 Client is javascript hosted via GitHub pages.  
+Referee is node.js hosted via heroku instance.  
 
 ## Client
 
@@ -35,7 +36,6 @@ Referee returns to all participating Players Match Information:
   - starting memory location
 
 Client can replay the match at the user's desired speed to visualize the match and verify the result.
-
 
 ## RedAsm
 
@@ -111,9 +111,9 @@ Client can replay the match at the user's desired speed to visualize the match a
 ### Examples
 ```Assembly
 # dwarf from cwg.pg#4
-zero:     .BYTE 0        # 00 00 00    # var offset
-loop:     add (-1), $4   # 01 -1 04    # offset += 4
-          ld @zero, $0   # 02 -2 00    # mem[offset] = 0
-          jmp loop       # 03 -2 00    # goto loop
+ ofs:     .BYTE 0        # var ofs = 0
+loop:     add (-1), $4   # ofs += 4
+          ld @ofs, $0    # memory[ofs] = 0
+          jmp loop       # goto loop
 ```
 
