@@ -1,8 +1,8 @@
 # Code Wars
 
- > Your code must change itself in memory to survive.
+#### Your code must change itself in memory to survive.
 
-<cite>&mdash; GitHub Game Off 2013</cite>
+<em>A GitHub Game Off 2013 Entry.</em>
 
 
 ## Overview
@@ -15,6 +15,8 @@ MARS has no registers, only primary memory (RAM).
 A Thread that executes an invalid operation dies.
 
 
+For more details see [NOTES](blob/master/NOTES.md).
+
 ## Gameplay
 
 1. All participating players submit their Program to the Referee
@@ -25,14 +27,14 @@ A Thread that executes an invalid operation dies.
 
 ## Open Source Used
 
+- [Core Wars](http://corewar.co.uk/cwg.txt)
 - [jQuery](http://jquery.com)
-- [Twitter bootstrap](http://getbootstrap.com/)
+- [Bootstrap](http://getbootstrap.com/)
 - [Backbone.js](http://backbonejs.org/)
 - [Underscore.js](http://underscorejs.org/)
 - [Ace Editor](http://ace.c9.io/)
 - [Jekyll](https://github.com/mojombo/jekyll)
 - [Markdown](http://daringfireball.net/projects/markdown/)
-- [Core Wars](http://corewar.co.uk/cwg.txt)
 - [Stack Overflow](http://www.stackoverflow.com)
 - [All the other source code I've read in my life](http://github.com/)
 
