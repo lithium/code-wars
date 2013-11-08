@@ -25,6 +25,28 @@ loop:   add (-1), $4
     </div>
     <div class="col-md-0 thirdColumn">
       <div class="help well">
+        <h2>LD</h2>
+        <h4>Load data into memory</h4>
+        <div class="syntax">
+          ld <code>address</code>, <code>value</code>
+        </div>
+        <div class="description">
+          <p>The memory location referenced by <code>address</code> will be changed to <code>value</code>.</p>
+        </div>
+        <h5>Examples</h5>
+        <div class="row">
+          <div class="col-md-6"> ld (-1), 0 </div>
+          <div class="col-md-6"><em class="small">load previous memory location with 0</em></div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"> ld @label, (-5) </div>
+          <div class="col-md-6"><em class="small">load the memory location at <strong>label</strong> with the data at memory location <strong>-5</strong></em></div>
+        </div>
+        <div class="row errors">
+          <div class="col-md-6"> <strike>ld 5, 0x42</strike> </div>
+          <div class="col-md-6"><em class="small">You cannot reference absolute memory locations.</em></div>
+        </div>
+        </ul>
       </div>
     </div>
   </div>

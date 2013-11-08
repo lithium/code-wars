@@ -36,9 +36,9 @@ CodeWarsConsole = Backbone.View.extend({
     this.thirdColumnShown = false;
 
     var duration = 0;
-    this.firstColumn.switchClass("col-md-5", "col-md-7", duration);
+    this.firstColumn.switchClass("col-md-4", "col-md-7", duration);
     this.secondColumn.switchClass("col-md-4", "col-md-5", duration);
-    this.thirdColumn.switchClass("col-md-3", "col-md-0", duration);
+    this.thirdColumn.switchClass("col-md-4", "col-md-0", duration);
 
   },
   showThirdColumn: function() {
@@ -46,9 +46,9 @@ CodeWarsConsole = Backbone.View.extend({
       return;
 
     var duration = 0;
-    this.firstColumn.switchClass("col-md-7", "col-md-5", duration);
+    this.firstColumn.switchClass("col-md-7", "col-md-4", duration);
     this.secondColumn.switchClass("col-md-5", "col-md-4", duration);
-    this.thirdColumn.switchClass("col-md-0", "col-md-3", duration);
+    this.thirdColumn.switchClass("col-md-0", "col-md-4", duration);
 
     this.thirdColumnShown = true;
   },
@@ -61,7 +61,7 @@ CodeWarsConsole = Backbone.View.extend({
       var word = line.trim().split(/\s+/)[0]
       if (word.toUpperCase() in RedAsm.MNEUMONICS) {
         this.showThirdColumn();
-        this.help.html(word);
+        // this.help.html(word);
       } else {
         this.hideThirdColumn();
       }

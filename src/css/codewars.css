@@ -2,23 +2,39 @@ textarea:focus, input:focus {
   outline: 0;
 }
 
+.col-md-0 {
+  width: 0%;
+  overflow: hidden;
+}
+
+
 
 .editor {
-  min-height: 250px;
+  height: 380px;
+  overflow: hidden;
   font-family: monospace;
   border: 1px solid black;
 }
 
 .output.compiled {
-  min-height: 250px;
+  height: 380px;
+  overflow: hidden;
 }
+
+
+
 
 .help.well {
-  min-height: 250px;
+  height: 380px;
+  overflow-y: scroll;
 }
-
-
-.col-md-0 {
-  width: 0%;
-  overflow: hidden;
+.help.well h2 {
+  margin-top: 0;
+}
+.help.well .syntax {
+  margin: 1.3em 1em;
+  font-family: monospace;
+}
+.help.well .description {
+  margin-bottom: 1.3em;
 }
