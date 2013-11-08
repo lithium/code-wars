@@ -55,9 +55,10 @@ CodeWarsConsole = Backbone.View.extend({
 
   editorCursorChanged: function(evt, selection) {
       var cursor = selection.getCursor()
-      var wordRange = this.editor.session.getWordRange(cursor.row, cursor.column);
       var line = this.editor.session.getLine(cursor.row)
-      var word = line.substring(wordRange.start.column, wordRange.end.column)
+      if (line.indexOf(':') != -1)
+        line = line.replace(/.+:/,'')
+      var word = line.trim().split(/\s+/)[0]
       if (word.toUpperCase() in RedAsm.MNEUMONICS) {
         this.showThirdColumn();
         this.help.html(word);
