@@ -69,21 +69,51 @@ Client can replay the match at the user's desired speed to visualize the match a
   </tr>
   <tr>
     <td>04</td>
-    <td>jmp dest</td>
-    <td>JMP B</td>
-    <td>Jump to location dest(B).</td>
+    <td>mul dest, src</td>
+    <td>MUL A,B</td>
+    <td>Multiply src(A) and dest(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>05</td>
-    <td>brz dest, value</td>
-    <td>JMZ A,B</td>
-    <td>If value(A) is 0, jump to location dest(B).</td>
+    <td>div dest, src</td>
+    <td>DIV A,B</td>
+    <td>Divide src(A) from dest(B) and store result at location dest.</td>
+  </tr>
+  <tr>
+    <td>06</td>
+    <td>mod dest, src</td>
+    <td>MOD A,B</td>
+    <td>Modulus src(A) and est(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>07</td>
     <td>cmp a,b</td>
     <td>CMP A,B</td>
     <td>Compare values A and B, if they are not equal skip next instruction.</td>
+  </tr>
+  <tr>
+    <td>08</td>
+    <td>brz dest, value</td>
+    <td>JMZ A,B</td>
+    <td>If value(A) is 0, jump to location dest(B).</td>
+  </tr>
+  <tr>
+    <td>0D</td>
+    <td>jmp dest</td>
+    <td>JMP B</td>
+    <td>Jump to location dest(B).</td>
+  </tr>
+  <tr>
+    <td>0E</td>
+    <td>fork dest</td>
+    <td>SPL B</td>
+    <td>Spawn a new thread that will start at dest.</td>
+  </tr>
+  <tr>
+    <td>0F</td>
+    <td>NOP</td>
+    <td>NOP</td>
+    <td>Do nothing.</td>
   </tr>
 
 </table>

@@ -3,7 +3,15 @@ RedAsm = {
   MNEUMONICS: {
     'LD': 1,
     'ADD': 2,
-    'JMP': 4,
+    'SUB': 3,
+    'MUL': 4,
+    'DIV': 5,
+    'MOD': 6,
+    'CMP': 7,
+    'BRZ': 8,
+    'JMP': 0xD,
+    'FORK': 0xE,
+    'NOP': 0xF,
   },
 
   compile: function(assembly_string) {
@@ -52,45 +60,49 @@ RedAsm = {
       if (!line)
         continue;
       tokens = line.split(/\s+/)
-      // console.log("tokens",tokens)
 
       var mneumonic = tokens[0].toUpperCase();
-      var firstOperand = tokens[1].trim().replace(/,$/,'')
-      var secondOperand = (tokens[2] || "").trim();
-
       if (mneumonic in RedAsm.MNEUMONICS) {
         var opcode = RedAsm.MNEUMONICS[mneumonic];
-        var firstOperand = tokens[1].trim().replace(/,$/,'')
-        var secondOperand = (tokens[2] || "").trim();
 
-        var a = resolveOperand(firstOperand)
-
-        if (!a || !a[1]) {
-          return {
-            'success': false,
-            'error': "Syntax error on line "+lineNumber+": Invalid Operand: '"+firstOperand+"'",
-          }
-        }
-        var b = resolveOperand(secondOperand)
-        if (!b) 
-          b = [0,0]
-
-        // console.log(opcode,a,b)
 
         //opcode is bits 31..28
         var outbyte = opcode<<28;
-        //addressing mode for first operand bits 27,26
-        outbyte |= (a[0]&0x3)<<26;
-        //addressing mode for first operand bits 25,24
-        outbyte |= (b[0]&0x3)<<24;
-        //first operand bits 12..23
-        outbyte |= (a[1]&0x0fff)<<12;
-        //second operand bits 0..11
-        outbyte |= (b[1]&0x0fff);
+
+
+        var firstOperand = tokens[1]
+        var secondOperand;
+
+        if (firstOperand) {
+          firstOperand = firstOperand.trim().replace(/,$/,'')
+          secondOperand = (tokens[2] || "").trim();
+
+          var a = resolveOperand(firstOperand)
+
+          if (!a || !a[1]) {
+            return {
+              'success': false,
+              'error': "Syntax error on line "+lineNumber+": Invalid Operand: '"+firstOperand+"'",
+            }
+          }
+          var b = resolveOperand(secondOperand)
+          if (!b) 
+            b = [0,0]
+
+          //addressing mode for first operand bits 27,26
+          outbyte |= (a[0]&0x3)<<26;
+          //addressing mode for first operand bits 25,24
+          outbyte |= (b[0]&0x3)<<24;
+          //first operand bits 12..23
+          outbyte |= (a[1]&0x0fff)<<12;
+          //second operand bits 0..11
+          outbyte |= (b[1]&0x0fff);
+        }
 
         output.push( outbyte )
       } 
       else if (mneumonic == '.BYTE') {
+        var firstOperand = tokens[1].trim().replace(/,$/,'')
         output.push( parseInt(firstOperand.replace(/^\$/,'')) );
       }
       else {
@@ -113,12 +125,13 @@ RedAsm = {
   disassemble: function(compiledBytes) {
     var _bytehex = function(number, padding) {
       var padding = padding || 2;
-      var number = number.toString(16);
-      if (padding > 2 && number < 32) 
-        number = "0"+number;
-      if (padding > 1 && number < 16) 
-        number = "0"+number;
-      return number;
+      var out = parseInt(number).toString(16);
+      while (padding > 1) {
+        if (number < 1<<(padding+2))
+          out = "0"+out;
+        padding--;
+      }
+      return out;
     }
     var _signedcast = function(number) {
       // cast to 12 bit signed integer
@@ -130,7 +143,7 @@ RedAsm = {
     }
     var _addrmode = function(mode, value) {
       if (mode == 0)
-        return "$"+value;
+        return "$"+parseInt(value).toString(16);
       else if (mode == 1)
         return "("+value+")";
       else if (mode == 2)
@@ -140,11 +153,11 @@ RedAsm = {
     var rows=[]
     for (var i=0; i<compiledBytes.length; i++) {
       var word  = compiledBytes[i];
-      var opcode = (word & 0xF0000000)>>28;
-      var mode1 =  (word & 0x0C000000)>>26;
-      var mode2 =  (word & 0x03000000)>>24;
-      var operand1 = (word & 0x00FFF000)>>12;
-      var operand2 = (word & 0x0000FFF);
+      var opcode = (word & 0xF0000000)>>>28;
+      var mode1 =  (word & 0x0C000000)>>>26;
+      var mode2 =  (word & 0x03000000)>>>24;
+      var operand1 = (word & 0x00FFF000)>>>12;
+      var operand2 = (word & 0x00000FFF);
 
       var stmt;
       for (var mn in RedAsm.MNEUMONICS) {
@@ -156,13 +169,14 @@ RedAsm = {
       if (!stmt) { //unknown opcode
         stmt = ".BYTE 0x"+_bytehex(word,8)
       } else {
-        stmt += " "+_addrmode(mode1, _signedcast(operand1));
-        if (opcode != 4)
+        if (opcode < 0xF) 
+          stmt += " "+_addrmode(mode1, _signedcast(operand1));
+        if (opcode < 0xD)
           stmt += ", "+_addrmode(mode2, _signedcast(operand2));
       }
 
       var row =  [_bytehex(i,4),
-                  _bytehex(opcode),
+                  _bytehex(opcode,2),
                   _bytehex(mode1, 1),
                   _bytehex(mode2, 1),
                   _bytehex(operand1, 3),
