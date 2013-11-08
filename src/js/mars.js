@@ -21,14 +21,14 @@ _.extend(Mars.MarsCore.prototype, {
 
 
   startMatch: function(players) {
-    var usedRanges = []
-
-
-    this.players = players;
-    //TODO: randomize players
 
     this._memset(0,0,this.options.memorySize);
 
+    //TODO: randomize players
+    this.players = players;
+
+
+    var usedRanges = []
     var _overlapsRanges = function(offset) {
       for (var i=0; i < usedRanges.length; i++) {
         if (offset >= usedRanges[i].start && offset <= usedRanges[i].end) {
@@ -38,6 +38,7 @@ _.extend(Mars.MarsCore.prototype, {
       return false;
     }
 
+    //place each player in a random memory location and spawn their first thread
     for (var i=0; i < this.players.length; i++) {
       var player = this.players[i];
       player.playerNumber = i;
@@ -58,19 +59,18 @@ _.extend(Mars.MarsCore.prototype, {
       usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
     }
 
+    // initialize counters 
+    this.stepCount = 0;
     this.cycleCount = 0;
     this.currentPlayer = 0;
     this.remainingPlayerCount = this.players.length;
-    // console.log("memory", this.memory);
-    // console.log("players", this.players);
   },
 
-  executeNextStep: function() {
-    var player = this.players[this.currentPlayer];
+  executeOneCycle: function(player) {
     var thread = player.threads[player.currentThread];
 
     var instruction = this.memory[thread.PC];
-    console.log("execute", instruction, player, thread);
+    console.log("execute", instruction, thread, player);
 
     thread.PC = ++thread.PC % this.options.memorySize;
     player.currentThread = ++player.currentThread % player.threads.length;
@@ -80,15 +80,37 @@ _.extend(Mars.MarsCore.prototype, {
       thread.running = false;
       if (--player.runningThreadCount < 1) {
         player.running = false;
-        this.declareLoser(player);
-        if (--this.remainingPlayerCount < 2) {
-          this.declareWinner();
-        }
+        this.remainingPlayerCount--;
       }
     }
-
     this.cycleCount++;
+  },
+  executeNextStep: function() {
+    if (this.remainingPlayerCount < 1)
+      return;
 
+    for (var i=0; i < this.players.length; i++) {
+      this.executeOneCycle(this.players[i]);
+    }
+
+    if (this.remainingPlayerCount < 1) {
+      console.log("remaining players tied on step ",this.stepCount);
+    } else if (this.remainingPlayerCount < 2) {
+      var winner;
+      for (var i=0; i < this.players.length; i++) {
+        if (this.players[i].running) {
+          winner = this.players[i];
+          break;
+        }
+      }
+      console.log("only one player left ", winner);
+    }
+
+    this.stepCount++;
+  },
+
+  executeInstruction: function(PC, instruction) {
+    return false;
   },
 
   _memset: function(memoryLocation, value, size) {
