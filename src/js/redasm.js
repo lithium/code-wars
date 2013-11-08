@@ -68,13 +68,33 @@ RedAsm.compile = function(assembly_string) {
     return null;
   };
 
-  for (lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-    var line = lines[lineNumber];
+  var lineNumber = 0;
+
+  //take a first pass to build the symbol table 
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+
     var colonIdx = line.indexOf(':');
     if (colonIdx != -1) { // label is present
       var label = line.substring(0, colonIdx).trim()
       line = line.substring(colonIdx+1);
       symbolTable[label] = lineNumber;
+    }
+    line = line.trim()
+    if (!line)
+      continue;
+    lineNumber++;
+  }
+
+  // second pass to actually assemble
+  lineNumber = 0;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+
+    var colonIdx = line.indexOf(':');
+    if (colonIdx != -1) { // label is present
+      var label = line.substring(0, colonIdx).trim()
+      line = line.substring(colonIdx+1);
     }
     line = line.trim()
     if (!line)
@@ -120,6 +140,7 @@ RedAsm.compile = function(assembly_string) {
       }
 
       output.push( outbyte )
+      lineNumber++;
     } 
     else if (mneumonic == '.BYTE') {
       var firstOperand = tokens[1].trim().replace(/,$/,'')
@@ -154,7 +175,7 @@ RedAsm.disassemble =  function(compiledBytes) {
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
 
-    var stmt;
+    var stmt='';
     for (var mn in RedAsm.MNEUMONICS) {
       if (RedAsm.MNEUMONICS[mn] == instruction.opcode) {
         stmt = mn.toLowerCase();
