@@ -75,7 +75,7 @@ RedAsm = {
         if (!b) 
           b = [0,0]
 
-        console.log(opcode,a,b)
+        // console.log(opcode,a,b)
 
         //opcode is bits 31..28
         var outbyte = opcode<<28;
@@ -120,6 +120,23 @@ RedAsm = {
         number = "0"+number;
       return number;
     }
+    var _signedcast = function(number) {
+      // cast to 12 bit signed integer
+      if ((number & 0xF00) == 0xF00) {
+        var n = (number & 0xFFF)-1;
+        return -(0xFFF - n);
+      } 
+      return number;
+    }
+    var _addrmode = function(mode, value) {
+      if (mode == 0)
+        return "$"+value;
+      else if (mode == 1)
+        return "("+value+")";
+      else if (mode == 2)
+        return "@"+value;
+      return value;
+    }
     var rows=[]
     for (var i=0; i<compiledBytes.length; i++) {
       var word  = compiledBytes[i];
@@ -128,23 +145,34 @@ RedAsm = {
       var mode2 =  (word & 0x03000000)>>24;
       var operand1 = (word & 0x00FFF000)>>12;
       var operand2 = (word & 0x0000FFF);
+
+      var stmt;
+      for (var mn in RedAsm.MNEUMONICS) {
+        if (RedAsm.MNEUMONICS[mn] == opcode) {
+          stmt = mn.toLowerCase();
+          break;
+        }
+      }
+      if (!stmt) { //unknown opcode
+        stmt = ".BYTE 0x"+_bytehex(word,8)
+      } else {
+        stmt += " "+_addrmode(mode1, _signedcast(operand1));
+        if (opcode != 4)
+          stmt += ", "+_addrmode(mode2, _signedcast(operand2));
+      }
+
       var row =  [_bytehex(i,4),
                   _bytehex(opcode),
                   _bytehex(mode1, 1),
                   _bytehex(mode2, 1),
                   _bytehex(operand1, 3),
-                  _bytehex(operand2, 3)];
+                  _bytehex(operand2, 3),
+                  stmt];
+
       rows.push(row);
     }
     return rows;
   },
-
-  decompile: function(compiled_bytes) {
-    //TODO
-    return compiled_bytes.join('');
-  },
-
-
 
 
 }
