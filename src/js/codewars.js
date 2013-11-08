@@ -1,10 +1,19 @@
 
 
+HelpPanel = Backbone.View.extend({
+  el: "div",
+
+  initialize: function() {
+
+  }
+})
+
 CodeWarsConsole = Backbone.View.extend({
   el: $('#console.codewars'),
 
   events: {
     "click .save": "saveEditor",
+    "click .step": "stepMars",
   },
 
   initialize: function() {
@@ -26,6 +35,9 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
     this.editor.focus();
+
+
+    this.mars = new Mars.MarsCore()
   },
 
   render: function() {
@@ -77,12 +89,18 @@ CodeWarsConsole = Backbone.View.extend({
         o.push(disasm[i].join(" "));
       }
       this.output.html(o.join("\n"));
+
+      this.mars.startMatch([_.clone(result),result]);
     } else {
       this.errors.html(result.error);
     }
 
 
   },
+
+  stepMars: function() {
+    this.mars.executeNextStep();
+  }
 
 
 })
