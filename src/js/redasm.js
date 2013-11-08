@@ -1,7 +1,6 @@
 var RedAsm = RedAsm || {}
 
 _.extend(RedAsm, {
-
   OPCODE_LD: 1,
   OPCODE_ADD: 2,
   OPCODE_SUB: 3,
@@ -131,8 +130,6 @@ RedAsm.compile = function(assembly_string) {
 
   }
 
-  // console.log("symbols",symbolTable)
-
   return {
     'success': true,
     'compiledBytes': output,
@@ -140,24 +137,6 @@ RedAsm.compile = function(assembly_string) {
 }
 
 RedAsm.disassemble =  function(compiledBytes) {
-  var _bytehex = function(number, padding) {
-    var padding = padding || 2;
-    var out = parseInt(number).toString(16);
-    while (padding > 1) {
-      if (number < 1<<(padding+2))
-        out = "0"+out;
-      padding--;
-    }
-    return out;
-  }
-  var _signedcast = function(number) {
-    // cast to 12 bit signed integer
-    if ((number & 0xF00) == 0xF00) {
-      var n = (number & 0xFFF)-1;
-      return -(0xFFF - n);
-    } 
-    return number;
-  }
   var _addrmode = function(mode, value) {
     if (mode == 0)
       return "$"+parseInt(value).toString(16);
@@ -169,35 +148,32 @@ RedAsm.disassemble =  function(compiledBytes) {
   }
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
-    var word  = compiledBytes[i];
-    var opcode = (word & 0xF0000000)>>>28;
-    var mode1 =  (word & 0x0C000000)>>>26;
-    var mode2 =  (word & 0x03000000)>>>24;
-    var operand1 = (word & 0x00FFF000)>>>12;
-    var operand2 = (word & 0x00000FFF);
+    var instruction = RedAsm.parseInstruction(compiledBytes[i]);
 
     var stmt;
     for (var mn in RedAsm.MNEUMONICS) {
-      if (RedAsm.MNEUMONICS[mn] == opcode) {
+      if (RedAsm.MNEUMONICS[mn] == instruction.opcode) {
         stmt = mn.toLowerCase();
         break;
       }
     }
     if (!stmt) { //unknown opcode
-      stmt = ".BYTE 0x"+_bytehex(word,8)
+      stmt = ".BYTE 0x"+RedAsm.hexdump(compiledBytes[i],8)
     } else {
-      if (opcode < 0xF) 
-        stmt += " "+_addrmode(mode1, _signedcast(operand1));
-      if (opcode < 0xD)
-        stmt += ", "+_addrmode(mode2, _signedcast(operand2));
+      //everything except NOP(0xF) has at least 1 operand
+      if (instruction.opcode < 0xF) 
+        stmt += " "+_addrmode(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
+      //the only ones without operand2 are: JMP(0xD), FORK(0xE) and NOP(0xF) 
+      if (instruction.opcode < 0xD)
+        stmt += ", "+_addrmode(instruction.mode2, RedAsm.signedCast12(instruction.operand2));
     }
 
-    var row =  [_bytehex(i,4),
-                _bytehex(opcode,2),
-                _bytehex(mode1, 1),
-                _bytehex(mode2, 1),
-                _bytehex(operand1, 3),
-                _bytehex(operand2, 3),
+    var row =  [RedAsm.hexdump(i,4),
+                RedAsm.hexdump(instruction.opcode,2),
+                RedAsm.hexdump(instruction.mode1, 1),
+                RedAsm.hexdump(instruction.mode2, 1),
+                RedAsm.hexdump(instruction.operand1, 3),
+                RedAsm.hexdump(instruction.operand2, 3),
                 stmt];
 
     rows.push(row);
@@ -205,4 +181,40 @@ RedAsm.disassemble =  function(compiledBytes) {
   return rows;
 }
 
+RedAsm.parseInstruction = function(instruction) {
+  var opcode = (instruction & 0xF0000000)>>>28;
+  var mode1 =  (instruction & 0x0C000000)>>>26;
+  var mode2 =  (instruction & 0x03000000)>>>24;
+  var operand1 = (instruction & 0x00FFF000)>>>12;
+  var operand2 = (instruction & 0x00000FFF);
+
+  return {
+    'opcode': opcode,
+    'mode1': mode1,
+    'mode2': mode2,
+    'operand1': operand1,
+    'operand2': operand2,
+  }
+
+}
+
+RedAsm.signedCast12 = function(number) {
+  // cast to 12 bit signed integer
+  if ((number & 0xF00) == 0xF00) {
+    var n = (number & 0xFFF)-1;
+    return -(0xFFF - n);
+  } 
+  return number;
+}
+
+RedAsm.hexdump = function(number, padding) {
+  var padding = padding || 2;
+  var out = parseInt(number).toString(16);
+  while (padding > 1) {
+    if (number < 1<<(padding+2))
+      out = "0"+out;
+    padding--;
+  }
+  return out;
+}
 
