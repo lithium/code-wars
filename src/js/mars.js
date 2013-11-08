@@ -117,36 +117,78 @@ _.extend(Mars.MarsCore.prototype, {
     var instruction = RedAsm.parseInstruction(word)
     switch (instruction.opcode) {
       case RedAsm.OPCODE_LD:
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+
+        this.memory[address] = value;
+
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_ADD:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
-        
+
         this.memory[address] += value;
 
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_SUB:
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        
+        this.memory[address] -= value;
+
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_MUL:
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        
+        this.memory[address] *= value;
+
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_DIV:
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        
+        this.memory[address] /= value;
+
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_MOD:
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        
+        this.memory[address] %= value;
+
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_CMP:
+        var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
+        var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+
+        if (op1 != op2) {
+          _advancePC.apply(this);
+        }
+
         _advancePC.apply(this);
         return true;
       case RedAsm.OPCODE_BRZ:
-        _advancePC.apply(this);
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+
+        if (value == 0) {
+          thread.PC = address;
+        }
+        else {
+          _advancePC.apply(this);
+        }
         return true;
       case RedAsm.OPCODE_JMP:
-        _advancePC.apply(this);
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+
+        thread.PC = address;
         return true;
       case RedAsm.OPCODE_FORK:
         _advancePC.apply(this);
