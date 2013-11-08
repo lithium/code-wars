@@ -13,6 +13,8 @@ _.extend(Mars.MarsCore.prototype, {
     }
     this.options = _.extend(_.clone(defaults), options)
 
+    _.extend(this, Backbone.Events);
+
     this.memory = new Array(this.options.memorySize)
     this.players = null;
     return this;
@@ -72,9 +74,7 @@ _.extend(Mars.MarsCore.prototype, {
     var instruction = this.memory[thread.PC];
     console.log("execute", instruction, thread, player);
 
-    // thread.PC = ++thread.PC % this.options.memorySize;
-    player.currentThread = ++player.currentThread % player.threads.length;
-    this.currentPlayer = ++this.currentPlayer % this.players.length;
+    this.trigger("mars:beforeCycleExecute", thread, player);
 
     if (!this.executeInstruction(thread, instruction)) {
       thread.running = false;
@@ -84,6 +84,11 @@ _.extend(Mars.MarsCore.prototype, {
       }
     }
     this.cycleCount++;
+
+
+
+    player.currentThread = ++player.currentThread % player.threads.length;
+    this.currentPlayer = ++this.currentPlayer % this.players.length;
   },
   executeNextStep: function() {
     if (this.remainingPlayerCount < 1)
@@ -225,6 +230,17 @@ _.extend(Mars.MarsCore.prototype, {
     if (addr == null)
       return null;
     return this.memory[addr];
+  },
+
+
+  memorySlice: function(memoryLocation, size) {
+    var slice = new Array(size);
+    var written = 0;
+    while (written < size) {
+      slice[written++] = this.memory[memoryLocation];
+      memoryLocation = ++memoryLocation % this.options.memorySize;
+    }
+    return slice;
   },
 
   _memset: function(memoryLocation, value, size) {

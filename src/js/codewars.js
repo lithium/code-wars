@@ -17,7 +17,7 @@ CodeWarsConsole = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.output = this.$(".output.compiled");
+    this.output = this.$(".output");
 
     this.help = this.$(".help.well");
 
@@ -32,10 +32,46 @@ CodeWarsConsole = Backbone.View.extend({
 
 
     this.mars = new Mars.MarsCore()
+    this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
   },
 
   render: function() {
 
+  },
+
+
+  beforeCycle: function(thread, player) {
+
+    var slice = this.mars.memorySlice(thread.PC - 3, 7);
+    var source = RedAsm.decompile(slice);
+
+    var $monitor = $('<div class="monitor"></div>');
+    for (var i=0; i < slice.length; i++) {
+      var $row = $('<div class="row"></div>');
+      var $addr = $('<span class="address"></span>');
+      var $hex = $('<span class="hexdump"></span>');
+      var $assembly = $('<span class="assembly"></span>');
+
+      $addr.html(RedAsm.hexdump(thread.PC-3+i, 3)+":");
+
+      $hex.html(RedAsm.hexdump(slice[i]>>>0, 8));
+
+      $assembly.html("; "+source[i]);
+
+      if (i == 3) {
+        $row.addClass("active");
+      }
+
+      $row.append($addr);
+      $row.append($hex);
+      $row.append($assembly);
+      $monitor.append($row);
+    }
+    this.output.empty();
+    this.output.append($monitor);
+
+
+    // console.log(source);
   },
 
   editorCursorChanged: function(evt, selection) {
@@ -60,7 +96,7 @@ CodeWarsConsole = Backbone.View.extend({
       for (var i=0; i < disasm.length; i++) {
         o.push(disasm[i].join(" "));
       }
-      this.output.html(o.join("\n"));
+      this.output.html("<pre>"+o.join("\n")+"</pre>");
 
       this.mars.startMatch([_.clone(result),result]);
     } else {

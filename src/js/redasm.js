@@ -161,16 +161,7 @@ RedAsm.compile = function(assembly_string) {
   }
 }
 
-RedAsm.disassemble =  function(compiledBytes) {
-  var _addrmode = function(mode, value) {
-    if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
-      return "$"+parseInt(value).toString(16);
-    else if (mode == RedAsm.ADDR_MODE_RELATIVE)
-      return "("+value+")";
-    else if (mode == RedAsm.ADDR_MODE_INDIRECT)
-      return "@"+value;
-    return value;
-  }
+RedAsm.decompile = function(compiledBytes) {
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
@@ -182,25 +173,35 @@ RedAsm.disassemble =  function(compiledBytes) {
         break;
       }
     }
+
     if (!stmt) { //unknown opcode
       stmt = ".BYTE 0x"+RedAsm.hexdump(compiledBytes[i],8)
     } else {
       //everything except NOP(0xF) has at least 1 operand
       if (instruction.opcode < 0xF) 
-        stmt += " "+_addrmode(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
       //the only ones without operand2 are: JMP(0xD), FORK(0xE) and NOP(0xF) 
       if (instruction.opcode < 0xD)
-        stmt += ", "+_addrmode(instruction.mode2, RedAsm.signedCast12(instruction.operand2));
+        stmt += ", "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2));
     }
+    rows.push(stmt);
+  }
+  return rows;
+},
 
-    var row =  [RedAsm.hexdump(i,4),
+
+RedAsm.disassemble = function(compiledBytes) {
+  var stmts = RedAsm.decompile(compiledBytes);
+  var rows = [];
+  for (var i=0; i<compiledBytes.length; i++) {
+    var instruction = RedAsm.parseInstruction(compiledBytes[i]);
+    var row = [RedAsm.hexdump(i,4),
                 RedAsm.hexdump(instruction.opcode,2),
                 RedAsm.hexdump(instruction.mode1, 1),
                 RedAsm.hexdump(instruction.mode2, 1),
                 RedAsm.hexdump(instruction.operand1, 3),
                 RedAsm.hexdump(instruction.operand2, 3),
-                stmt];
-
+                stmts[i]];
     rows.push(row);
   }
   return rows;
@@ -243,3 +244,12 @@ RedAsm.hexdump = function(number, padding) {
   return out;
 }
 
+RedAsm.decorateAddressing = function(mode, value) {
+  if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
+    return "$"+parseInt(value).toString(16);
+  else if (mode == RedAsm.ADDR_MODE_RELATIVE)
+    return "("+value+")";
+  else if (mode == RedAsm.ADDR_MODE_INDIRECT)
+    return "@"+value;
+  return value;
+}

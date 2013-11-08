@@ -18,10 +18,6 @@ textarea:focus, input:focus {
   border: 1px solid black;
 }
 
-.output.compiled {
-}
-
-
 
 
 .help.well {
@@ -40,4 +36,19 @@ textarea:focus, input:focus {
 }
 .help.well .errors {
   color: red;
+}
+
+
+.output pre {
+  font-size: 0.7em;
+}
+.output .monitor .row span {
+  margin-right: 1em;
+  font-family: monospace;
+}
+.output .monitor .row .hexdump {
+  width: 8em;
+}
+.output .monitor .row.active {
+  background: #eee;
 }

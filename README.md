@@ -7,6 +7,7 @@
 
 ## Overview
 
+[Core War](http://en.wikipedia.org/wiki/Core_War) for a new generation.  
 The game board is a virtual computer, MARS.   
 Players write Programs in RedAsm to battle with other Players' Programs.  
 Programs must change memory locations to survive and grow.  
