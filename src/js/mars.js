@@ -53,6 +53,7 @@ _.extend(Mars.MarsCore.prototype, {
       player.threads = [{
         PC: offset,
         running: true,
+        threadNumber: 0,
       }];
       player.currentThread = 0;
       player.runningThreadCount = 1;

@@ -42,12 +42,13 @@ CodeWarsConsole = Backbone.View.extend({
 
   beforeCycle: function(thread, player) {
 
+    console.log("player", player)
     var slice = this.mars.memorySlice(thread.PC - 3, 7);
     var source = RedAsm.decompile(slice);
 
     var $monitor = $('<div class="monitor"></div>');
     for (var i=0; i < slice.length; i++) {
-      var $row = $('<div class="row"></div>');
+      var $row = $('<div class="monitorRow"></div>');
       var $addr = $('<span class="address"></span>');
       var $hex = $('<span class="hexdump"></span>');
       var $assembly = $('<span class="assembly"></span>');
@@ -67,8 +68,19 @@ CodeWarsConsole = Backbone.View.extend({
       $row.append($assembly);
       $monitor.append($row);
     }
-    this.output.empty();
-    this.output.append($monitor);
+
+    var $output = this.$('.dissassembly.player'+player.playerNumber+".thread"+thread.threadNumber);
+
+    if ($output.length < 1) {
+      $output = $('<div class="col-md-3 dissassembly player'+player.playerNumber+' thread'+thread.threadNumber+'"></div>');
+      this.output.append($output);
+    }
+    $output.empty();
+
+    var $title = $('<h4></h4>');
+    $title.html("Player:"+player.playerNumber+" Thread:"+thread.threadNumber);
+    $output.append($title)
+    $output.append($monitor);
 
 
     // console.log(source);
@@ -96,7 +108,7 @@ CodeWarsConsole = Backbone.View.extend({
       for (var i=0; i < disasm.length; i++) {
         o.push(disasm[i].join(" "));
       }
-      this.output.html("<pre>"+o.join("\n")+"</pre>");
+      this.output.html("<pre >"+o.join("\n")+"</pre>");
 
       this.mars.startMatch([_.clone(result),result]);
     } else {

@@ -42,13 +42,17 @@ textarea:focus, input:focus {
 .output pre {
   font-size: 0.7em;
 }
-.output .monitor .row span {
-  margin-right: 1em;
+.output .monitor .monitorRow span {
   font-family: monospace;
 }
-.output .monitor .row .hexdump {
-  width: 8em;
+.output .monitor .monitorRow .hexdump {
+  margin: 0 0.5em;
 }
-.output .monitor .row.active {
+.output .monitor .monitorRow.active {
   background: #eee;
+}
+
+.output .monitor {
+  border: 1px solid black;
+  padding: 2px;
 }
