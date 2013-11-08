@@ -15,7 +15,7 @@ MARS has no registers, only primary memory (RAM).
 A Thread that executes an invalid operation dies.
 
 
-For more details see [NOTES](blob/master/NOTES.md).
+For more details see [NOTES](NOTES.md).
 
 ## Gameplay
 
@@ -28,6 +28,8 @@ For more details see [NOTES](blob/master/NOTES.md).
 ## Open Source Used
 
 - [Core Wars](http://corewar.co.uk/cwg.txt)
+- [Chrome/Javascript](https://code.google.com/p/v8/)
+- [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 - [jQuery](http://jquery.com)
 - [Bootstrap](http://getbootstrap.com/)
 - [Backbone.js](http://backbonejs.org/)
