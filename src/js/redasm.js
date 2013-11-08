@@ -236,10 +236,10 @@ RedAsm.signedCast12 = function(number) {
 RedAsm.hexdump = function(number, padding) {
   var padding = padding || 2;
   var out = parseInt(number).toString(16);
-  while (padding > 1) {
-    if (number < 1<<(padding+2))
+  padding -= out.length;
+  while (padding > 0) {
       out = "0"+out;
-    padding--;
+      padding--;
   }
   return out;
 }
