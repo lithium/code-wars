@@ -54,6 +54,7 @@ _.extend(Mars.MarsCore.prototype, {
         PC: offset,
         running: true,
         threadNumber: 0,
+        owner: player,
       }];
       player.currentThread = 0;
       player.runningThreadCount = 1;
@@ -113,92 +114,108 @@ _.extend(Mars.MarsCore.prototype, {
     this.stepCount++;
   },
 
-  executeInstruction: function(thread, word) {
-    var _advancePC = function() { 
-      thread.PC = ++thread.PC % this.options.memorySize;
-    }
+  loadMemory: function(address, value, thread) {
+    this.memory[address] = value;
+    this.trigger("mars:memoryChanged", address, value, thread);
+  },
 
+  advancePC: function(thread, offset) { 
+    var offset = offset != null ? offset : 1;
+    this.loadPC(thread, thread.PC+offset);
+  },
+  loadPC: function(thread, address) { 
+    thread.PC = address % this.options.memorySize;
+    this.trigger("mars:instructionPointerChanged", thread.PC, thread);
+  },
+
+
+  executeInstruction: function(thread, word) {
     var instruction = RedAsm.parseInstruction(word)
     switch (instruction.opcode) {
       case RedAsm.OPCODE_LD:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
-        this.memory[address] = value;
-
-        _advancePC.apply(this);
+        this.loadMemory(address, value, thread);
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_ADD:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
-        this.memory[address] += value;
-
-        _advancePC.apply(this);
+        this.loadMemory(address, this.memory[address] + value, thread);
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_SUB:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
         
-        this.memory[address] -= value;
-
-        _advancePC.apply(this);
+        this.loadMemory(address, this.memory[address] - value, thread);
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_MUL:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
         
-        this.memory[address] *= value;
-
-        _advancePC.apply(this);
+        this.loadMemory(address, this.memory[address] * value, thread);
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_DIV:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
         
-        this.memory[address] /= value;
-
-        _advancePC.apply(this);
+        this.loadMemory(address, this.memory[address] / value, thread);
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_MOD:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
         
-        this.memory[address] %= value;
-
-        _advancePC.apply(this);
+        this.loadMemory(address, this.memory[address] % value, thread);
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_CMP:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
         if (op1 != op2) {
-          _advancePC.apply(this);
+          this.advancePC(thread, 2);
+        } else {
+          this.advancePC(thread, 1);
         }
-
-        _advancePC.apply(this);
         return true;
+
       case RedAsm.OPCODE_BRZ:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
         if (value == 0) {
-          thread.PC = address;
+          this.loadPC(thread, address);
         }
         else {
-          _advancePC.apply(this);
+          this.advancePC(thread,1);
         }
         return true;
+
       case RedAsm.OPCODE_JMP:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
 
-        thread.PC = address;
+        this.loadPC(thread, address);
         return true;
+
       case RedAsm.OPCODE_FORK:
-        _advancePC.apply(this);
+        //TODO
+        this.advancePC(thread);
         return true;
+
       case RedAsm.OPCODE_NOP:
-        _advancePC.apply(this);
+        this.advancePC(thread);
         return true;
     }
     return false;
