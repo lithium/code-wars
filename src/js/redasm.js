@@ -12,6 +12,10 @@ _.extend(RedAsm, {
   OPCODE_JMP: 0xD,
   OPCODE_FORK: 0xE,
   OPCODE_NOP: 0xF,
+
+  ADDR_MODE_IMMEDIATE: 0,
+  ADDR_MODE_RELATIVE: 1,
+  ADDR_MODE_INDIRECT: 2,
 });
 
 _.extend(RedAsm, {
@@ -53,13 +57,13 @@ RedAsm.compile = function(assembly_string) {
     var rel;
 
     if (/^@/.test(operand)) { // indirect addressing
-      return [2, resolveRelative(operand.slice(1))];
+      return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
     } 
     else if (/^(0|\$|-)?\d+/.test(operand)) { // immediate
       operand = operand.replace(/^\$/,'')
-      return [0, parseInt(operand)];
+      return [RedAsm.ADDR_MODE_IMMEDIATE, parseInt(operand)];
     } else if ((rel = resolveRelative(operand)) != null) { // relative address
-      return [1, rel];
+      return [RedAsm.ADDR_MODE_RELATIVE, rel];
     }
     return null;
   };
@@ -138,11 +142,11 @@ RedAsm.compile = function(assembly_string) {
 
 RedAsm.disassemble =  function(compiledBytes) {
   var _addrmode = function(mode, value) {
-    if (mode == 0)
+    if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
       return "$"+parseInt(value).toString(16);
-    else if (mode == 1)
+    else if (mode == RedAsm.ADDR_MODE_RELATIVE)
       return "("+value+")";
-    else if (mode == 2)
+    else if (mode == RedAsm.ADDR_MODE_INDIRECT)
       return "@"+value;
     return value;
   }

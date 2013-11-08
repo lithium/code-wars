@@ -72,11 +72,11 @@ _.extend(Mars.MarsCore.prototype, {
     var instruction = this.memory[thread.PC];
     console.log("execute", instruction, thread, player);
 
-    thread.PC = ++thread.PC % this.options.memorySize;
+    // thread.PC = ++thread.PC % this.options.memorySize;
     player.currentThread = ++player.currentThread % player.threads.length;
     this.currentPlayer = ++this.currentPlayer % this.players.length;
 
-    if (!this.executeInstruction(thread.PC, instruction)) {
+    if (!this.executeInstruction(thread, instruction)) {
       thread.running = false;
       if (--player.runningThreadCount < 1) {
         player.running = false;
@@ -109,8 +109,80 @@ _.extend(Mars.MarsCore.prototype, {
     this.stepCount++;
   },
 
-  executeInstruction: function(PC, instruction) {
+  executeInstruction: function(thread, word) {
+    var _advancePC = function() { 
+      thread.PC = ++thread.PC % this.options.memorySize;
+    }
+
+    var instruction = RedAsm.parseInstruction(word)
+    switch (instruction.opcode) {
+      case RedAsm.OPCODE_LD:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_ADD:
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        
+        this.memory[address] += value;
+
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_SUB:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_MUL:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_DIV:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_MOD:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_CMP:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_BRZ:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_JMP:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_FORK:
+        _advancePC.apply(this);
+        return true;
+      case RedAsm.OPCODE_NOP:
+        _advancePC.apply(this);
+        return true;
+    }
     return false;
+  },
+
+  resolveAddress: function(PC, operand, mode) {
+    if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {
+      return null;
+    }
+
+    var offset = RedAsm.signedCast12(operand);
+    var addr = (PC+offset) % this.options.memorySize;
+    if (mode == RedAsm.ADDR_MODE_RELATIVE) {
+      return addr;
+    }
+    if (mode == RedAsm.ADDR_MODE_INDIRECT) {
+      return this.memory[addr] % this.options.memorySize;
+    }
+
+    return null;
+  },
+  resolveValue: function(PC, operand, mode) {
+    if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {
+      return RedAsm.signedCast12(operand);
+    }
+
+    var addr = this.resolveAddress(PC, operand, mode);
+    if (addr == null)
+      return null;
+    return this.memory[addr];
   },
 
   _memset: function(memoryLocation, value, size) {
