@@ -42,7 +42,6 @@ CodeWarsConsole = Backbone.View.extend({
 
   beforeCycle: function(thread, player) {
 
-    console.log("player", player)
     var slice = this.mars.memorySlice(thread.PC - 3, 7);
     var source = RedAsm.decompile(slice);
 

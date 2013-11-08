@@ -73,8 +73,6 @@ _.extend(Mars.MarsCore.prototype, {
     var thread = player.threads[player.currentThread];
 
     var instruction = this.memory[thread.PC];
-    console.log("execute", instruction, thread, player);
-
     this.trigger("mars:beforeCycleExecute", thread, player);
 
     if (!this.executeInstruction(thread, instruction)) {
@@ -217,7 +215,7 @@ _.extend(Mars.MarsCore.prototype, {
       return addr;
     }
     if (mode == RedAsm.ADDR_MODE_INDIRECT) {
-      return this.memory[addr] % this.options.memorySize;
+      return (PC+this.memory[addr]) % this.options.memorySize;
     }
 
     return null;
