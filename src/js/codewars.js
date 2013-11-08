@@ -19,12 +19,6 @@ CodeWarsConsole = Backbone.View.extend({
   initialize: function() {
     this.output = this.$(".output.compiled");
 
-
-    this.firstColumn = this.$(".firstColumn")
-    this.secondColumn = this.$(".secondColumn")
-    this.thirdColumn = this.$(".thirdColumn")
-    this.hideThirdColumn();
-
     this.help = this.$(".help.well");
 
     this.errors = this.$(".errors");
@@ -44,27 +38,6 @@ CodeWarsConsole = Backbone.View.extend({
 
   },
 
-  hideThirdColumn: function() {
-    this.thirdColumnShown = false;
-
-    var duration = 0;
-    this.firstColumn.switchClass("col-md-4", "col-md-7", duration);
-    this.secondColumn.switchClass("col-md-4", "col-md-5", duration);
-    this.thirdColumn.switchClass("col-md-4", "col-md-0", duration);
-
-  },
-  showThirdColumn: function() {
-    if (this.thirdColumnShown)
-      return;
-
-    var duration = 0;
-    this.firstColumn.switchClass("col-md-7", "col-md-4", duration);
-    this.secondColumn.switchClass("col-md-5", "col-md-4", duration);
-    this.thirdColumn.switchClass("col-md-0", "col-md-4", duration);
-
-    this.thirdColumnShown = true;
-  },
-
   editorCursorChanged: function(evt, selection) {
       var cursor = selection.getCursor()
       var line = this.editor.session.getLine(cursor.row)
@@ -72,10 +45,9 @@ CodeWarsConsole = Backbone.View.extend({
         line = line.replace(/.+:/,'')
       var word = line.trim().split(/\s+/)[0]
       if (word.toUpperCase() in RedAsm.MNEUMONICS) {
-        this.showThirdColumn();
         // this.help.html(word);
       } else {
-        this.hideThirdColumn();
+        // this.help.html("");
       }
   },
 

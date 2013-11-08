@@ -19,8 +19,6 @@ textarea:focus, input:focus {
 }
 
 .output.compiled {
-  height: 380px;
-  overflow: hidden;
 }
 
 

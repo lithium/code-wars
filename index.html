@@ -9,21 +9,25 @@ title: Code Wars - GitHubGameOff 2013
     <h1>> Hello, Player. <span class="cursor">|</span></h1>
   </div>
 
+  <div class="row">
+    <div class="col-md-2 col-md-offset-10">
+      <button type="button" class="btn btn-default save">Compile</button>
+      <button type="button" class="btn btn-default step">Step</button>
+    </div>
+  </div>
+
 
   <div class="row">
-    <div class="col-md-7 firstColumn">
-      <div class="editor">addr:   .BYTE 0
-loop:   add (-1), $4
-        ld @addr, $0
+    <div class="col-md-6 editorColumn">
+      <div class="editor">loop:   add addr, 4
+        ld @addr, 0
         jmp loop
+addr:   .BYTE 0
       </div>
       <div class="errors"></div>
 
     </div>
-    <div class="col-md-5 secondColumn">
-      <pre class="output compiled"></pre>
-    </div>
-    <div class="col-md-0 thirdColumn">
+    <div class="col-md-6 helpColumn">
       <div class="help well">
         <h2 class="title">LD</h2>
         <h4 class="subtitle">Load data into memory</h4>
@@ -36,16 +40,16 @@ loop:   add (-1), $4
         <h5>Examples</h5>
         <div class="examples">
           <div class="row">
-            <div class="col-md-6 monospace"> ld (-1), 0 </div>
-            <div class="col-md-6"><em class="small">load previous memory location with 0</em></div>
+            <div class="col-md-5 monospace"> ld (-1), 0 </div>
+            <div class="col-md-7"><em class="small">load previous memory location with 0</em></div>
           </div>
           <div class="row">
-            <div class="col-md-6 monospace"> ld @label, (-5) </div>
-            <div class="col-md-6"><em class="small">load the memory location at <strong>label</strong> with the data at memory location <strong>-5</strong></em></div>
+            <div class="col-md-5 monospace"> ld @label, (-5) </div>
+            <div class="col-md-7"><em class="small">load the memory location at <strong>label</strong> with the data at memory location <strong>-5</strong></em></div>
           </div>
           <div class="row errors">
-            <div class="col-md-6 monospace"> <strike>ld 5, 0x42</strike> </div>
-            <div class="col-md-6"><em class="small">You cannot reference absolute memory locations.</em></div>
+            <div class="col-md-5 monospace"> <strike>ld 5, 0x42</strike> </div>
+            <div class="col-md-7"><em class="small">You cannot reference absolute memory locations.</em></div>
           </div>
         </div>
         </ul>
@@ -54,10 +58,11 @@ loop:   add (-1), $4
   </div>
 
   <div class="row">
-    <div class="col-md-2 col-md-offset-10">
-      <button type="button" class="btn btn-default step">Step</button>
-      <button type="button" class="btn btn-default save">Compile</button>
+    <div class="col-md-4">
+      <pre class="output compiled"></pre>
     </div>
   </div>
+
+
 
 </div>
