@@ -7,7 +7,9 @@ textarea:focus, input:focus {
   overflow: hidden;
 }
 
-
+.monospace {
+  font-family: monospace;
+}
 
 .editor {
   height: 380px;
@@ -37,4 +39,7 @@ textarea:focus, input:focus {
 }
 .help.well .description {
   margin-bottom: 1.3em;
+}
+.help.well .errors {
+  color: red;
 }
