@@ -122,7 +122,7 @@ RedAsm.compile = function(assembly_string) {
         if (!a) {
           return {
             'success': false,
-            'error': "Syntax error on line "+lineNumber+": Invalid Operand: '"+firstOperand+"'",
+            'error': "Syntax error on line "+i+": Invalid Operand: '"+firstOperand+"'",
           }
         }
         var b = resolveOperand(secondOperand)
@@ -149,7 +149,7 @@ RedAsm.compile = function(assembly_string) {
     else {
       return {
         'success': false,
-        'error': "Syntax error on line "+lineNumber+": No such operation '"+tokens[0]+"'",
+        'error': "Syntax error on line "+i+": No such operation '"+tokens[0]+"'",
       };
     }
 
@@ -237,9 +237,8 @@ RedAsm.hexdump = function(number, padding) {
   var padding = padding || 2;
   var out = parseInt(number).toString(16);
   padding -= out.length;
-  while (padding > 0) {
+  while (padding-- > 0) {
       out = "0"+out;
-      padding--;
   }
   return out;
 }
