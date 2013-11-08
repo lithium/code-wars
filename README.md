@@ -7,23 +7,20 @@
 
 ## Overview
 
-Players write Programs in RedAsm to battle with other Players' Programs.
-Programs must change memory locations to survive and grow.
-The last Program standing wins.
-
-The game board is a virtual computer, MARS. 
-MARS has a circular memory of 4096 32bit words.
-MARS has no registers, only primary memory (RAM).
-
+The game board is a virtual computer, MARS.   
+Players write Programs in RedAsm to battle with other Players' Programs.  
+Programs must change memory locations to survive and grow.  
+MARS has a circular memory of 4096 32bit words.  
+MARS has no registers, only primary memory (RAM).  
 A Thread that executes an invalid operation dies.
 
 
 ## Gameplay
 
-- All participating players submit their Program to the Referee
-- The Referree places each Program into a random place in Memory.
-- If a player's Thread encounters an illegal operation it dies.
-- When only one player's Threads remain, a winner is declared.
+1. All participating players submit their Program to the Referee
+1. The Referree places each Program into a random place in Memory.
+1. If a player's Thread encounters an illegal operation it dies.
+1. When only one player's Threads remain, a winner is declared.
 
 
 ## Open Source Used
