@@ -119,7 +119,7 @@ RedAsm.compile = function(assembly_string) {
 
         var a = resolveOperand(firstOperand)
 
-        if (!a || !a[1]) {
+        if (!a) {
           return {
             'success': false,
             'error': "Syntax error on line "+lineNumber+": Invalid Operand: '"+firstOperand+"'",
