@@ -68,6 +68,8 @@ _.extend(Mars.MarsCore.prototype, {
     this.cycleCount = 0;
     this.currentPlayer = 0;
     this.remainingPlayerCount = this.players.length;
+
+    this.trigger("mars:matchStarted", this.players);
   },
 
   executeOneCycle: function(player) {
@@ -78,9 +80,11 @@ _.extend(Mars.MarsCore.prototype, {
 
     if (!this.executeInstruction(thread, instruction)) {
       thread.running = false;
+      this.trigger("mars:threadDied", thread);
       if (--player.runningThreadCount < 1) {
         player.running = false;
         this.remainingPlayerCount--;
+        this.trigger("mars:playerDied", player);
       }
     }
     this.cycleCount++;
@@ -99,7 +103,8 @@ _.extend(Mars.MarsCore.prototype, {
     }
 
     if (this.remainingPlayerCount < 1) {
-      console.log("remaining players tied on step ",this.stepCount);
+      // console.log("remaining players tied on step ",this.stepCount);
+      this.trigger("mars:matchComplete", null);
     } else if (this.remainingPlayerCount < 2) {
       var winner;
       for (var i=0; i < this.players.length; i++) {
@@ -108,7 +113,8 @@ _.extend(Mars.MarsCore.prototype, {
           break;
         }
       }
-      console.log("only one player left ", winner);
+      // console.log("only one player left ", winner);
+      this.trigger("mars:matchComplete", winner);
     }
 
     this.stepCount++;
