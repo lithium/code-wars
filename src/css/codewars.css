@@ -12,3 +12,13 @@ textarea:focus, input:focus {
 .output.compiled {
   min-height: 250px;
 }
+
+.help.well {
+  min-height: 250px;
+}
+
+
+.col-md-0 {
+  width: 0%;
+  overflow: hidden;
+}
