@@ -28,16 +28,20 @@ For more details see [NOTES](NOTES.md).
 
 ## Open Source Used
 
-- [Core Wars](http://corewar.co.uk/cwg.txt)
-- [Chrome/Javascript](https://code.google.com/p/v8/)
-- [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-- [jQuery](http://jquery.com)
-- [Bootstrap](http://getbootstrap.com/)
+- [Core War](http://corewar.co.uk/cwg.txt)
 - [Backbone.js](http://backbonejs.org/)
 - [Underscore.js](http://underscorejs.org/)
 - [Ace Editor](http://ace.c9.io/)
+- [Bootstrap](http://getbootstrap.com/)
+- [jQuery](http://jquery.com)
+- [Node.js](http://nodejs.org/)
+- [Express](http://expressjs.com/)
+- [Redis](http://redis.io/)
+- [redis-url](https://github.com/ddollar/redis-url)
 - [Jekyll](https://github.com/mojombo/jekyll)
 - [Markdown](http://daringfireball.net/projects/markdown/)
+- [Chrome/Javascript](https://code.google.com/p/v8/)
+- [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 - [Stack Overflow](http://www.stackoverflow.com)
 - [All the other source code I've read in my life](http://github.com/)
 
