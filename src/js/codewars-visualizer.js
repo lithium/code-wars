@@ -67,8 +67,8 @@ CodeWarsVisualizer = Backbone.View.extend({
   instructionPointerChanged: function(PC, thread) {
     var $cell = this.cellAt(PC);
     var pos = $cell.position();
-    thread.$pc.css('left', pos.left);
-    thread.$pc.css('top', pos.top);
+    thread.$pc.css('left', pos.left-2);
+    thread.$pc.css('top', pos.top-2);
   },
 
   matchStarted: function(players) {

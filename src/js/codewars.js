@@ -14,6 +14,7 @@ CodeWarsConsole = Backbone.View.extend({
   events: {
     "click .save": "saveEditor",
     "click .step": "stepMars",
+    "click .run": "runMars",
   },
 
   initialize: function() {
@@ -34,6 +35,10 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.mars = new Mars.MarsCore()
     this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
+
+
+    this.runButton = this.$(".btn.run"); 
+    this.running = false;
 
 
 
@@ -106,6 +111,7 @@ CodeWarsConsole = Backbone.View.extend({
   },
 
   saveEditor: function() {
+    this.$('.pc').remove();
     var playerScript = this.editor.getValue();
     var result = RedAsm.compile(playerScript);
     if (result.success) {
@@ -126,7 +132,24 @@ CodeWarsConsole = Backbone.View.extend({
 
   stepMars: function() {
     this.mars.executeNextStep();
-  }
+  },
+
+  runMars: function() {
+    this.running = !this.running;
+    if (this.running) {
+      this._runcycle();
+      this.runButton.addClass("btn-primary");
+    } else {
+      this.runButton.removeClass("btn-primary");
+    }
+  },
+
+  _runcycle: function() {
+    if (!this.running) 
+      return;
+    this.stepMars();
+    setTimeout(_.bind(this._runcycle, this), 100);
+  },
 
 
 })

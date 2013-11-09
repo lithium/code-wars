@@ -76,8 +76,8 @@ textarea:focus, input:focus {
 }
  
 .visualizer .pc {
-  width: 8px;
-  height: 8px;
-  border: 1px solid green;
+  width: 11px;
+  height: 11px;
+  border: 2px solid orange;
   position:absolute;
 }
