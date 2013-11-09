@@ -18,6 +18,7 @@ CodeWarsConsole = Backbone.View.extend({
 
   initialize: function() {
     this.output = this.$(".output");
+    this.compiled = this.$(".compiled");
 
     this.help = this.$(".help.well");
 
@@ -33,6 +34,11 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.mars = new Mars.MarsCore()
     this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
+
+    this.visualizer = new CodeWarsVisualizer({
+      el: this.$(".visualizer"), 
+      mars: this.mars,
+    });
   },
 
   render: function() {
@@ -107,7 +113,7 @@ CodeWarsConsole = Backbone.View.extend({
       for (var i=0; i < disasm.length; i++) {
         o.push(disasm[i].join(" "));
       }
-      this.output.html("<pre >"+o.join("\n")+"</pre>");
+      this.compiled.html("<pre>"+o.join("\n")+"</pre>");
 
       this.mars.startMatch([_.clone(result),result]);
     } else {

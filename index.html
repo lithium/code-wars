@@ -10,14 +10,6 @@ title: Code Wars - GitHubGameOff 2013
   </div>
 
   <div class="row">
-    <div class="col-md-2 col-md-offset-10">
-      <button type="button" class="btn btn-default save">Compile</button>
-      <button type="button" class="btn btn-default step">Step</button>
-    </div>
-  </div>
-
-
-  <div class="row">
     <div class="col-md-6 editorColumn">
       <div class="editor">loop:   add addr, 4
         ld @addr, 0
@@ -25,8 +17,9 @@ title: Code Wars - GitHubGameOff 2013
 addr:   .BYTE 0
       </div>
       <div class="errors"></div>
-
+      <div class="compiled"></div>
     </div>
+
     <div class="col-md-6 helpColumn">
       <div class="help well">
         <h2 class="title">LD</h2>
@@ -52,13 +45,24 @@ addr:   .BYTE 0
             <div class="col-md-7"><em class="small">You cannot reference absolute memory locations.</em></div>
           </div>
         </div>
-        </ul>
       </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-2 col-md-offset-10">
+      <button type="button" class="btn btn-default save">Compile</button>
+      <button type="button" class="btn btn-default step">Step</button>
     </div>
   </div>
 
-  <div class="row output">
+  <div class="row output"></div>
+ 
+  <div class="row visualizer">
   </div>
+
+
 
 
 
