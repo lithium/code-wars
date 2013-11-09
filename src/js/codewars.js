@@ -35,6 +35,8 @@ CodeWarsConsole = Backbone.View.extend({
     this.mars = new Mars.MarsCore()
     this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
 
+
+
     this.visualizer = new CodeWarsVisualizer({
       el: this.$(".visualizer"), 
       mars: this.mars,
@@ -44,7 +46,6 @@ CodeWarsConsole = Backbone.View.extend({
   render: function() {
 
   },
-
 
   beforeCycle: function(thread, player) {
 

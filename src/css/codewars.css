@@ -44,6 +44,7 @@ textarea:focus, input:focus {
 }
 .output .monitor .monitorRow span {
   font-family: monospace;
+  font-size: 0.8em;
 }
 .output .monitor .monitorRow .hexdump {
   margin: 0 0.5em;
@@ -74,3 +75,9 @@ textarea:focus, input:focus {
   border-left-width: 1px;
 }
  
+.visualizer .pc {
+  width: 8px;
+  height: 8px;
+  border: 1px solid green;
+  position:absolute;
+}
