@@ -60,20 +60,28 @@ textarea:focus, input:focus {
 
 
 
+.visualizer {
+  border: 1px solid black;
+  width: 1026px;
+  margin: auto;
+}
 .visualizer .cell {
   width: 8px;
   height: 8px;
-  border: 1px solid black;
-  border-left-width: 0;
-  border-top-width: 0;
   float: left;
 }
-.visualizer .row:first-child .cell {
-  border-top-width: 1px;
-}
-.visualizer .row .cell:first-child {
-  border-left-width: 1px;
-}
+
+.visualizer .cell.add { background-image: url('opcodes/add.png'); }
+.visualizer .cell.brz { background-image: url('opcodes/brz.png'); }
+.visualizer .cell.div { background-image: url('opcodes/div.png'); }
+.visualizer .cell.jmp { background-image: url('opcodes/jmp.png'); }
+.visualizer .cell.ld { background-image: url('opcodes/ld.png'); }
+.visualizer .cell.mod { background-image: url('opcodes/mod.png'); }
+.visualizer .cell.mul { background-image: url('opcodes/mul.png'); }
+.visualizer .cell.sub { background-image: url('opcodes/sub.png'); }
+.visualizer .cell.cmp { background-image: url('opcodes/sne.png'); }
+.visualizer .cell.seq { background-image: url('opcodes/seq.png'); }
+.visualizer .cell.slt { background-image: url('opcodes/slt.png'); }
  
 .visualizer .pc {
   width: 11px;

@@ -161,19 +161,13 @@ RedAsm.compile = function(assembly_string) {
   }
 }
 
+
 RedAsm.decompile = function(compiledBytes) {
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
 
-    var stmt='';
-    for (var mn in RedAsm.MNEUMONICS) {
-      if (RedAsm.MNEUMONICS[mn] == instruction.opcode) {
-        stmt = mn.toLowerCase();
-        break;
-      }
-    }
-
+    var stmt= RedAsm.mneumonicFromOpcode(instruction.opcode);
     if (!stmt) { //unknown opcode
       stmt = ".BYTE 0x"+RedAsm.hexdump(compiledBytes[i],8)
     } else {
@@ -187,7 +181,7 @@ RedAsm.decompile = function(compiledBytes) {
     rows.push(stmt);
   }
   return rows;
-},
+}
 
 
 RedAsm.disassemble = function(compiledBytes) {
@@ -251,4 +245,13 @@ RedAsm.decorateAddressing = function(mode, value) {
   else if (mode == RedAsm.ADDR_MODE_INDIRECT)
     return "@"+value;
   return value;
+}
+
+RedAsm.mneumonicFromOpcode = function(opcode) {
+  for (var mn in RedAsm.MNEUMONICS) {
+    if (RedAsm.MNEUMONICS[mn] == opcode) {
+      return mn;
+    }
+  }
+  return null;
 }

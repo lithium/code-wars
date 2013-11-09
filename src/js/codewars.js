@@ -43,7 +43,7 @@ CodeWarsConsole = Backbone.View.extend({
 
 
     this.visualizer = new CodeWarsVisualizer({
-      el: this.$(".visualizer"), 
+      el: this.$(".memoryDisplay"), 
       mars: this.mars,
     });
   },
@@ -122,6 +122,8 @@ CodeWarsConsole = Backbone.View.extend({
       }
       this.compiled.html("<pre>"+o.join("\n")+"</pre>");
 
+      this.visualizer.clearMemory();
+      this.running = false;
       this.mars.startMatch([_.clone(result),result]);
     } else {
       this.errors.html(result.error);
@@ -148,7 +150,7 @@ CodeWarsConsole = Backbone.View.extend({
     if (!this.running) 
       return;
     this.stepMars();
-    setTimeout(_.bind(this._runcycle, this), 100);
+    setTimeout(_.bind(this._runcycle, this), 10);
   },
 
 

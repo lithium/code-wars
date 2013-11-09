@@ -10,23 +10,28 @@ CodeWarsVisualizer = Backbone.View.extend({
 
 
     this.memorySize = this.mars.options.memorySize;
-    this.gridSize = Math.sqrt(this.memorySize);
 
 
-    // this.$el.html(this.gridSize+"x"+this.gridSize);
+    var root = Math.sqrt(this.memorySize);
+    this.gridWidth = parseInt(root*2);
+    this.gridHeight = parseInt(root/2); 
+    console.log("size", this.gridWidth, this.gridHeight);
+
+
     this.cells = [];
-    var $container = $('<div class="visualizer"></div>');
-    for (var row=0; row < this.gridSize; row++) {
+    this.$container = $('<div class="visualizer"></div>');
+    for (var row=0; row < this.gridHeight; row++) {
       this.cells[row] = [];
-      var $row = $('<div class="row"></div>');
-      for (var col=0; col < this.gridSize; col++) {
+      var $row = $('<div class="cellRow"></div>');
+      for (var col=0; col < this.gridWidth; col++) {
         var $cell = $('<div class="cell"></div>');
         $row.append($cell);
         this.cells[row].push($cell);
       }
-      $container.append($row);
+      $row.append('<div style="clear: both"></div>');
+      this.$container.append($row);
     }
-    this.$el.append($container);
+    this.$el.append(this.$container);
 
     this.mars.on("mars:memoryChanged", _.bind(this.memoryChanged, this));
     this.mars.on("mars:instructionPointerChanged", _.bind(this.instructionPointerChanged, this));
@@ -38,34 +43,47 @@ CodeWarsVisualizer = Backbone.View.extend({
   },
 
   playerColor: function(playerNumber) {
-    return playerNumber ? "blue" : "red";
+    return playerNumber ? "#6060ff" : "#ff6060";
   },
 
   clearMemory: function () {
-    for (var row=0; row < this.gridSize; row++) {
-      for (var col=0; col < this.gridSize; col++) {
+    for (var row=0; row < this.gridHeight; row++) {
+      for (var col=0; col < this.gridWidth; col++) {
         var $cell = this.cells[row][col];
-        $cell.css("background", "none");
+        $cell.css("background-color", "white");
+        $cell.removeClass().addClass("cell");
       }
     }
   },
 
   cellAt: function(address) {
-    var row = parseInt(address/this.gridSize);
-    var column = address % this.gridSize;
+    var row = parseInt(address/this.gridWidth);
+    var column = address % this.gridWidth;
     return this.cells[row][column];
   }, 
 
   touchMemoryLocation: function(address, player) {
     var $cell = this.cellAt(address);
-    $cell.css("background", this.playerColor(player.playerNumber));
+    $cell.css("background-color", this.playerColor(player.playerNumber));
+    var value = this.mars.memory[address]
+    var instr = RedAsm.parseInstruction(value);
+    var mneu = RedAsm.mneumonicFromOpcode(instr.opcode);
+    if (mneu) {
+      $cell.addClass(mneu.toLowerCase());
+    } else {
+      $cell.removeClass().addClass("cell");
+    }
   },
 
   memoryChanged: function(address, value, thread) {
     this.touchMemoryLocation(address, thread.owner)
   },
   instructionPointerChanged: function(PC, thread) {
-    var $cell = this.cellAt(PC);
+    this.setInstructionCursor(thread);
+  },
+
+  setInstructionCursor: function(thread) {
+    var $cell = this.cellAt(thread.PC);
     var pos = $cell.position();
     thread.$pc.css('left', pos.left-2);
     thread.$pc.css('top', pos.top-2);
@@ -80,11 +98,12 @@ CodeWarsVisualizer = Backbone.View.extend({
       var end = start+player.compiledBytes.length;
 
       player.threads[0].$pc = $('<div class="pc"></div>')
-      this.$el.append(player.threads[0].$pc);
+      this.$container.append(player.threads[0].$pc);
 
       while (start<end) {
         this.touchMemoryLocation(start++, player);
       }
+      this.setInstructionCursor(player.threads[0])
 
     }
   },
