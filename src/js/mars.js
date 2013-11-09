@@ -186,11 +186,33 @@ _.extend(Mars.MarsCore.prototype, {
         this.advancePC(thread);
         return true;
 
-      case RedAsm.OPCODE_CMP:
+      case RedAsm.OPCODE_SEQ:
+        var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
+        var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+
+        if (op1 == op2) {
+          this.advancePC(thread, 2);
+        } else {
+          this.advancePC(thread, 1);
+        }
+        return true;
+
+      case RedAsm.OPCODE_SNE:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
         if (op1 != op2) {
+          this.advancePC(thread, 2);
+        } else {
+          this.advancePC(thread, 1);
+        }
+        return true;
+
+      case RedAsm.OPCODE_SLT:
+        var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
+        var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+
+        if (op1 < op2) {
           this.advancePC(thread, 2);
         } else {
           this.advancePC(thread, 1);

@@ -79,12 +79,24 @@ Client can replay the match at the user's desired speed to visualize the match a
   </tr>
   <tr>
     <td>07</td>
-    <td>cmp a,b</td>
-    <td>CMP A,B</td>
-    <td>Compare values A and B, if they are not equal skip next instruction.</td>
+    <td>sne a,b</td>
+    <td>sne A,B</td>
+    <td>Compare values A and B, if they are not equal skip the next instruction.</td>
   </tr>
   <tr>
     <td>08</td>
+    <td>seq a,b</td>
+    <td>seq A,B</td>
+    <td>Compare values A and B, if they are equal skip the next instruction.</td>
+  </tr>
+  <tr>
+    <td>09</td>
+    <td>slt a,b</td>
+    <td>slt A,B</td>
+    <td>If the value A is less than B, skip the next instruction.</td>
+  </tr>
+  <tr>
+    <td>0A</td>
     <td>brz dest, value</td>
     <td>JMZ A,B</td>
     <td>If value(A) is 0, jump to location dest(B).</td>
