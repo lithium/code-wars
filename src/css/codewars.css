@@ -56,3 +56,21 @@ textarea:focus, input:focus {
   border: 1px solid black;
   padding: 2px;
 }
+
+
+
+.visualizer .cell {
+  width: 8px;
+  height: 8px;
+  border: 1px solid black;
+  border-left-width: 0;
+  border-top-width: 0;
+  float: left;
+}
+.visualizer .row:first-child .cell {
+  border-top-width: 1px;
+}
+.visualizer .row .cell:first-child {
+  border-left-width: 1px;
+}
+ 

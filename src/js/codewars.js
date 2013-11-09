@@ -77,7 +77,7 @@ CodeWarsConsole = Backbone.View.extend({
     var $output = this.$('.dissassembly.player'+player.playerNumber+".thread"+thread.threadNumber);
 
     if ($output.length < 1) {
-      $output = $('<div class="col-md-3 dissassembly player'+player.playerNumber+' thread'+thread.threadNumber+'"></div>');
+      $output = $('<div class="col-md-6 dissassembly player'+player.playerNumber+' thread'+thread.threadNumber+'"></div>');
       this.output.append($output);
     }
     $output.empty();
