@@ -2,9 +2,12 @@
   "name": "codewars-referee",
   "version": "0.0.1",
   "dependencies": {
+    "express": "3.1.x",
+    "redis-url": "0.1.0"
   },
   "engines": {
     "node": "0.10.x",
     "npm": "1.2.x"
   }
 }
+
