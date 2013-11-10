@@ -242,12 +242,12 @@ RedAsm.decompile = function(compiledBytes) {
     if (!stmt) { //unknown opcode
       stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i],8)
     } else {
+      //the only ones without operand2 are: JMP(0xD), FORK(0xE) and NOP(0xF) 
+      if (instruction.opcode < 0xD)
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2))+",";
       //everything except NOP(0xF) has at least 1 operand
       if (instruction.opcode < 0xF) 
         stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
-      //the only ones without operand2 are: JMP(0xD), FORK(0xE) and NOP(0xF) 
-      if (instruction.opcode < 0xD)
-        stmt += ", "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2));
     }
     rows.push(stmt);
   }
