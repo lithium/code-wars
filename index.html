@@ -11,10 +11,13 @@ title: Code Wars - GitHubGameOff 2013
 
   <div class="row">
     <div class="col-md-6 editorColumn">
-      <div class="editor">loop:   add addr, 4
-        ld @addr, 0
-        jmp loop
-addr:   .BYTE 0
+      <div class="editor">loop:
+  *addr = 0
+  addr += 7
+  if addr != 0x16
+    jmp loop
+  halt
+addr: .DAT 6
       </div>
       <div class="errors"></div>
       <div class="compiled"></div>

@@ -97,9 +97,9 @@ Client can replay the match at the user's desired speed to visualize the match a
   </tr>
   <tr>
     <td>0A</td>
-    <td>brz dest, value</td>
-    <td>JMZ A,B</td>
-    <td>If value(A) is 0, jump to location dest(B).</td>
+    <td>sgt a,b</td>
+    <td>--</td>
+    <td>If the value A is greater than B, skip the next instruction.</td>
   </tr>
   <tr>
     <td>0D</td>

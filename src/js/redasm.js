@@ -10,7 +10,7 @@ _.extend(RedAsm, {
   OPCODE_SNE: 7,
   OPCODE_SEQ: 8,
   OPCODE_SLT: 9,
-  OPCODE_BRZ:  0xA,
+  OPCODE_SGT: 0xA,
   OPCODE_JMP:  0xD,
   OPCODE_FORK: 0xE,
   OPCODE_NOP:  0xF,
@@ -35,6 +35,18 @@ _.extend(RedAsm, {
     'JMP': RedAsm.OPCODE_JMP,
     'FORK': RedAsm.OPCODE_FORK,
     'NOP': RedAsm.OPCODE_NOP,
+    'HALT': RedAsm.OPCODE_HALT,
+  }
+});
+
+_.extend(RedAsm, {
+  OPERATORS: {
+    '=': RedAsm.OPCODE_LD,
+    '+=': RedAsm.OPCODE_ADD,
+    '-=': RedAsm.OPCODE_SUB,
+    '*=': RedAsm.OPCODE_MUL,
+    '/=': RedAsm.OPCODE_DIV,
+    '%=': RedAsm.OPCODE_MOD,
   }
 });
 
@@ -60,7 +72,7 @@ RedAsm.compile = function(assembly_string) {
   var resolveOperand = function(operand) {
     var rel;
 
-    if (/^@/.test(operand)) { // indirect addressing
+    if (/^\*/.test(operand)) { // indirect addressing
       return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
     } 
     else if (/^(0|\$|-)?\d+/.test(operand)) { // immediate
@@ -89,6 +101,7 @@ RedAsm.compile = function(assembly_string) {
       continue;
     lineNumber++;
   }
+  console.log("symbols", symbolTable);
 
   // second pass to actually assemble
   lineNumber = 0;
@@ -105,57 +118,112 @@ RedAsm.compile = function(assembly_string) {
       continue;
     tokens = line.split(/\s+/)
 
-    var mneumonic = tokens[0].toUpperCase();
-    if (mneumonic in RedAsm.MNEUMONICS) {
-      var opcode = RedAsm.MNEUMONICS[mneumonic];
+
+    var mneumonic = false;
+    var firstOperand = false;
+    var secondOperand = false;
+    var instruction = RedAsm.parseInstruction(0); // create empty instruction
+ 
+
+    var token = tokens[0].toLowerCase().trim();
 
 
-      //opcode is bits 31..28
-      var outbyte = opcode<<28;
-
-
-      var firstOperand = tokens[1]
-      var secondOperand;
-
-      if (firstOperand) {
-        firstOperand = firstOperand.trim().replace(/,$/,'')
-        secondOperand = (tokens[2] || "").trim();
-
-        var a = resolveOperand(firstOperand)
-
-        if (!a) {
-          return {
-            'success': false,
-            'error': "Syntax error on line "+i+": Invalid Operand: '"+firstOperand+"'",
-          }
-        }
-        var b = resolveOperand(secondOperand)
-        if (!b) 
-          b = [0,0]
-
-        //addressing mode for first operand bits 27,26
-        outbyte |= (a[0]&0x3)<<26;
-        //addressing mode for first operand bits 25,24
-        outbyte |= (b[0]&0x3)<<24;
-        //first operand bits 12..23
-        outbyte |= (a[1]&0x0fff)<<12;
-        //second operand bits 0..11
-        outbyte |= (b[1]&0x0fff);
-      }
-
-      output.push( outbyte )
-      lineNumber++;
-    } 
-    else if (mneumonic == '.BYTE') {
+    if (token == '.dat' || token == '.data') {
       var firstOperand = tokens[1].trim().replace(/,$/,'')
       output.push( parseInt(firstOperand.replace(/^\$/,'')) );
+      continue;
+    }
+    else
+    if (token == "halt") {
+
+    }
+    else if (token == "jmp") {
+      instruction.opcode = RedAsm.OPCODE_JMP;
+      firstOperand = tokens[1];
+    }
+    else if (token == "fork") {
+      instruction.opcode = RedAsm.OPCODE_FORK;
+      firstOperand = tokens[1];
+    }
+    else if (token == "if") {
+      firstOperand = tokens[1]
+      secondOperand = tokens[3]
+      var operator = tokens[2];
+      switch (operator) {
+        case '==':
+          instruction.opcode = RedAsm.OPCODE_SNE;
+          break;
+        case '!=':
+          instruction.opcode = RedAsm.OPCODE_SEQ;
+          break;
+        case '<':
+          instruction.opcode = RedAsm.OPCODE_SLT;
+          break;
+        case '>':
+          instruction.opcode = RedAsm.OPCODE_SGT;
+          break;
+        case '>=':
+          instruction.opcode = RedAsm.OPCODE_SLT;
+          firstOperand = tokens[3]
+          secondOperand = tokens[1]
+          break;
+        case '<=':
+          instruction.opcode = RedAsm.OPCODE_SGT;
+          firstOperand = tokens[3]
+          secondOperand = tokens[1]
+          break;
+        default:
+          return {
+            'success': false,
+            'error': "Syntax error on line "+i+": Invalid comparison '"+operator+"'",
+          }
+
+      }
     }
     else {
-      return {
-        'success': false,
-        'error': "Syntax error on line "+i+": No such operation '"+tokens[0]+"'",
-      };
+      //arithmetic operator or LD
+
+      var operator = tokens[1];
+      if (operator in RedAsm.OPERATORS) {
+        instruction.opcode = RedAsm.OPERATORS[operator];
+      } else {
+        return {
+          'success': false,
+          'error': "Syntax error on line "+i+": Invalid Operator: '"+operator+"'",
+        }
+      }
+
+      firstOperand = tokens[0]
+      secondOperand = tokens[2]
+
     }
+
+
+    if (firstOperand) {
+      firstOperand = firstOperand.trim().replace(/,$/,'')
+
+      var a = resolveOperand(firstOperand)
+      if (a) {
+        instruction.mode1 = a[0];
+        instruction.operand1 = a[1];
+      } else {
+        return {
+          'success': false,
+          'error': "Syntax error on line "+i+": Invalid Operand: '"+firstOperand+"'",
+        }
+      }
+    }
+
+    if (secondOperand) {
+      var b = resolveOperand(secondOperand)
+      if (b) {
+        instruction.mode2 = b[0];
+        instruction.operand2 = b[1];
+      }
+    }
+
+    output.push( RedAsm.encodeInstruction(instruction) );
+    lineNumber++;
 
   }
 
@@ -173,7 +241,7 @@ RedAsm.decompile = function(compiledBytes) {
 
     var stmt= RedAsm.mneumonicFromOpcode(instruction.opcode);
     if (!stmt) { //unknown opcode
-      stmt = ".BYTE 0x"+RedAsm.hexdump(compiledBytes[i],8)
+      stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i],8)
     } else {
       //everything except NOP(0xF) has at least 1 operand
       if (instruction.opcode < 0xF) 
@@ -219,7 +287,20 @@ RedAsm.parseInstruction = function(instruction) {
     'operand1': operand1,
     'operand2': operand2,
   }
+}
+RedAsm.encodeInstruction = function(instruction) {
 
+  var outbyte = instruction.opcode<<28;
+  //addressing mode for first operand bits 27,26
+  outbyte |= (instruction.mode1&0x3)<<26;
+  //addressing mode for first operand bits 25,24
+  outbyte |= (instruction.mode2&0x3)<<24;
+  //first operand bits 12..23
+  outbyte |= (instruction.operand1&0x0fff)<<12;
+  //second operand bits 0..11
+  outbyte |= (instruction.operand2&0x0fff);
+
+  return outbyte;
 }
 
 RedAsm.signedCast12 = function(number) {
