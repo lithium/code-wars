@@ -75,7 +75,7 @@ RedAsm.compile = function(assembly_string) {
     if (/^\*/.test(operand)) { // indirect addressing
       return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
     } 
-    else if (/^(0|\$|-)?\d+/.test(operand)) { // immediate
+    else if (/^(0x|-)?\d+/.test(operand)) { // immediate
       operand = operand.replace(/^\$/,'')
       return [RedAsm.ADDR_MODE_IMMEDIATE, parseInt(operand)];
     } else if ((rel = resolveRelative(operand)) != null) { // relative address
@@ -101,7 +101,6 @@ RedAsm.compile = function(assembly_string) {
       continue;
     lineNumber++;
   }
-  console.log("symbols", symbolTable);
 
   // second pass to actually assemble
   lineNumber = 0;
@@ -324,7 +323,7 @@ RedAsm.hexdump = function(number, padding) {
 
 RedAsm.decorateAddressing = function(mode, value) {
   if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
-    return "$"+parseInt(value).toString(16);
+    return "#"+parseInt(value).toString(16);
   else if (mode == RedAsm.ADDR_MODE_RELATIVE)
     return "("+value+")";
   else if (mode == RedAsm.ADDR_MODE_INDIRECT)
