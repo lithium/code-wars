@@ -219,15 +219,14 @@ _.extend(Mars.MarsCore.prototype, {
         }
         return true;
 
-      case RedAsm.OPCODE_BRZ:
-        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
-        var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+      case RedAsm.OPCODE_SGT:
+        var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
+        var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
-        if (value == 0) {
-          this.loadPC(thread, address);
-        }
-        else {
-          this.advancePC(thread,1);
+        if (op1 > op2) {
+          this.advancePC(thread, 2);
+        } else {
+          this.advancePC(thread, 1);
         }
         return true;
 

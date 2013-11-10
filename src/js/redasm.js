@@ -31,7 +31,7 @@ _.extend(RedAsm, {
     'SEQ': RedAsm.OPCODE_SEQ,
     'SNE': RedAsm.OPCODE_SNE,
     'SLT': RedAsm.OPCODE_SLT,
-    'BRZ': RedAsm.OPCODE_BRZ,
+    'SGT': RedAsm.OPCODE_SGT,
     'JMP': RedAsm.OPCODE_JMP,
     'FORK': RedAsm.OPCODE_FORK,
     'NOP': RedAsm.OPCODE_NOP,
