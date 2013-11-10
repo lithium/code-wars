@@ -1,7 +1,7 @@
 var RedAsm = RedAsm || {}
 
 _.extend(RedAsm, {
-  OPCODE_LD: 1,
+  OPCODE_MOV: 1,
   OPCODE_ADD: 2,
   OPCODE_SUB: 3,
   OPCODE_MUL: 4,
@@ -22,7 +22,7 @@ _.extend(RedAsm, {
 
 _.extend(RedAsm, {
   MNEUMONICS: {
-    'LD': RedAsm.OPCODE_LD,
+    'MOV': RedAsm.OPCODE_MOV,
     'ADD': RedAsm.OPCODE_ADD,
     'SUB': RedAsm.OPCODE_SUB,
     'MUL': RedAsm.OPCODE_MUL,
@@ -41,7 +41,7 @@ _.extend(RedAsm, {
 
 _.extend(RedAsm, {
   OPERATORS: {
-    '=': RedAsm.OPCODE_LD,
+    '=': RedAsm.OPCODE_MOV,
     '+=': RedAsm.OPCODE_ADD,
     '-=': RedAsm.OPCODE_SUB,
     '*=': RedAsm.OPCODE_MUL,
@@ -180,7 +180,7 @@ RedAsm.compile = function(assembly_string) {
       }
     }
     else {
-      //arithmetic operator or LD
+      //arithmetic operator or mov
 
       var operator = tokens[1];
       if (operator in RedAsm.OPERATORS) {
@@ -323,7 +323,7 @@ RedAsm.hexdump = function(number, padding) {
 
 RedAsm.decorateAddressing = function(mode, value) {
   if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
-    return "#"+parseInt(value).toString(16);
+    return "0x"+parseInt(value).toString(16);
   else if (mode == RedAsm.ADDR_MODE_RELATIVE)
     return "("+value+")";
   else if (mode == RedAsm.ADDR_MODE_INDIRECT)

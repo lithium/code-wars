@@ -138,7 +138,7 @@ _.extend(Mars.MarsCore.prototype, {
   executeInstruction: function(thread, word) {
     var instruction = RedAsm.parseInstruction(word)
     switch (instruction.opcode) {
-      case RedAsm.OPCODE_LD:
+      case RedAsm.OPCODE_MOV:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 

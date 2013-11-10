@@ -72,10 +72,9 @@ textarea:focus, input:focus {
 }
 
 .visualizer .cell.add { background-image: url('opcodes/add.png'); }
-.visualizer .cell.brz { background-image: url('opcodes/brz.png'); }
 .visualizer .cell.div { background-image: url('opcodes/div.png'); }
 .visualizer .cell.jmp { background-image: url('opcodes/jmp.png'); }
-.visualizer .cell.ld  { background-image: url('opcodes/ld.png'); }
+.visualizer .cell.mov { background-image: url('opcodes/ld.png'); }
 .visualizer .cell.mod { background-image: url('opcodes/mod.png'); }
 .visualizer .cell.mul { background-image: url('opcodes/mul.png'); }
 .visualizer .cell.sub { background-image: url('opcodes/sub.png'); }
