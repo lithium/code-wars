@@ -7,35 +7,27 @@
 // imports
 var express = require('express')
 var redis_url = require('redis-url');
+var GitHubApi = require("github");
 
-
-// environment from heroku
+// heroku environment default to local development
 var port = process.env.PORT || 5000;
-var redistogo_url = process.env.REDISTOGO_URL;
+var redistogo_url = process.env.REDISTOGO_URL || null;
+
+// local settings
+require('./settings_local')
+
+
+// global application objects
+redis = redis_url.connect(redistogo_url);
+app = express();
+github = new GitHubApi({version: "3.0.0"});
 
 
 
-// application objects
-var app = express();
-var redis = redis_url.connect(redistogo_url)
+// import routes
+require('./routes');
 
 
-
-
-// routes
-app.get('/', function(req, res) {
-  redis.get('foo', function(e,foo) {
-    res.send({'message': "Hello, "+foo});
-  });
-});
-
-
-app.get('/foo', function(req, res) {
-  // redis.set('foo', req);
-  var foo = req.connection.remoteAddress;
-  redis.set("foo", foo);
-  res.send(foo);
-});
 
 // main loop
 app.listen(port, function() {
