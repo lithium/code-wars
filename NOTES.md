@@ -20,27 +20,26 @@ Users can edit/submit Scripts online with GitHub authentication.
 
 
 
-## Championship
+### Championship
 
-Each Script plays a Match against every other Script.
-Players are ranked by the Top score out of all their Scripts.
-A Match consists of a Best-of 100 rounds.
-Scoring is 2 points for a win, 1 point for a tie, 0 points if 100% of all rounds ended in a tie.
+Each Script plays a Match against every other Script.  
+Players are ranked by the Top score out of all their Scripts.  
+A Match consists of a Best-of 100 rounds.  
+Scoring is 2 points for a win, 1 point for a tie, 0 points if 100% of all rounds ended in a tie.  
 
 
-## Battle Royale
+### Battle Royale
 
-The Script will play 100 Free-For-All Matches against 3 randomly selected Scripts. 3 new scripts will be selected for each new Match, will not match against a Script a second time until matched against all other scripts in the field at least once.
+The Script will play 100 Free-For-All Matches against 3 randomly selected Scripts. 3 new scripts will be selected for each new Match, will not match against a Script a second time until matched against all other scripts in the field at least once.  
 
 Round/Match scoring:
 * 1st: 8 points
 * 2nd: 4 points
 * 3rd: 2 points
-* 4th: 0 points
-In the result of a tie, the points for both are divided evenly (e.g. 2nd and 3rd place tied, both players receive 3 points)
-Players in a Match are ranked by the sum of their Round Scores.
-
-Players are ranked on the Royale Hill by the sum of their Match scores from their royale pass.
+* 4th: 0 points  
+In the result of a tie, the points for both are divided evenly (e.g. 2nd and 3rd place tied, both players receive 3 points)  
+Players in a Match are ranked by the sum of their Round Scores.  
+Players are ranked on the Royale Hill by the sum of their Match scores from their royale pass.  
 
 
 ## RedAsm
