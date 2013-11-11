@@ -136,6 +136,7 @@ RedAsm.compile = function(assembly_string) {
     if (token == '.dat' || token == '.data') {
       var firstOperand = tokens[1].trim().replace(/,$/,'')
       output.push( parseInt(firstOperand.replace(/^\$/,'')) );
+      lineNumber++;
       continue;
     }
     else
