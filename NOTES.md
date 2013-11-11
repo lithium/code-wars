@@ -15,7 +15,8 @@ Client can replay the match at the user's desired speed to visualize the match a
 
 ## Referee
 
-Users can submit Scripts by forking lithium/codewars-warrior.
+Users can submit Scripts by forking lithium/codewars-warrior
+
 Users can edit/submit Scripts online with GitHub authentication.
 
 
@@ -37,6 +38,7 @@ Round/Match scoring:
 * 2nd: 4 points
 * 3rd: 2 points
 * 4th: 0 points  
+
 In the result of a tie, the points for both are divided evenly (e.g. 2nd and 3rd place tied, both players receive 3 points)  
 Players in a Match are ranked by the sum of their Round Scores.  
 Players are ranked on the Royale Hill by the sum of their Match scores from their royale pass.  
