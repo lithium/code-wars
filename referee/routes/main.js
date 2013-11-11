@@ -33,11 +33,11 @@ app.get('/github-callback', function(req, res) {
       var user = {
         'username': github_user.login,
         'avatar': github_user.avatar_url,
-        'github_access_token': oauth.access_token,
       };
-
-      redis.set('user:'+user.username, user);
       res.send(user);
+
+      user.github_access_token = oauth.access_token;
+      redis.set('user:'+user.username, user);
 
     });
 
