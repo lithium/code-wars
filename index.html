@@ -11,14 +11,14 @@ title: Code Wars - GitHubGameOff 2013
 
   <div class="row">
     <div class="col-md-6 editorColumn">
-      <div class="editor">loop:
-  *addr = 0
-  addr += 7
-  if addr != 0x16
-    jmp loop
-  halt
-addr: .DAT 6
-      </div>
+      <div class="editor">// dwarf
+// strategy: bomb memory at regular intervals
+
+loop:   *addr = 0
+        addr += 4    // bomb every 4 locations
+        jmp loop
+addr:   .DAT 4       // start bombing immediately after ourself
+</div>
       <div class="errors"></div>
       <div class="compiled"></div>
     </div>

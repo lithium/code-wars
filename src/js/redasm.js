@@ -52,7 +52,7 @@ _.extend(RedAsm, {
 
 RedAsm.compile = function(assembly_string) {
   var output = []
-  var lines = assembly_string.split(/[\n;]/);
+  var lines = assembly_string.split(/\n/);
 
   var symbolTable = {}
   var lineNumber;
@@ -90,6 +90,8 @@ RedAsm.compile = function(assembly_string) {
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
 
+    line = line.replace(/\/\/.*$/,'');
+
     var colonIdx = line.indexOf(':');
     if (colonIdx != -1) { // label is present
       var label = line.substring(0, colonIdx).trim()
@@ -97,6 +99,7 @@ RedAsm.compile = function(assembly_string) {
       symbolTable[label] = lineNumber;
     }
     line = line.trim()
+
     if (!line)
       continue;
     lineNumber++;
@@ -107,12 +110,15 @@ RedAsm.compile = function(assembly_string) {
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
 
+    line = line.replace(/\/\/.*$/,'');
+
     var colonIdx = line.indexOf(':');
     if (colonIdx != -1) { // label is present
       var label = line.substring(0, colonIdx).trim()
       line = line.substring(colonIdx+1);
     }
     line = line.trim()
+
     if (!line)
       continue;
     tokens = line.split(/\s+/)
