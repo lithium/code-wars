@@ -23,17 +23,17 @@ app.get('/github-callback', function(req, res) {
       'code': code
     }
   }, function(err,response,body) {
-    console.log("oauth response", err, body)
+    var oauth = JSON.parse(body)
 
     request.get({
-      url: 'https://github.com/user', 
+      url: 'https://api.github.com/user?access_token='+oauth.access_token,
       headers: {'Accept': 'application/json'}
-    }, function(user_err,user_response,github_user) {
-
+    }, function(user_err,user_response,body) {
+      var github_user = JSON.parse(body);
       var user = {
         'username': github_user.login,
         'avatar': github_user.avatar_url,
-        'github_access_token': body.access_token,
+        'github_access_token': oauth.access_token,
       };
 
       redis.set('user:'+user.username, user);
