@@ -12,12 +12,12 @@ title: Code Wars - GitHubGameOff 2013
   <div class="row">
     <div class="col-md-6 editorColumn">
       <div class="editor">// dwarf
-// strategy: bomb memory at regular intervals
 
-loop:   *addr = 0
-        addr += 4    // bomb every 4 locations
+loop:   *loc = bomb
+        loc += 4        // bomb every 4 locations
         jmp loop
-addr:   .DAT 4       // start bombing immediately after ourself
+bomb:   jmp (-3)        // this is the bomb to drop
+loc:   .DAT -1          // start bombing immediately before ourself
 </div>
       <div class="errors"></div>
       <div class="compiled"></div>

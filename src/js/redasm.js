@@ -76,7 +76,6 @@ RedAsm.compile = function(assembly_string) {
       return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
     } 
     else if (/^(0x|-)?\d+/.test(operand)) { // immediate
-      operand = operand.replace(/^\$/,'')
       return [RedAsm.ADDR_MODE_IMMEDIATE, parseInt(operand)];
     } else if ((rel = resolveRelative(operand)) != null) { // relative address
       return [RedAsm.ADDR_MODE_RELATIVE, rel];
