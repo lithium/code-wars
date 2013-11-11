@@ -10,18 +10,21 @@ Referee is node.js hosted via heroku instance.
 A Player edits their PlayerScript in the client.  
 A PlayerScript reference is provided.  
 
+Users can browse the Top 100 Champions.   
+Users can browse the Battle Royale rankings.  
+Users can start a local match:
+  - mirror match
+  - vs a Script on a Leaderboard
 
 Client can replay the match at the user's desired speed to visualize the match and verify the result.
 
 ## Referee
 
-Users can submit Scripts by forking lithium/codewars-warrior
-
-Users can edit/submit Scripts online with GitHub authentication.
-
+Users can submit Scripts by forking lithium/codewars-warrior  
+Users can edit/submit Scripts online with GitHub authentication.  
 
 
-### Championship
+### Championship Leaderboard
 
 Each Script plays a Match against every other Script.  
 Players are ranked by the Top score out of all their Scripts.  
@@ -29,7 +32,7 @@ A Match consists of a Best-of 100 rounds.
 Scoring is 2 points for a win, 1 point for a tie, 0 points if 100% of all rounds ended in a tie.  
 
 
-### Battle Royale
+### Battle Royale Leaderboard
 
 The Script will play 100 Free-For-All Matches against 3 randomly selected Scripts. 3 new scripts will be selected for each new Match, will not match against a Script a second time until matched against all other scripts in the field at least once.  
 
