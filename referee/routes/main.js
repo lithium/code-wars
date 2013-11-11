@@ -10,7 +10,7 @@ app.get('/github-login', function(req, res) {
   res.redirect('https://github.com/login/oauth/authorize?client_id='+GITHUB_CLIENT_ID)
 });
 
-app.post('/github-callback', function(req, res) {
+app.get('/github-callback', function(req, res) {
 
   var code = req.query.code;
 
