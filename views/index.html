@@ -24,12 +24,11 @@
     <div id="console" class="container codewars">
 
       <div class="row">
-        <h1>> Hello, Player. <span class="cursor">|</span></h1>
 
         <% if (user) { %>
-        user: <%= user %>
+        <h1>> Welcome <%= user.username %>.</h1>
         <% } else { %>
-        <a href="/github-login">login</a>
+        <h1>> Hello, Player.<br>> <a href="/github-login">login</a> </h1>
         <% } %>
       </div>
 
