@@ -1,1 +1,1 @@
-web: node referee/server.js
+web: node app.js
