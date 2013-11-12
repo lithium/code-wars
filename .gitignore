@@ -1,3 +1,4 @@
 _site/
 _config.yml
-settings_local.js
+local_settings.js
+Gemfile

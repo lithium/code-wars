@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Code Wars - GitHubGameOff 2013</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <link href="src/css/codewars.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+
+    <div id="console" class="container codewars">
+
+      <div class="row">
+        <h1>> Hello, Player. <span class="cursor">|</span></h1>
+
+        <a href="http://lithium-github-game-off-2013.herokuapp.com/github-login">login</a>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 editorColumn">
+          <div class="editor">// dwarf
+
+loop:   *loc = bomb
+        loc += 4        // bomb every 4 locations
+        jmp loop
+bomb:   jmp (-3)        // this is the bomb to drop
+loc:   .DAT -1          // start bombing immediately before ourself
+</div>
+          <div class="errors"></div>
+          <div class="compiled"></div>
+        </div>
+
+        <div class="col-md-6 helpColumn">
+          <div class="help well">
+            <h2 class="title">LD</h2>
+            <h4 class="subtitle">Load data into memory</h4>
+            <div class="syntax">
+              ld <code>address</code>, <code>value</code>
+            </div>
+            <div class="description">
+              <p>The memory location referenced by <code>address</code> will be changed to <code>value</code>.</p>
+            </div>
+            <h5>Examples</h5>
+            <div class="examples">
+              <div class="row">
+                <div class="col-md-5 monospace"> ld (-1), 0 </div>
+                <div class="col-md-7"><em class="small">load previous memory location with 0</em></div>
+              </div>
+              <div class="row">
+                <div class="col-md-5 monospace"> ld @label, (-5) </div>
+                <div class="col-md-7"><em class="small">load the memory location at <strong>label</strong> with the data at memory location <strong>-5</strong></em></div>
+              </div>
+              <div class="row errors">
+                <div class="col-md-5 monospace"> <strike>ld 5, 0x42</strike> </div>
+                <div class="col-md-7"><em class="small">You cannot reference absolute memory locations.</em></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 col-md-offset-8">
+          <button type="button" class="btn btn-default save">Compile</button>
+          <button type="button" class="btn btn-default step">Step</button>
+          <button type="button" class="btn btn-default run">Run</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 memoryDisplay"> </div>
+      </div>
+
+      <div class="row">
+        <div class="output"> </div>
+      </div>
+
+
+    </div>
+
+
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/underscore-1.5.2.min.js"></script>
+    <script src="js/backbone-1.1.0.min.js"></script>
+    <script src="js/backbone.localStorage.js"></script>
+    <script src="js/ace-min/ace.js" type="text/javascript" charset="utf-8"></script>
+
+
+    <script src="src/js/redasm.js"></script>
+    <script src="src/js/mars.js"></script>
+    <script src="src/js/codewars-visualizer.js"></script>
+    <script src="src/js/codewars.js"></script>
+
+    <script>
+    $(function() {
+      window.application = new CodeWarsConsole;
+    })
+    </script> 
+
+  </body>
+</html>
