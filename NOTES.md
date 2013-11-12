@@ -172,21 +172,20 @@ loop:     add (-1), $4   # ofs += 4
 
 ## Rest API
 
+GET /github-login
+POST /github-callback
 
-GET /board/:board_name
-  [{username, script:{}, score, record:{wins,losses,ties}}]
-
-GET /user/:username
+GET /user/:username   
   {username, avatar, scripts:[]}
 
+POST /script/:sha1  
+  name=  
+  source=  
+  compiledBytes=  
+  
+GET /board/:board_name  
+  [{username, script:{}, score, record:{wins,losses,ties}}]
 
-POST /github-callback
-  {username}
-
-POST /script/:sha1
-  name=
-  source=
-  compiledBytes=
 
 
 ## Redis Model

@@ -1,4 +1,9 @@
-var RedAsm = RedAsm || {}
+var RedAsm;
+if (typeof exports == "undefined") {
+  RedAsm = RedAsm || {}
+} else {
+  RedAsm = exports
+}
 
 _.extend(RedAsm, {
   OPCODE_MOV: 1,

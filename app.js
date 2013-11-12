@@ -8,7 +8,6 @@
 var express = require('express')
 var redis_url = require('redis-url');
 var GitHubApi = require("github");
-var _ = require("underscore");
 var engines = require("consolidate");
 var passport = require("passport");
 var GitHubStrategy = require('passport-github').Strategy;
@@ -22,6 +21,14 @@ require('./local_settings')
 
 
 
+// global application objects
+redis = redis_url.connect(redistogo_url);
+app = express();
+_ = require("underscore");
+
+
+
+//configure
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
@@ -41,18 +48,12 @@ passport.use(new GitHubStrategy({
   }
 ));
 
-
-// global application objects
-redis = redis_url.connect(redistogo_url);
-app = express();
-
-
 app.configure(function() {
   app.engine('html', engines.underscore);
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.session({secret: 'DfqweDe'}));
+  app.use(express.session({secret: SECRET_KEY}));
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);

@@ -20,6 +20,10 @@ textarea:focus, input:focus {
 
 
 
+.editorColumn .scriptName {
+  width: 100%;
+}
+
 .help.well {
   height: 380px;
   overflow-y: scroll;
@@ -34,7 +38,7 @@ textarea:focus, input:focus {
 .help.well .description {
   margin-bottom: 1.3em;
 }
-.help.well .errors {
+.help.well .incorrect {
   color: red;
 }
 

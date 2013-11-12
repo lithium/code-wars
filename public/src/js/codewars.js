@@ -12,7 +12,8 @@ CodeWarsConsole = Backbone.View.extend({
   el: $('#console.codewars'),
 
   events: {
-    "click .save": "saveEditor",
+    "click .save": "saveScript",
+    "click .compile": "clickCompile",
     "click .step": "stepMars",
     "click .run": "runMars",
   },
@@ -24,6 +25,8 @@ CodeWarsConsole = Backbone.View.extend({
     this.help = this.$(".help.well");
 
     this.errors = this.$(".errors");
+
+    this.scriptName = this.$(".scriptName");
 
     this.editor = ace.edit(this.$(".editor")[0]);
     this.editor.setTheme("ace/theme/github");
@@ -114,7 +117,7 @@ CodeWarsConsole = Backbone.View.extend({
       }
   },
 
-  saveEditor: function() {
+  clickCompile: function() {
     this.$('.pc').remove();
     var playerScript = this.editor.getValue();
     var result = RedAsm.compile(playerScript);
@@ -133,6 +136,15 @@ CodeWarsConsole = Backbone.View.extend({
       this.errors.html(result.error);
     }
 
+  },
+
+  saveScript: function() {
+    var playerScript = this.editor.getValue();
+    var name = this.scriptName.val();
+    var form = {'name': name, 'source': playerScript}
+    $.post('/script/', form, function(data) {
+      console.log(data);
+    })
 
   },
 
