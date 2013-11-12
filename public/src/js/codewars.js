@@ -52,6 +52,10 @@ CodeWarsConsole = Backbone.View.extend({
 
   },
 
+  login: function(profile) {
+    this.profile = profile;
+  },
+
   beforeCycle: function(thread, player) {
 
     var slice = this.mars.memorySlice(thread.PC - 3, 7);

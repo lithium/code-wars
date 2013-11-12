@@ -114,6 +114,10 @@ loc:   .DAT -1          // start bombing immediately before ourself
     <script>
     $(function() {
       window.application = new CodeWarsConsole;
+
+      <% if (user) { %>
+      window.application.login(JSON.parse("<%=JSON.stringify(user)%>"));
+      <% } %>
     })
     </script> 
 
