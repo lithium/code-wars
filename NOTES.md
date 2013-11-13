@@ -173,16 +173,17 @@ loop:     add (-1), $4   # ofs += 4
 ## Rest API
 
 GET /github-login
-POST /github-callback
+GET /github-callback
 
 GET /user/:username   
-  {username, avatar, scripts:[]}
+  {username, avatar, script:{}}
 
-POST /script/:sha1  
-  name=  
+
+POST /script
   source=  
-  compiledBytes=  
-  
+  name=optional
+
+
 GET /board/:board_name  
   [{username, script:{}, score, record:{wins,losses,ties}}]
 
@@ -192,7 +193,8 @@ GET /board/:board_name
 
 ```
 "user:username" -> {username, avatar}
-"script:sha1" -> {sha1, username, scriptName, source, compiledBytes}
+"script:username" -> {sha1, username, scriptName, source, compiledBytes}
+"script:sha1" -> script_id
 
 "match:sha1:sha1" -> [
   {order, script_sha1, username, score, record:{wins,losses,ties}}

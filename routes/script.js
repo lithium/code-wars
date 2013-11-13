@@ -8,42 +8,47 @@ app.post('/script',
     var name = req.body.name;
     var source = req.body.source;
 
-    if (!(name && source)) {
-      res.send("Invalid arguments. 'name' and 'source' required.")
+    if (!source) {
+      res.send("Argument Error: Argument 'source' required.")
       return;
     }
 
-    // if (!(req.user && req.user.username)) {
-    //   res.send("Must authenticate via github first.")
-    //   return;
-    // }
+    var username;
+    if (DEBUG_AUTH) {
+      username = 'system';
+    } else if (req.user && req.user.username) {
+      username = req.user.username;
+    } else {
+      res.send("Must authenticate via github first.");
+      return;
+    }  
 
     var result = RedAsm.compile(source)
     var hash = crypto.createHash('sha1')
     hash.update(new Buffer(result.compiledBytes));
     var sha1 = hash.digest('hex');
 
-    var script_key = "script:"+sha1;
-    console.log("script_key", script_key)
-    redis.get(script_key, function(err,existing) {
+    redis.get("script:"+sha1, function(err,existing) {
       if (existing) {
         res.send({
           success: false,
-          error: "Script already exists!",
-          'existing': existing
+          error: "Script is a duplicate!",
+          'existing': JSON.parse(existing),
         });
         return;
       }
 
       var script = {
-        // 'username': req.user.username,
+        'username': username,
         'sha1': sha1,
         'scriptName': name,
         'source': source,
         'compiledBytes': result.compiledBytes,
       };
+      var json = JSON.stringify(script);
 
-      redis.set(script_key, script);
+      redis.set("script:"+username, json);
+      redis.set("script:"+sha1, json);
       res.send({
         success: true,
         'script': script
