@@ -1,7 +1,10 @@
 
 app.get('/', function(req, res) {
   res.render('index.html', { 
-    user: req.user,
+    user: {
+      'username': req.user.username,
+      'avatar': req.user.avatar
+    }
   });
 });
 
