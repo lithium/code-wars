@@ -52,11 +52,18 @@ CodeWarsConsole = Backbone.View.extend({
   },
 
   render: function() {
+    var $h1 = this.$('h1')
+
+    $h1.empty();
+    $h1.append("> Welcome ");
+    $h1.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
+    $h1.append(this.profile.username);
 
   },
 
   login: function(profile) {
     this.profile = profile;
+    this.render();
   },
 
   beforeCycle: function(thread, player) {
