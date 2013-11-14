@@ -20,6 +20,13 @@ textarea:focus, input:focus {
 
 
 
+h1 img.avatar {
+  width: 30px;
+  position: relative;
+  top: -4px;
+  margin-right: 2px;
+}
+
 .editorColumn .scriptName {
   width: 100%;
 }
