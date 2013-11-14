@@ -1,15 +1,26 @@
 
-app.get('/', function(req, res) {
-  var user = null
-  if (req.user) {
-    user = {
-      'username': req.user.username,
-      'avatar': req.user._json.avatar_url
+app.get('/', 
+  function(req, res) {
+    var done = function(user) {
+      res.render('index.html', { 
+        'user': user
+      });
     }
-  }
-  res.render('index.html', { 
-    'user': user
+
+    if (req.user) {
+
+      redis.get("username:"+req.user.username, function(err,user) {
+        done(user);
+      });
+
+
+    } else {
+
+      done(null);
+
+    }
+
+
   });
-});
 
 
