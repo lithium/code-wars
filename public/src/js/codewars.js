@@ -63,7 +63,7 @@ CodeWarsConsole = Backbone.View.extend({
     }
 
     if (this.profile.script) {
-      this.editor.setValue(this.profile.script);
+      this.editor.setValue(this.profile.script.source);
     }
   },
 
