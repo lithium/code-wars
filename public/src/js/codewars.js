@@ -54,11 +54,17 @@ CodeWarsConsole = Backbone.View.extend({
   render: function() {
     var $h1 = this.$('h1')
 
-    $h1.empty();
-    $h1.append("> Welcome ");
-    $h1.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
-    $h1.append(this.profile.username);
+    if (this.profile) {
+      $h1.empty();
+      $h1.append("> Welcome ");
+      if (this.profile.avatar)
+        $h1.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
+      $h1.append(this.profile.username);
+    }
 
+    if (this.profile.script) {
+      this.editor.setValue(this.profile.script);
+    }
   },
 
   login: function(profile) {
