@@ -9,8 +9,7 @@ app.get('/',
 
     if (req.user) {
 
-      redis.get("username:"+req.user.username, function(err,user) {
-        console.log("redis get ", req.user.username, err, user)
+      redis.get("user:"+req.user.username, function(err,user) {
         done(JSON.parse(user));
       });
 
