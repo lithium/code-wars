@@ -10,7 +10,14 @@ app.get('/',
     if (req.user) {
 
       redis.get("user:"+req.user.username, function(err,user) {
-        done(JSON.parse(user));
+
+        redis.get("script:"+req.user.username, function(err,script) {
+          var profile = JSON.parse(user);
+          profile.script = JSON.parse(script);
+
+          done(profile);
+
+        })
       });
 
 
