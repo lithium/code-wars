@@ -1,6 +1,5 @@
 var passport = require("passport");
 
-
 ensureAuthenticated = function(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/')
@@ -16,9 +15,9 @@ app.get('/github-callback',
 
     var user = {
       'username': req.user.username,
-      'avatar': req.user.avatar,
+      'avatar': req.user._json.avatar_url,
     };
-    redis.set('user:'+user.username, user);
+    redis.set('user:'+user.username, JSON.stringify(user));
 
     //success
     res.redirect('/');
