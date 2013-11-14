@@ -194,7 +194,9 @@ GET /board/:board_name
 ```
 "user:username" -> {username, avatar}
 "script:username" -> {sha1, username, scriptName, source, compiledBytes}
-"script:sha1" -> script_id
+"script:sha1" -> {}
+
+"scripts" -> ["script:username",...]
 
 "match:sha1:sha1" -> [
   {order, script_sha1, username, score, record:{wins,losses,ties}}

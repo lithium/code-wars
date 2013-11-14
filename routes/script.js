@@ -2,6 +2,8 @@
 var RedAsm = require('../public/src/js/redasm.js')
 var crypto = require('crypto')
 
+require('../local_settings')
+
 
 app.post('/script', 
   function(req, res) {
@@ -15,7 +17,7 @@ app.post('/script',
 
     var username;
     if (DEBUG_AUTH) {
-      username = 'system';
+      username = name || 'system';
     } else if (req.user && req.user.username) {
       username = req.user.username;
     } else {
@@ -49,6 +51,9 @@ app.post('/script',
 
       redis.set("script:"+username, json);
       redis.set("script:"+sha1, json);
+      redis.sadd("scripts", "script:"+username);
+
+
       res.send({
         success: true,
         'script': script

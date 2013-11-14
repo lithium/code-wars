@@ -18,7 +18,6 @@ app.get('/github-callback',
       'avatar': req.user._json.avatar_url,
     };
     redis.set('user:'+user.username, JSON.stringify(user));
-    console.log('user:'+user.username, JSON.stringify(user));
 
     //success
     res.redirect('/');
