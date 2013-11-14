@@ -43,7 +43,9 @@ passport.use(new GitHubStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function() { 
-      return done(null, profile);
+      redis.get("user:"+profile.username, function(err,user) {
+        return done(null, user || profile);
+      })
     });
   }
 ));

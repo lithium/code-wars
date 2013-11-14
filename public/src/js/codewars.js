@@ -53,10 +53,14 @@ CodeWarsConsole = Backbone.View.extend({
 
   render: function() {
 
+    console.log("profile", this.profile)
+    if (this.profile) {
+    }
   },
 
   login: function(profile) {
     this.profile = profile;
+    this.render();
   },
 
   beforeCycle: function(thread, player) {
