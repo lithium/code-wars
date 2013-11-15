@@ -1,7 +1,12 @@
+var Mars;
+if (typeof exports == "undefined") {
+  Mars = Mars || {}
+} else {
+  Mars = exports
+}
 
 
 
-var Mars = Mars || {};
 
 Mars.MarsCore = function(options) {
   return this.init(options);
@@ -10,6 +15,7 @@ _.extend(Mars.MarsCore.prototype, {
   init: function(options) {
     var defaults = {
       'memorySize': 4096,
+      'maxSteps': 100000,
     }
     this.options = _.extend(_.clone(defaults), options)
 
@@ -21,14 +27,32 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
 
+  runBattle: function(players, numRounds, maxSteps) {
+    var results = []
+
+    var matchRunning;
+    var roundResults;
+
+    this.on("mars:roundComplete", function(results) {
+      matchRunning = false;
+      roundResults = results;
+    })
+    for (var i=0; i < numRounds; i++) {
+      this.startMatch(players);
+      matchRunning = true;
+      while (matchRunning) {
+        this.executeNextStep();
+      }
+      results.push(_.clone(roundResults));
+    }
+    return results
+  },
 
   startMatch: function(players) {
 
     this._memset(0,0,this.options.memorySize);
 
-    //TODO: randomize players
-    this.players = players;
-
+    this.players = _.map(_.shuffle(players), _.clone);
 
     var usedRanges = []
     var _overlapsRanges = function(offset) {
@@ -50,17 +74,22 @@ _.extend(Mars.MarsCore.prototype, {
         offset = parseInt(Math.random() * this.options.memorySize);
       } while (_overlapsRanges(offset));
 
-      player.threads = [{
+
+      var thread = {
         PC: offset,
         running: true,
         threadNumber: 0,
         owner: player,
-      }];
+      };
+      player.threads = [thread];
       player.currentThread = 0;
       player.runningThreadCount = 1;
+      player.startingLocation = offset;
       this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
 
       usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
+
+      this.trigger("mars:instructionPointerChanged", thread.PC, thread);
     }
 
     // initialize counters 
@@ -70,6 +99,7 @@ _.extend(Mars.MarsCore.prototype, {
     this.remainingPlayerCount = this.players.length;
 
     this.trigger("mars:matchStarted", this.players);
+
   },
 
   executeOneCycle: function(player) {
@@ -84,6 +114,7 @@ _.extend(Mars.MarsCore.prototype, {
       if (--player.runningThreadCount < 1) {
         player.running = false;
         this.remainingPlayerCount--;
+        player.lastCycle = this.cycleCount;
         this.trigger("mars:playerDied", player);
       }
     }
@@ -102,22 +133,31 @@ _.extend(Mars.MarsCore.prototype, {
       this.executeOneCycle(this.players[i]);
     }
 
-    if (this.remainingPlayerCount < 1) {
-      // console.log("remaining players tied on step ",this.stepCount);
-      this.trigger("mars:matchComplete", null);
-    } else if (this.remainingPlayerCount < 2) {
-      var winner;
+    this.stepCount++;
+
+    if (this.stepCount >= this.options.maxSteps) {
       for (var i=0; i < this.players.length; i++) {
-        if (this.players[i].running) {
-          winner = this.players[i];
-          break;
+        var player = this.players[i];
+        if (!player.lastCycle) {
+          player.lastCycle = this.cycleCount+player.playerNumber/10;
+          this.remainingPlayerCount--;
         }
       }
-      // console.log("only one player left ", winner);
-      this.trigger("mars:matchComplete", winner);
     }
 
-    this.stepCount++;
+    if (this.remainingPlayerCount < 2) {
+      var placements = _.sortBy(this.players, function(player) { 
+        return player.lastCycle;
+      });
+      var results = {
+        'stepCount': this.stepCount,
+        'cycleCount': this.cycleCount,
+        'currentPlayer': this.currentPlayer,
+        'players': placements,
+      }
+      this.trigger("mars:roundComplete", results);
+    } 
+
   },
 
   loadMemory: function(address, value, thread) {

@@ -1,17 +1,31 @@
 
 var redis_url = require('redis-url');
 var redistogo_url = process.env.REDISTOGO_URL || null;
-redis = redis_url.connect(redistogo_url);
+var redis = redis_url.connect(redistogo_url);
+
+Backbone = require('backbone')
+_ = require('underscore')
+
+RedAsm = require('./public/src/js/redasm')
+var Mars = require('./public/src/js/mars')
+
+var core = new Mars.MarsCore()
 
 
-
+var NUM_ROUNDS = 10;
 var match_count = -1;
 
 var done = function(results) {
 
   if (results) {
-    console.log("results", results)
+    for (var r=0; r < results.length; r++) {
+      console.log("round #", r);
 
+      for (var i=0; i < results[r].players.length; i++) {
+        var player = results[r].players[i];
+        console.log("  place:"+i, "player #"+player.playerNumber, player.username, player.lastCycle );
+      }
+    }
   }
 
   if (--match_count <= 0)
@@ -20,7 +34,7 @@ var done = function(results) {
 
 redis.smembers("scripts", function(err,scripts) {
 
-  match_count = (scripts.length-1)*(scripts.length-1);
+  match_count = (scripts.length)*(scripts.length-1);
 
   var i,j;
   for (i = 0; i < scripts.length; i++) {
@@ -48,8 +62,9 @@ redis.smembers("scripts", function(err,scripts) {
             redis.get(jKey, function(err,jScript){
               var results;
               if (iScript && jScript) {
-                // results = Mars.runBattle([iScript, jScript], NUM_ROUNDS);
+                results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
               }
+              // console.log("results", iScript,jScript)
               done(results);
 
             })
