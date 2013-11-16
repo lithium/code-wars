@@ -61,7 +61,7 @@ Players are ranked on the Royale Hill by the sum of their Match scores from thei
   </tr>
   <tr>
     <td>01</td>
-    <td>dest = src<td>
+    <td>dest = src</td>
     <td>MOV A,B</td>
     <td>Copy the value from src(A) into the location dest(B).</td>
   </tr>

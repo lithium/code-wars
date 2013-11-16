@@ -31,3 +31,10 @@ app.get('/',
   });
 
 
+
+
+app.get('/help',
+  function(req, res) {
+    res.render('help.html', {});
+
+  });
