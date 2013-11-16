@@ -52,70 +52,70 @@ Players are ranked on the Royale Hill by the sum of their Match scores from thei
 ### Opcodes
 
 <table>
-  <tr><th>Opcode</th><th>RedAsm</th><th>RedCode</th><th>Action</th></tr>
+  <tr><th>Opcode</th><th>RedScript</th><th>RedCode</th><th>Action</th></tr>
   <tr>
     <td>00</td>
-    <td>.BYTE b</td>
+    <td>.DATA b</td>
     <td>DAT B</td>
     <td>Store value b at current location. Terminates process when evaluated.</td>
   </tr>
   <tr>
     <td>01</td>
-    <td>ld dest, src</td>
+    <td>dest = src<td>
     <td>MOV A,B</td>
     <td>Copy the value from src(A) into the location dest(B).</td>
   </tr>
   <tr>
     <td>02</td>
-    <td>add dest, src</td>
+    <td>dest += src</td>
     <td>ADD A,B</td>
     <td>Add src(A) and dest(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>03</td>
-    <td>sub dest, src</td>
+    <td>dest -= src</td>
     <td>SUB A,B</td>
     <td>Subtract src(A) from dest(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>04</td>
-    <td>mul dest, src</td>
+    <td>dest *= src</td>
     <td>MUL A,B</td>
     <td>Multiply src(A) and dest(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>05</td>
-    <td>div dest, src</td>
+    <td>dest /= src</td>
     <td>DIV A,B</td>
     <td>Divide src(A) from dest(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>06</td>
-    <td>mod dest, src</td>
+    <td>dest %= src</td>
     <td>MOD A,B</td>
     <td>Modulus src(A) and est(B) and store result at location dest.</td>
   </tr>
   <tr>
     <td>07</td>
-    <td>sne a,b</td>
+    <td>if a == b:</td>
     <td>sne A,B</td>
     <td>Compare values A and B, if they are not equal skip the next instruction.</td>
   </tr>
   <tr>
     <td>08</td>
-    <td>seq a,b</td>
+    <td>if a != b:</td>
     <td>seq A,B</td>
     <td>Compare values A and B, if they are equal skip the next instruction.</td>
   </tr>
   <tr>
     <td>09</td>
-    <td>slt a,b</td>
+    <td>if a &lt; b:</td>
     <td>slt A,B</td>
     <td>If the value A is less than B, skip the next instruction.</td>
   </tr>
   <tr>
     <td>0A</td>
-    <td>sgt a,b</td>
+    <td>if a > b:</td>
     <td>--</td>
     <td>If the value A is greater than B, skip the next instruction.</td>
   </tr>
@@ -146,7 +146,7 @@ Players are ranked on the Royale Hill by the sum of their Match scores from thei
   <tr><th></th><th>Addressing Mode</th><th>Examples</th></tr>
   <tr>
     <td>Immediate (constants)</td>
-    <td><em>42, -5, 0xf0, $ff</em></td>
+    <td><em>42, -5, 0xf0</em></td>
   </tr>
   <tr>
     <td>Relative</td>
@@ -154,7 +154,7 @@ Players are ranked on the Royale Hill by the sum of their Match scores from thei
   </tr>
   <tr>
     <td>Indirect</td>
-    <td><em>@42, @(-5), @$ff, @label</em></td>
+    <td><em>@42, @(-5), @label</em></td>
   </tr>
 
 </table>
@@ -198,7 +198,7 @@ GET /board/:board_name
 
 "scripts" -> ["script:username",...]
 
-"match:sha1:sha1" -> [
+"match:script:username:script:username" -> [
   {order, script_sha1, username, score, record:{wins,losses,ties}}
 ]
 
