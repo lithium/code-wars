@@ -1,8 +1,14 @@
+<div id="help-container">
+
 <section id="mov">
-  <h2 class="title">LD</h2>
-  <h4 class="subtitle">Load data into memory</h4>
+  <h2 class="title">MOV</h2>
+  <h4 class="subtitle">Change memory by MOVing data into it.</h4>
   <div class="syntax">
-    ld <code>address</code>, <code>value</code>
+    address = value
+  </div>
+  <h6>RedCode Equivalent</h6>
+  <div class="syntax redcode">
+    MOV <code>value</code>, <code>address</code>
   </div>
   <div class="description">
     <p>The memory location referenced by <code>address</code> will be changed to <code>value</code>.</p>
@@ -10,16 +16,136 @@
   <h5>Examples</h5>
   <div class="examples">
     <div class="row">
-      <div class="col-md-5 monospace"> ld (-1), 0 </div>
-      <div class="col-md-7"><em class="small">load previous memory location with 0</em></div>
+      <div class="col-md-5 monospace">mov 0, (-1)</div>
+      <div class="col-md-7"><em class="small">change previous memory location to 0</em></div>
     </div>
     <div class="row">
-      <div class="col-md-5 monospace"> ld @label, (-5) </div>
-      <div class="col-md-7"><em class="small">load the memory location at <strong>label</strong> with the data at memory location <strong>-5</strong></em></div>
+      <div class="col-md-5 monospace">mov (-5), @label</div>
+      <div class="col-md-7"><em class="small">change the memory location at <strong>label</strong> to be the data stored at memory location <strong>-5</strong></em></div>
     </div>
     <div class="row incorrect">
-      <div class="col-md-5 monospace"> <strike>ld 5, 0x42</strike> </div>
+      <div class="col-md-5 monospace"> <strike>ld 0x42, 5</strike> </div>
       <div class="col-md-7"><em class="small">You cannot reference absolute memory locations.</em></div>
     </div>
   </div>
 </section>
+
+
+<section id="data">
+  <h2 class="title">.DATA</h2>
+  <h4 class="subtitle">Data constant</h4>
+  <div class="syntax">
+    .DAT <code>value</code><br>
+    .DATA <code>value</code>
+  </div>
+  <div class="description">
+    <p>The 16-bit <code>value</code> will be included at the current location in the compiled program.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">.DAT 0</div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 monospace">.DATA 0xfe000f2a</div>
+    </div>
+  </div>
+</section>
+
+
+<section id="sne">
+  <h2 class="title">if ==</h2>
+  <h4 class="subtitle">Compare and If Equal run next instruction</h4>
+  <div class="syntax">
+    if <code>a</code> == <code>b</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
+  </div>
+  <h6>RedCode Equivalent</h6>
+  <div class="syntax redcode">
+    SNE <code>value</code>, <code>value</code><br>
+    CMP <code>value</code>, <code>value</code>
+  </div>
+  <div class="description">
+    <p>Compare the 12-bit value <code>a</code> and the 12-bit value <code>b</code>. If they are equal, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">loop: counter -= 1<br>if counter == 0:<br>&nbsp;&nbsp;goto loop</div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 monospace">if *foo == 42:</div>
+    </div>
+  </div>
+</section>
+
+<section id="seq">
+  <h2 class="title">if !=</h2>
+  <h4 class="subtitle">Compare and Not If Equal run next instruction</h4>
+  <div class="syntax">
+    if <code>a</code> != <code>b</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
+  </div>
+  <h6>RedCode Equivalent</h6>
+  <div class="syntax redcode">
+    SEQ <code>value</code>, <code>value</code><br>
+  </div>
+  <div class="description">
+    <p>Compare the 12-bit value <code>a</code> and the 12-bit value <code>b</code>. If they are not equal, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">loop:<br>if *label != 42:<br>&nbsp;&nbsp;label += 1<br>goto loop</div>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+</section>
+
+<section id="slt">
+  <h2 class="title">if &gt;</h2>
+  <h4 class="subtitle">If Greater Than, run next instruction</h4>
+  <div class="syntax">
+    if <code>a</code> > <code>b</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
+    if <code>b</code> &lt;= <code>a</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
+  </div>
+  <div class="description">
+    <p>If the 12-bit value <code>a</code> is greater than the 12-bit value <code>b</code>, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">if counter > 100:<br>&nbsp;&nbsp;counter = 100</div>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+</section>
+
+
+<section id="sgt">
+  <h2 class="title">if &lt;</h2>
+  <h4 class="subtitle">If Less Than, run next instruction</h4>
+  <div class="syntax">
+    if <code>a</code> < <code>b</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
+    if <code>b</code> >= <code>a</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
+  </div>
+  <div class="description">
+    <p>If the 12-bit value <code>a</code> is less than the 12-bit value <code>b</code>, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">loop:<br>if *label != 42:<br>&nbsp;&nbsp;label += 1<br>goto loop</div>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+</section>
+
+</div>
