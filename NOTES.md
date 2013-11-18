@@ -10,18 +10,41 @@ Referee is node.js hosted via heroku instance.
 A Player edits their PlayerScript in the client.  
 A PlayerScript reference is provided.  
 
-Users can browse the Top 100 Champions.   
+Users can browse all Players Scripts.
 Users can browse the Battle Royale rankings.  
 Users can start a local match:
   - mirror match
+  - vs rock, paper or scissors
   - vs a Script on a Leaderboard
 
-Client can replay the match at the user's desired speed to visualize the match and verify the result.
+Client can replay a match at the user's desired speed to visualize the match and verify the result.
 
 ## Referee
 
 Users can submit Scripts by forking lithium/codewars-warrior  
 Users can edit/submit Scripts online with GitHub authentication.  
+
+
+### Battle Royale Round
+
+At least 4 players.
+Board locations are "Marked" by a player if they change the memory location.
+If a Thread executes an Instruction Marked by a different Player, and later dies, the player who marked the location will be granted a Kill Point.
+
+The round ends after 65,536 steps, or if there is only one player's threads left.
+
+Last man standing is awarded a point bonus.
+
+Players Score is: ```<numberOfCycles>*<killPoints+1>```
+
+at least 100 Rounds are played in a Match.
+A Players Match score is the average of his round scores.
+
+
+### Infinite Battle
+
+Every 5 minutes the server runs a Battle Royale Match.
+
 
 
 ### Championship Leaderboard
@@ -47,9 +70,7 @@ Players in a Match are ranked by the sum of their Round Scores.
 Players are ranked on the Royale Hill by the sum of their Match scores from their royale pass.  
 
 
-## RedAsm
-
-### Opcodes
+## RedScript
 
 <table>
   <tr><th>Opcode</th><th>RedScript</th><th>RedCode</th><th>Action</th></tr>
@@ -169,6 +190,15 @@ loop:     add (-1), $4   # ofs += 4
           jmp loop       # goto loop
 ```
 
+```
+//Rock - Bomb
+loop:   *loc = bomb
+        loc += 4        // bomb every 4 locations
+        jmp loop
+bomb:   jmp (-4)        // this is the bomb to drop
+loc:   .DAT -1          // start bombing immediately before ourself
+
+```
 
 ## Rest API
 
