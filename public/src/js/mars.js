@@ -277,7 +277,16 @@ _.extend(Mars.MarsCore.prototype, {
         return true;
 
       case RedAsm.OPCODE_FORK:
-        //TODO
+        var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+
+        var newThread = {
+          PC: address,
+          running: true,
+          threadNumber: thread.owner.threads.length,
+          owner: thread.owner,
+        };
+        thread.owner.threads.push(newThread);
+
         this.advancePC(thread);
         return true;
 

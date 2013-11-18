@@ -51,11 +51,18 @@
 
           <div class="editor">// dwarf
 
-loop:   *loc = bomb
+
+master:
+        (2048) = imp
+        fork (2047)
+
+
+dwarf:  *loc = bomb
         loc += 4        // bomb every 4 locations
-        jmp loop
+        jmp dwarf
 bomb:   jmp (-3)        // this is the bomb to drop
-loc:   .DAT -1          // start bombing immediately before ourself
+loc:    .DAT -1         // start bombing immediately before ourself
+imp:    (1) = imp
 </div>
           </div>
           <div class="row errors"></div>
