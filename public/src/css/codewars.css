@@ -99,3 +99,8 @@ h1 img.avatar {
   border: 2px solid orange;
   position:absolute;
 }
+.visualizer .pc.player0 {
+  border-color: #ff0000;
+}.visualizer .pc.player1 {
+  border-color: #0000ff;
+}

@@ -287,6 +287,8 @@ _.extend(Mars.MarsCore.prototype, {
         };
         thread.owner.threads.push(newThread);
 
+        this.trigger("mars:threadSpawned", newThread);
+
         this.advancePC(thread);
         return true;
 

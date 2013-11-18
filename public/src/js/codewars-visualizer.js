@@ -36,6 +36,7 @@ CodeWarsVisualizer = Backbone.View.extend({
     this.mars.on("mars:memoryChanged", _.bind(this.memoryChanged, this));
     this.mars.on("mars:instructionPointerChanged", _.bind(this.instructionPointerChanged, this));
     this.mars.on("mars:matchStarted", _.bind(this.matchStarted, this));
+    this.mars.on("mars:threadSpawned", _.bind(this.threadSpawned, this));
   },
 
   render: function() {
@@ -99,7 +100,7 @@ CodeWarsVisualizer = Backbone.View.extend({
       var start = player.threads[0].PC;
       var end = start+player.compiledBytes.length;
 
-      player.threads[0].$pc = $('<div class="pc"></div>')
+      player.threads[0].$pc = $('<div class="pc player'+player.playerNumber+'"></div>')
       this.$container.append(player.threads[0].$pc);
 
       while (start<end) {
@@ -108,6 +109,12 @@ CodeWarsVisualizer = Backbone.View.extend({
       this.setInstructionCursor(player.threads[0])
 
     }
+  },
+
+  threadSpawned: function(thread) {
+    thread.$pc = $('<div class="pc player'+thread.owner.playerNumber+'"></div>');
+    this.$container.append(thread.$pc);
+    this.setInstructionCursor(thread)
   },
  
 
