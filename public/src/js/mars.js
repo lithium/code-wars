@@ -292,9 +292,6 @@ _.extend(Mars.MarsCore.prototype, {
         this.advancePC(thread);
         return true;
 
-      case RedAsm.OPCODE_NOP:
-        this.advancePC(thread);
-        return true;
     }
     return false;
   },

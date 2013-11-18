@@ -16,9 +16,8 @@ _.extend(RedAsm, {
   OPCODE_SEQ: 8,
   OPCODE_SLT: 9,
   OPCODE_SGT: 0xA,
-  OPCODE_JMP:  0xD,
-  OPCODE_FORK: 0xE,
-  OPCODE_NOP:  0xF,
+  OPCODE_JMP:  0xB,
+  OPCODE_FORK: 0xC,
 
   ADDR_MODE_IMMEDIATE: 0,
   ADDR_MODE_RELATIVE: 1,
@@ -39,8 +38,6 @@ _.extend(RedAsm, {
     'SGT': RedAsm.OPCODE_SGT,
     'JMP': RedAsm.OPCODE_JMP,
     'FORK': RedAsm.OPCODE_FORK,
-    'NOP': RedAsm.OPCODE_NOP,
-    'HALT': RedAsm.OPCODE_HALT,
   }
 });
 
@@ -253,12 +250,10 @@ RedAsm.decompile = function(compiledBytes) {
     if (!stmt) { //unknown opcode
       stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i],8)
     } else {
-      //the only ones without operand2 are: JMP(0xD), FORK(0xE) and NOP(0xF) 
-      if (instruction.opcode < 0xD)
+      //the only ones without operand2 are: JMP(0xB), FORK(0xC)
+      if (instruction.opcode < 0xB)
         stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2))+",";
-      //everything except NOP(0xF) has at least 1 operand
-      if (instruction.opcode < 0xF) 
-        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
+      stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
     }
     rows.push(stmt);
   }
