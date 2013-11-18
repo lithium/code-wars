@@ -85,8 +85,10 @@ CodeWarsVisualizer = Backbone.View.extend({
   setInstructionCursor: function(thread) {
     var $cell = this.cellAt(thread.PC);
     var pos = $cell.position();
-    thread.$pc.css('left', pos.left-2);
-    thread.$pc.css('top', pos.top-2);
+    if (thread.$pc) {
+      thread.$pc.css('left', pos.left-2);
+      thread.$pc.css('top', pos.top-2);
+    }
   },
 
   matchStarted: function(players) {
