@@ -51,6 +51,3 @@ Juno.isWarriorViable = function(compiledWarrior, numCycles) {
 }
 
 
-
-var randWar = Juno.viableWarrior();
-console.log("rand", RedAsm.decompile(randWar), Juno.isWarriorViable(randWar))

@@ -28,6 +28,7 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.scriptName = this.$(".scriptName");
 
+
     this.editor = ace.edit(this.$(".editor")[0]);
     this.editor.setTheme("ace/theme/github");
     this.editor.setOption("firstLineNumber", 0);
@@ -40,10 +41,15 @@ CodeWarsConsole = Backbone.View.extend({
     this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
 
 
+    this.cycleCount = this.$(".cycleCount");
     this.runButton = this.$(".btn.run"); 
     this.running = false;
 
 
+
+    var randWar = Juno.viableWarrior();
+
+    this.editor.setValue(RedAsm.decompileToRedscript(randWar));
 
     this.visualizer = new CodeWarsVisualizer({
       el: this.$(".memoryDisplay"), 
@@ -74,6 +80,7 @@ CodeWarsConsole = Backbone.View.extend({
   },
 
   beforeCycle: function(thread, player) {
+    this.cycleCount.html(this.mars.cycleCount);
 
     var slice = this.mars.memorySlice(thread.PC - 3, 7);
     var source = RedAsm.decompile(slice);
