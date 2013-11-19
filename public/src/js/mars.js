@@ -15,7 +15,9 @@ _.extend(Mars.MarsCore.prototype, {
   init: function(options) {
     var defaults = {
       'memorySize': 4096,
-      'maxSteps': 100000,
+      'maxSteps': 0,
+      'maxCycles': 20000,
+      'maxThreads': 128,
     }
     this.options = _.extend(_.clone(defaults), options)
 
@@ -104,6 +106,8 @@ _.extend(Mars.MarsCore.prototype, {
 
   executeOneCycle: function(player) {
     var thread = player.threads[player.currentThread];
+    if (!thread.running)
+      return
 
     var instruction = this.memory[thread.PC];
     this.trigger("mars:beforeCycleExecute", thread, player);
@@ -135,7 +139,9 @@ _.extend(Mars.MarsCore.prototype, {
 
     this.stepCount++;
 
-    if (this.stepCount >= this.options.maxSteps) {
+    if ((this.options.maxSteps && this.stepCount >= this.options.maxSteps) ||
+        (this.options.maxCycles && this.cycleCount >= this.options.maxCycles))
+    {
       for (var i=0; i < this.players.length; i++) {
         var player = this.players[i];
         if (!player.lastCycle) {
@@ -147,7 +153,7 @@ _.extend(Mars.MarsCore.prototype, {
 
     if (this.remainingPlayerCount < 2) {
       var placements = _.sortBy(this.players, function(player) { 
-        return player.lastCycle;
+        return player.lastCycle || this.cycleCount;
       });
       var results = {
         'stepCount': this.stepCount,
@@ -279,15 +285,18 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_FORK:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
 
-        var newThread = {
-          PC: address,
-          running: true,
-          threadNumber: thread.owner.threads.length,
-          owner: thread.owner,
-        };
-        thread.owner.threads.push(newThread);
-
-        this.trigger("mars:threadSpawned", newThread);
+        var threadCount = thread.owner.threads.length;
+        if (threadCount < this.options.maxThreads) {
+          var newThread = {
+            PC: address,
+            running: true,
+            threadNumber: threadCount,
+            owner: thread.owner,
+          };
+          thread.owner.threads.push(newThread);
+          thread.owner.runningThreadCount++;
+          this.trigger("mars:threadSpawned", newThread);
+        }
 
         this.advancePC(thread);
         return true;

@@ -97,7 +97,8 @@ Juno.breedWarriors = function(compiledParent1, compiledParent2, options) {
 
   var child;
 
-  var mutationType = options.mutationType || parseInt(Math.random() * 2) ? 'point' : 'crossover';
+  // only 10% chance of crossover mutation
+  var mutationType = options.mutationType || Math.random() <= 0.10 ? 'crossover' : 'point';
   if (mutationType == 'crossover') {
     child = _.clone(compiledParent1)
     var crossover1 = parseInt(Math.random()*compiledParent1.length);

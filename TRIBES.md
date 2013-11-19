@@ -4,11 +4,50 @@
 
 ## Overview
 
+8 Tribes start with 32 randomized Warriors.  
+Players can inspect(disassemble) and name the warriors in their tribe.   
+First Tournament immediately starts with default Evolution Strategy.  
+Players then choose Evolution Strategy and can run tournaments in batches of: 1,10,50,100 generations.   
 
-On game start a player's Tribe is initialized with 20 Random Viable Warriors.  
-Players can inspect(disassemble) and name their warriors.  
-Player will choose at least 4 Warriors to Battle.  
-A Tribe can have a maximum of 30 Warriors in it, any excess individuals must be killed before starting a new Battle.  
+
+## Tournament
+
+Each tribe holds its own tournament.  
+All members of the tribe play 3 Rounds of Swiss-Pairing rounds.   
+  Each round of swiss is Best-out-of 30 games.  
+  Games are max 20,000 cycles.  
+4 lowest scoring (lifetime) individuals are killed.
+Top 8 all play each other. (56 Rounds)
+Top 4 get to breed.
+
+
+## Evolution Strategy
+
+- Mate Selection
+  - fitness
+  - similarity/dissimilar
+  - random
+- Parent Dominance
+  - Highest Score
+  - Longest Lifetime
+  - Random
+- Reproduction Type -- weighted table
+  - Asexual (copy from dominant parent)
+  - Single Crossover
+  - Double Crossover
+- Mutation Chance -- % chance of mutation occuring
+- Mutation Amount -- max number instructions to randomly mutate 
+- Migration Chance -- % chance one individual from the tribe will im/emigrate to another tribe
+
+
+## War
+
+After 200 generations a war is held between the tribes.  
+The top 2 warriors from each tribe all play each other. (16 warriors, 112 rounds)
+
+
+
+
 
 ## Battle
 

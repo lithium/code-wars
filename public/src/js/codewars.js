@@ -39,22 +39,26 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.mars = new Mars.MarsCore()
     this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
+    this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
+    this.mars.on("mars:roundComplete", _.bind(this.roundComplete, this));
 
 
     this.cycleCount = this.$(".cycleCount");
+    this.stepCount = this.$(".stepCount");
     this.runButton = this.$(".btn.run"); 
     this.running = false;
 
 
+    this.clockDivider = 16;
 
-    var randWar = Juno.viableWarrior();
-
-    this.editor.setValue(RedAsm.decompileToRedscript(randWar));
 
     this.visualizer = new CodeWarsVisualizer({
       el: this.$(".memoryDisplay"), 
       mars: this.mars,
     });
+
+
+    this.startRandomBattle();
   },
 
   render: function() {
@@ -81,45 +85,48 @@ CodeWarsConsole = Backbone.View.extend({
 
   beforeCycle: function(thread, player) {
     this.cycleCount.html(this.mars.cycleCount);
+    this.stepCount.html(this.mars.stepCount);
 
-    var slice = this.mars.memorySlice(thread.PC - 3, 7);
-    var source = RedAsm.decompile(slice);
+    // var slice = this.mars.memorySlice(thread.PC - 3, 7);
+    // var source = RedAsm.decompile(slice);
 
-    var $monitor = $('<div class="monitor"></div>');
-    for (var i=0; i < slice.length; i++) {
-      var $row = $('<div class="monitorRow"></div>');
-      var $addr = $('<span class="address"></span>');
-      var $hex = $('<span class="hexdump"></span>');
-      var $assembly = $('<span class="assembly"></span>');
+    // var $monitor = $('<div class="monitor"></div>');
+    // for (var i=0; i < slice.length; i++) {
+    //   var $row = $('<div class="monitorRow"></div>');
+    //   var $addr = $('<span class="address"></span>');
+    //   var $hex = $('<span class="hexdump"></span>');
+    //   var $assembly = $('<span class="assembly"></span>');
 
-      $addr.html(RedAsm.hexdump(thread.PC-3+i, 3)+":");
+    //   $addr.html(RedAsm.hexdump(thread.PC-3+i, 3)+":");
 
-      $hex.html(RedAsm.hexdump(slice[i]>>>0, 8));
+    //   $hex.html(RedAsm.hexdump(slice[i]>>>0, 8));
 
-      $assembly.html("; "+source[i]);
+    //   $assembly.html("; "+source[i]);
 
-      if (i == 3) {
-        $row.addClass("active");
-      }
+    //   if (i == 3) {
+    //     $row.addClass("active");
+    //   }
 
-      $row.append($addr);
-      $row.append($hex);
-      $row.append($assembly);
-      $monitor.append($row);
-    }
+    //   $row.append($addr);
+    //   $row.append($hex);
+    //   $row.append($assembly);
+    //   $monitor.append($row);
+    // }
 
-    var $output = this.$('.dissassembly.player'+player.playerNumber+".thread"+thread.threadNumber);
+    var $output = this.$('.dissassembly.player'+player.playerNumber);
 
     if ($output.length < 1) {
-      $output = $('<div class="col-md-6 dissassembly player'+player.playerNumber+' thread'+thread.threadNumber+'"></div>');
+      $output = $('<div class="col-md-6 dissassembly player'+player.playerNumber+'"></div>');
       this.output.append($output);
     }
     $output.empty();
 
     var $title = $('<h4></h4>');
-    $title.html("Player:"+player.playerNumber+" Thread:"+thread.threadNumber);
+    $title.html("Player"+player.playerNumber);
     $output.append($title)
-    $output.append($monitor);
+
+    $output.append("Threads: "+player.runningThreadCount);
+    // $output.append($monitor);
 
 
     // console.log(source);
@@ -140,6 +147,7 @@ CodeWarsConsole = Backbone.View.extend({
 
   clickCompile: function() {
     this.$('.pc').remove();
+    this.$('.dissassembly').remove();
     var playerScript = this.editor.getValue();
     var result = RedAsm.compile(playerScript);
     if (result.success) {
@@ -157,6 +165,16 @@ CodeWarsConsole = Backbone.View.extend({
       this.errors.html(result.error);
     }
 
+  },
+
+
+  startRandomBattle: function(numWarriors) {
+    var numWarriors = numWarriors || 8;
+    var players = []
+    for (var i=0; i < numWarriors; i++) {
+      players.push({compiledBytes: Juno.viableWarrior()});
+    }
+    this.mars.startMatch(players);
   },
 
   saveScript: function() {
@@ -186,9 +204,27 @@ CodeWarsConsole = Backbone.View.extend({
   _runcycle: function() {
     if (!this.running) 
       return;
-    this.stepMars();
+    for (var i=0; i < this.clockDivider; i++) {
+      this.stepMars();
+    }
     setTimeout(_.bind(this._runcycle, this), 10);
   },
 
 
+  threadDied: function(thread) {
+    console.log("thread died", thread)
+    var $h4 = $(".player"+thread.owner.playerNumber+".thread"+thread.owner.threadNumber+" h4")
+    $h4.html('<strike>'+$h4.html()+'</strike>');
+  },
+
+  playerDied: function(player) {
+    console.log("player died", player);
+
+  },
+
+  roundComplete: function(results) {
+    this.running = false;
+    this.runButton.removeClass("btn-primary");
+    console.log("roundComplete", results)
+  },
 })
