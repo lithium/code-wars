@@ -202,6 +202,10 @@ CodeWarsConsole = Backbone.View.extend({
   threadDied: function(thread) {
     console.log("thread died", thread)
     this.beforeCycle(thread, thread.owner);
+    if (thread.$pc) {
+      thread.$pc.remove();
+      thread.$pc = null;
+    }
   },
 
   playerDied: function(player) {
