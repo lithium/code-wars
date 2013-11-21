@@ -202,7 +202,7 @@ copy:   *dest = *src
         dest -= 1
         if src != -2      
           jmp copy
-        dest -= 4
+        dest -= 5
         fork *dest
         dest -= 23
         jmp paper

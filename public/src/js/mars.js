@@ -118,16 +118,20 @@ _.extend(Mars.MarsCore.prototype, {
       if (--player.runningThreadCount < 1) {
         player.running = false;
         this.remainingPlayerCount--;
+        this.player.currentThread--;
         player.lastCycle = this.cycleCount;
         this.trigger("mars:playerDied", player);
       }
     }
     this.cycleCount++;
 
+    do {
+      player.currentThread = ++player.currentThread % player.threads.length;
+    } while (!player.threads[player.currentThread].running);
 
-
-    player.currentThread = ++player.currentThread % player.threads.length;
-    this.currentPlayer = ++this.currentPlayer % this.players.length;
+    do {
+      this.currentPlayer = ++this.currentPlayer % this.players.length;
+    } while (!this.players[this.currentPlayer].running);
   },
   executeNextStep: function() {
     if (this.remainingPlayerCount < 1)
