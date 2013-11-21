@@ -91,7 +91,7 @@ CodeWarsConsole = Backbone.View.extend({
 
       $assembly.html("; "+source[i]);
 
-      if (i == 3) {
+      if (i == 4) {
         $row.addClass("active");
       }
 

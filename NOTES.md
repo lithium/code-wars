@@ -21,17 +21,19 @@ Client can replay a match at the user's desired speed to visualize the match and
 
 ## Referee
 
-Users can submit Scripts by forking lithium/codewars-warrior  
-Users can edit/submit Scripts online with GitHub authentication.  
+Users can edit/submit One Script online with GitHub authentication.  
 
 
 ### Battle Royale Round
 
-At least 4 players.
+At least 4 players -- up to 8.
 Board locations are "Marked" by a player if they change the memory location.
 If a Thread executes an Instruction Marked by a different Player, and later dies, the player who marked the location will be granted a Kill Point.
 
 The round ends after 65,536 steps, or if there is only one player's threads left.
+
+
+score = (numWarriors * (numWarriors-1)) / numSurvivors + killPoints
 
 Last man standing is awarded a point bonus.
 
@@ -52,22 +54,16 @@ Every 5 minutes the server runs a Battle Royale Match.
 Each Script plays a Match against every other Script.  
 Players are ranked by the Top score out of all their Scripts.  
 A Match consists of a Best-of 100 rounds.  
-Scoring is 2 points for a win, 1 point for a tie, 0 points if 100% of all rounds ended in a tie.  
+Match Scoring is 3 points for a win, 1 point for a tie, 0 points if 100% of all rounds ended in a tie.  
+Players are ranked by their average score. 
 
 
 ### Battle Royale Leaderboard
 
-The Script will play 100 Free-For-All Matches against 3 randomly selected Scripts. 3 new scripts will be selected for each new Match, will not match against a Script a second time until matched against all other scripts in the field at least once.  
-
-Round/Match scoring:
-* 1st: 8 points
-* 2nd: 4 points
-* 3rd: 2 points
-* 4th: 0 points  
-
-In the result of a tie, the points for both are divided evenly (e.g. 2nd and 3rd place tied, both players receive 3 points)  
-Players in a Match are ranked by the sum of their Round Scores.  
-Players are ranked on the Royale Hill by the sum of their Match scores from their royale pass.  
+Each script plays enough rounds of 8 player Free-For-All Matches to play each other script about 8 times.  
+```(totalNumberOfPlayers - 1) / (playersPerMatch - 1) * timesToPlayEachOpponent```  
+Match Scoring is ```score = (playersPerMatch * (playersPerMatch - 1)) / numSurvivors```  
+Players are ranked by their average match score.  
 
 
 ## RedScript
@@ -182,23 +178,41 @@ Players are ranked on the Royale Hill by the sum of their Match scores from thei
 
 
 ### Examples
-```Assembly
-# dwarf from cwg.pg#4
- ofs:     .BYTE 0        # var ofs = 0
-loop:     add (-1), $4   # ofs += 4
-          ld @ofs, $0    # memory[ofs] = 0
-          jmp loop       # goto loop
 ```
-
-```
-//Rock - Bomb
+// Rock
 loop:   *loc = bomb
-        loc += 4        // bomb every 4 locations
+        loc += 4         // bomb every 4 locations
         jmp loop
-bomb:   jmp (-4)        // this is the bomb to drop
-loc:   .DAT -1          // start bombing immediately before ourself
+bomb:   .DAT 0           // this is the bomb to drop
+loc:    .DAT -1          // start bombing at loop-1
+```
+
+loc:    .DAT -1          // start bombing at loop-1
+bomb:   .DAT 0           // this is the bomb to drop
+start:  *loc = bomb
+        loc += 4         // bomb every 4 locations
+        jmp start
+
 
 ```
+// Paper
+paper:  src = 10           
+copy:   *dest = *src      
+        src -= 1
+        dest -= 1
+        if src != -2      
+          jmp copy
+        dest -= 4
+        fork *dest
+        dest -= 23
+        jmp paper
+src:    .DAT 8
+dest:   .DAT 1222
+```
+
+
+
+
 
 ## Rest API
 

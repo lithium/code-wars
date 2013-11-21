@@ -27,11 +27,26 @@ CodeWarsVisualizer = Backbone.View.extend({
         var $cell = $('<div class="cell"></div>');
         $row.append($cell);
         this.cells[row].push($cell);
+
+        $cell.data("mars_position", {
+          'row': row,
+          'col': col,
+          'memory': row*this.gridWidth+col,
+        });
+        $cell.on('click', _.bind(this.hoverCell, this));
       }
       $row.append('<div style="clear: both"></div>');
       this.$container.append($row);
     }
     this.$el.append(this.$container);
+
+
+    this.$inspector = $('<div class="inspector"></div>');
+    this.$inspectorValue = $('<div class="value"></div>');
+    this.$inspectorAddress = $('<div class="address"></div>');
+    this.$inspector.append(this.$inspectorValue);
+    this.$inspector.append(this.$inspectorAddress);
+    this.$el.append(this.$inspector);
 
     this.mars.on("mars:memoryChanged", _.bind(this.memoryChanged, this));
     this.mars.on("mars:instructionPointerChanged", _.bind(this.instructionPointerChanged, this));
@@ -116,6 +131,14 @@ CodeWarsVisualizer = Backbone.View.extend({
     this.$container.append(thread.$pc);
     this.setInstructionCursor(thread)
   },
+  hoverCell: function(e) {
+    var $cell = $(e.target)
+    var pos = $cell.data("mars_position");
+    var value = this.mars.memory[pos.memory];
+    this.$inspectorAddress.html(pos.memory.toString(16))
+    this.$inspectorValue.html(RedAsm.decompile([value]))
+  },
+
  
 
 })
