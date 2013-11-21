@@ -241,7 +241,7 @@ RedAsm.compile = function(assembly_string) {
 }
 
 
-RedAsm.decompile = function(compiledBytes) {
+RedAsm.decompileToRedcode = function(compiledBytes) {
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
@@ -260,6 +260,59 @@ RedAsm.decompile = function(compiledBytes) {
   return rows;
 }
 
+RedAsm.decompileToRedscript = function(compiledBytes) {
+  var rows=[]
+  for (var i=0; i<compiledBytes.length; i++) {
+    var instruction = RedAsm.parseInstruction(compiledBytes[i]);
+    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
+    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2));
+    switch (instruction.opcode) {
+      case RedAsm.OPCODE_MOV:
+        rows.push(op1+" = "+op2+"\n")
+        break;
+      case RedAsm.OPCODE_ADD:
+        rows.push(op1+" += "+op2+"\n")
+        break;
+      case RedAsm.OPCODE_SUB:
+        rows.push(op1+" -= "+op2+"\n")
+        break;
+      case RedAsm.OPCODE_MUL:
+        rows.push(op1+" *= "+op2+"\n")
+        break;
+      case RedAsm.OPCODE_DIV:
+        rows.push(op1+" /= "+op2+"\n")
+        break;
+      case RedAsm.OPCODE_MOD:
+        rows.push(op1+" %= "+op2+"\n")
+        break;
+      case RedAsm.OPCODE_SNE:
+        rows.push("if "+op1+" == "+op2+"\n  ")
+        break;
+      case RedAsm.OPCODE_SEQ:
+        rows.push("if "+op1+" != "+op2+"\n  ")
+        break;
+      case RedAsm.OPCODE_SLT:
+        rows.push("if "+op1+" < "+op2+"\n  ")
+        break;
+      case RedAsm.OPCODE_SGT:
+        rows.push("if "+op1+" > "+op2+"\n  ")
+        break;
+      case RedAsm.OPCODE_JMP:
+        rows.push("jmp "+op1+"\n");
+        break;
+      case RedAsm.OPCODE_FORK:
+        rows.push("fork "+op1+"\n");
+        break;
+      default:
+        rows.push(RedAsm.mneumonicFromOpcode(instruction.opcode))
+        break;
+    }
+  }
+  return rows.join("");
+}
+
+
+RedAsm.decompile = RedAsm.decompileToRedcode
 
 RedAsm.disassemble = function(compiledBytes) {
   var stmts = RedAsm.decompile(compiledBytes);
@@ -333,7 +386,7 @@ RedAsm.decorateAddressing = function(mode, value) {
   else if (mode == RedAsm.ADDR_MODE_RELATIVE)
     return "("+value+")";
   else if (mode == RedAsm.ADDR_MODE_INDIRECT)
-    return "@"+value;
+    return "*("+value+")";
   return value;
 }
 

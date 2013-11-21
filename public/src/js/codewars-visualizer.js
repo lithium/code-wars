@@ -15,7 +15,6 @@ CodeWarsVisualizer = Backbone.View.extend({
     var root = Math.sqrt(this.memorySize);
     this.gridWidth = parseInt(root*2);
     this.gridHeight = parseInt(root/2); 
-    console.log("size", this.gridWidth, this.gridHeight);
 
 
     this.cells = [];
