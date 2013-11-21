@@ -320,10 +320,13 @@ _.extend(Mars.MarsCore.prototype, {
       return addr;
     }
     if (mode == RedAsm.ADDR_MODE_INDIRECT) {
-      return (PC+this.memory[addr]) % this.options.memorySize;
-    }
+      addr = (PC+this.memory[addr]) % this.options.memorySize;
+      if (addr < 0)
+        addr += this.options.memorySize;
+      return addr
+    } 
 
-    return null;
+    return null
   },
   resolveValue: function(PC, operand, mode) {
     if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {
