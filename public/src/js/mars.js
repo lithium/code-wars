@@ -16,7 +16,7 @@ _.extend(Mars.MarsCore.prototype, {
     var defaults = {
       'memorySize': 4096,
       'maxSteps': 0,
-      'maxCycles': 20000,
+      'maxCycles': 0,
       'maxThreads': 128,
     }
     this.options = _.extend(_.clone(defaults), options)
@@ -106,8 +106,9 @@ _.extend(Mars.MarsCore.prototype, {
 
   executeOneCycle: function(player) {
     var thread = player.threads[player.currentThread];
-    if (!thread.running)
-      return
+    while (!thread.running) {
+      thread = player.threads[++player.currentThread % player.threads.length];
+    }
 
     var instruction = this.memory[thread.PC];
     this.trigger("mars:beforeCycleExecute", thread, player);
@@ -118,7 +119,6 @@ _.extend(Mars.MarsCore.prototype, {
       if (--player.runningThreadCount < 1) {
         player.running = false;
         this.remainingPlayerCount--;
-        this.player.currentThread--;
         player.lastCycle = this.cycleCount;
         this.trigger("mars:playerDied", player);
       }
@@ -127,11 +127,11 @@ _.extend(Mars.MarsCore.prototype, {
 
     do {
       player.currentThread = ++player.currentThread % player.threads.length;
-    } while (!player.threads[player.currentThread].running);
+    } while (player.runningThreadCount > 0 && !player.threads[player.currentThread].running);
 
     do {
       this.currentPlayer = ++this.currentPlayer % this.players.length;
-    } while (!this.players[this.currentPlayer].running);
+    } while (this.remainingPlayerCount > 0 && this.players[this.currentPlayer].runningThreadCount < 1);
   },
   executeNextStep: function() {
     if (this.remainingPlayerCount < 1)

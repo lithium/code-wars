@@ -201,8 +201,7 @@ CodeWarsConsole = Backbone.View.extend({
 
   threadDied: function(thread) {
     console.log("thread died", thread)
-    var $h4 = $(".player"+thread.owner.playerNumber+".thread"+thread.owner.threadNumber+" h4")
-    $h4.html('<strike>'+$h4.html()+'</strike>');
+    this.beforeCycle(thread, thread.owner);
   },
 
   playerDied: function(player) {
