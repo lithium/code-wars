@@ -11,10 +11,9 @@ A Player edits their PlayerScript in the client.
 A PlayerScript reference is provided.  
 
 Users can browse all Players Scripts.
-Users can browse the Battle Royale rankings.  
 Users can start a local match:
   - mirror match
-  - vs rock, paper or scissors
+  - vs rock, paper and/or scissors
   - vs a Script on a Leaderboard
 
 Client can replay a match at the user's desired speed to visualize the match and verify the result.
@@ -22,31 +21,6 @@ Client can replay a match at the user's desired speed to visualize the match and
 ## Referee
 
 Users can edit/submit One Script online with GitHub authentication.  
-
-
-### Battle Royale Round
-
-At least 4 players -- up to 8.
-Board locations are "Marked" by a player if they change the memory location.
-If a Thread executes an Instruction Marked by a different Player, and later dies, the player who marked the location will be granted a Kill Point.
-
-The round ends after 65,536 steps, or if there is only one player's threads left.
-
-
-score = (numWarriors * (numWarriors-1)) / numSurvivors + killPoints
-
-Last man standing is awarded a point bonus.
-
-Players Score is: ```<numberOfCycles>*<killPoints+1>```
-
-at least 100 Rounds are played in a Match.
-A Players Match score is the average of his round scores.
-
-
-### Infinite Battle
-
-Every 5 minutes the server runs a Battle Royale Match.
-
 
 
 ### Championship Leaderboard
@@ -60,9 +34,9 @@ Players are ranked by their average score.
 
 ### Battle Royale Leaderboard
 
-Each script plays enough rounds of 8 player Free-For-All Matches to play each other script about 8 times.  
-```(totalNumberOfPlayers - 1) / (playersPerMatch - 1) * timesToPlayEachOpponent```  
-Match Scoring is ```score = (playersPerMatch * (playersPerMatch - 1)) / numSurvivors```  
+Each script plays enough 8 player Free-For-All Matches to play each other script about 8 times.  
+Number of matches will be ```(totalNumberOfPlayers - 1) / (playersPerMatch - 1) * timesToPlayEachOpponent```  
+Match Scoring is ```matchScore = (playersPerMatch * (playersPerMatch - 1)) / numSurvivors```  
 Players are ranked by their average match score.  
 
 
