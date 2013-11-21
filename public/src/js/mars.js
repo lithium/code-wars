@@ -87,6 +87,7 @@ _.extend(Mars.MarsCore.prototype, {
       player.currentThread = 0;
       player.runningThreadCount = 1;
       player.startingLocation = offset;
+      player.running = true;
       this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
 
       usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
@@ -107,7 +108,7 @@ _.extend(Mars.MarsCore.prototype, {
   executeOneCycle: function(player) {
     if (!player.running)
       return;
-    
+
     var thread = player.threads[player.currentThread];
     while (!thread.running) {
       thread = player.threads[++player.currentThread % player.threads.length];

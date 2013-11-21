@@ -187,11 +187,6 @@ bomb:   .DAT 0           // this is the bomb to drop
 loc:    .DAT -1          // start bombing at loop-1
 ```
 
-loc:    .DAT -1          // start bombing at loop-1
-bomb:   .DAT 0           // this is the bomb to drop
-start:  *loc = bomb
-        loc += 4         // bomb every 4 locations
-        jmp start
 
 
 ```
@@ -212,6 +207,20 @@ dest:   .DAT 1222        // our arbitrary starting location
 
 ```
 // Scissors
+scan:   start += skip       // search skip offsets through memory
+        end += skip
+        if *start != *end   // break if we find changed locations
+          jmp clear
+        *start = 42         // otherwise drop color while we scan
+        jmp scan
+
+clear:  *end = 0            // core clear
+        end -= 1
+        jmp clear
+
+start:  .DAT 0
+end:    .DAT 12             // gap between start and end is 12
+skip:   .DAT -28            // our skip offset when scanning
 
 ```
 
