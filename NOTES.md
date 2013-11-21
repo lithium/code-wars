@@ -134,7 +134,7 @@ Players are ranked by their average match score.
 ### Addressing Modes
 
 <table>
-  <tr><th></th><th>Addressing Mode</th><th>Examples</th></tr>
+  <tr><th>Addressing Mode</th><th>Examples</th></tr>
   <tr>
     <td>Immediate (constants)</td>
     <td><em>42, -5, 0xf0</em></td>
@@ -240,12 +240,3 @@ GET /board/:board_name
 
 ```
 
-
-
-# Evolving
-
-[Thorsel, 99](http://corewar.co.uk/thorsell/paper.htm)
-[Coleman, 98](http://www.eecs.tufts.edu/~colemanr/corewars.pdf)
-
-The score is reported after all rounds have been played. A round ends either when a single surviving warrior remains or when a maximum number of cycles have elapsed. For each round, every surviving warrior is awarded points calculated from a score formula (F).
-By default, this is F(W,S) = (W * W-1) / S, where W is the total number of warriors participating, S is the number of survivors, and “/” is integer division.
