@@ -38,18 +38,24 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.mars = new Mars.MarsCore()
     this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
+    this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
+    this.mars.on("mars:roundComplete", _.bind(this.roundComplete, this));
 
 
     this.cycleCount = this.$(".cycleCount");
+    this.stepCount = this.$(".stepCount");
     this.runButton = this.$(".btn.run"); 
     this.running = false;
 
 
+    this.clockDivider = 16;
 
     this.visualizer = new CodeWarsVisualizer({
       el: this.$(".memoryDisplay"), 
       mars: this.mars,
     });
+
+
   },
 
   render: function() {
@@ -76,6 +82,7 @@ CodeWarsConsole = Backbone.View.extend({
 
   beforeCycle: function(thread, player) {
     this.cycleCount.html(this.mars.cycleCount);
+    this.stepCount.html(this.mars.stepCount);
 
     var slice = this.mars.memorySlice(thread.PC - 3, 7);
     var source = RedAsm.decompile(slice);
@@ -135,6 +142,7 @@ CodeWarsConsole = Backbone.View.extend({
 
   clickCompile: function() {
     this.$('.pc').remove();
+    this.$('.dissassembly').remove();
     var playerScript = this.editor.getValue();
     var result = RedAsm.compile(playerScript);
     if (result.success) {
@@ -181,9 +189,27 @@ CodeWarsConsole = Backbone.View.extend({
   _runcycle: function() {
     if (!this.running) 
       return;
-    this.stepMars();
+    for (var i=0; i < this.clockDivider; i++) {
+      this.stepMars();
+    }
     setTimeout(_.bind(this._runcycle, this), 10);
   },
 
 
+  threadDied: function(thread) {
+    console.log("thread died", thread)
+    var $h4 = $(".player"+thread.owner.playerNumber+".thread"+thread.owner.threadNumber+" h4")
+    $h4.html('<strike>'+$h4.html()+'</strike>');
+  },
+
+  playerDied: function(player) {
+    console.log("player died", player);
+
+  },
+
+  roundComplete: function(results) {
+    this.running = false;
+    this.runButton.removeClass("btn-primary");
+    console.log("roundComplete", results)
+  },
 })
