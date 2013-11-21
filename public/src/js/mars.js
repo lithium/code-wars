@@ -105,6 +105,9 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
   executeOneCycle: function(player) {
+    if (!player.running)
+      return;
+    
     var thread = player.threads[player.currentThread];
     while (!thread.running) {
       thread = player.threads[++player.currentThread % player.threads.length];
