@@ -196,18 +196,23 @@ start:  *loc = bomb
 
 ```
 // Paper
-paper:  src = 10           
-copy:   *dest = *src      
-        src -= 1
+paper:  src = 10         // copy from (10)..(-2)
+copy:   *dest = *src     // copy the instruction
+        src -= 1         // decrement pointers
         dest -= 1
         if src != -2      
-          jmp copy
-        dest -= 5
-        fork *dest
-        dest -= 23
-        jmp paper
-src:    .DAT 8
-dest:   .DAT 1222
+          jmp copy       // loop until we've copied ourself entirely
+        dest -= 5        // adjust dest to point at start of new copy
+        fork *dest       // spawn new copy
+        dest -= 23       // move to a new spot
+        jmp paper        // and start over
+src:    .DAT 0           // our loop pointer, initialized at paper:
+dest:   .DAT 1222        // our arbitrary starting location
+```
+
+```
+// Scissors
+
 ```
 
 
