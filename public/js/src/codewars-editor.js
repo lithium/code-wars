@@ -7,6 +7,7 @@ return Backbone.View.extend({
 
   events: {
     "click .btn.save": "saveAndCompile",
+    "click .pane.compiledBytes .close": "closeCompilePane",
   },
 
   initialize: function(options) {
@@ -14,11 +15,14 @@ return Backbone.View.extend({
       'initialScript': "",
     }, options || {})
 
-    this.$editor = this.$(".aceEditor");
-    this.$compiled = this.$(".compiledBytes");
+    this.$editorPane = this.$(".pane.fileEditor")
+    this.$compiledPane = this.$(".pane.compiledBytes");
+
+
     this.$messages = this.$(".compileMessages");
     this.$scriptName = this.$("input.scriptName");
-
+    this.$compiled = this.$(".compiledOutput");
+    this.$editor = this.$(".aceEditor");
 
     this.editor = ace.edit(this.$editor[0]);
     this.editor.setTheme("ace/theme/github");
@@ -81,9 +85,18 @@ return Backbone.View.extend({
       var disasm = RedAsm.disassemble(result.compiledBytes);
       var o = [];
       for (var i=0; i < disasm.length; i++) {
-        o.push(disasm[i].join(" "));
+        o.push('<div class="nowrap">'+disasm[i][0]+": "+disasm[i][6]+'</div>');
+        // o.push(disasm[i].join(" "));
       }
-      this.$compiled.html("<pre>"+o.join("\n")+"</pre>");
+
+      this.$compiled.html(o.join(""));
+
+      if (!this.compiledShown) { 
+        this.$compiledPane.toggleClass("col-md-0 col-md-3")
+        this.$editorPane.toggleClass("col-md-12 col-md-9")
+        this.compiledShown = true;
+      }
+
 
       this.message('');
       return true;
@@ -94,6 +107,15 @@ return Backbone.View.extend({
     return false;
   },
 
+  closeCompilePane: function() {
+    if (this.compiledShown) {
+      this.$compiled.html("")
+      this.$compiledPane.toggleClass("col-md-0 col-md-3")
+      this.$editorPane.toggleClass("col-md-12 col-md-9")
+      this.compiledShown = false;
+    }
+
+  },
 
 
 });

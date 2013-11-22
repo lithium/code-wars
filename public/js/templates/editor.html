@@ -1,11 +1,8 @@
 
 <div class="row">
 
-  <div class="col-md-2">
+  <div class="col-md-12">
     <button type="button" class="btn btn-default save">Save</button>
-  </div>
-
-  <div class="col-md-10">
     <input class="scriptName" type="text" placeholder="script name...">
   </div>
 
@@ -13,18 +10,21 @@
 
 <div class="row">
 
-  <div class="col-md-3 pane compiledBytes">
-  </div>
-
-  <div class="col-md-9 pane fileEditor">
-    <pre class="aceEditor">
+  <div class="col-md-12 pane fileEditor">
+    <div class="aceEditor">
     // dwarf
     dwarf:  *loc = bomb
             loc += 4        // bomb every 4 locations
             jmp dwarf
     bomb:   jmp (-3)        // this is the bomb to drop
     loc:    .DAT -1         // start bombing immediately before ourself
-    </pre>
+    </div>
+  </div>
+
+  <div class="col-md-0 pane compiledBytes">
+    <div class="close">X</div>
+    <div class="compiledOutput">
+    </div>
   </div>
 
 </div>

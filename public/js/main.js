@@ -9,8 +9,14 @@ require.config({
       exports: '_'
     },
     'bootstrap': ['jquery'],
-    'redasm': ['backbone'],
-    'mars': ['redasm','backbone'],
+    'redasm': {
+      exports: 'RedAsm',
+      deps: ['backbone'],
+    },
+    'mars': {
+      deps: ['redasm','backbone'],
+      exports: 'Mars',
+    },
   },
   paths: {
     text: 'text.require',
@@ -28,7 +34,7 @@ require.config({
 
 requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars'], 
   function(text,   $,       ace,      bootstrap,  underscore,  backbone,   CodeWarsConsole) {
-    
+
     $(function() {
       window.application = new CodeWarsConsole();
       if (window.userProfile) {
