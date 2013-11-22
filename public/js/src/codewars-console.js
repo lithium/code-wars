@@ -1,15 +1,11 @@
 
 
-HelpPanel = Backbone.View.extend({
-  el: "div",
+define(['backbone','ace','codewars-visualizer', 'text!templates/console.html'], 
+function(backbone,  ace,  CodeWarsVisualizer,    consoleTemplate) 
+{
 
-  initialize: function() {
-
-  }
-})
-
-CodeWarsConsole = Backbone.View.extend({
-  el: $('#console.codewars'),
+return Backbone.View.extend({
+  el: _.template(consoleTemplate),
 
   events: {
     "click .save": "saveScript",
@@ -28,12 +24,12 @@ CodeWarsConsole = Backbone.View.extend({
 
     this.scriptName = this.$(".scriptName");
 
-    this.editor = ace.edit(this.$(".editor")[0]);
-    this.editor.setTheme("ace/theme/github");
-    this.editor.setOption("firstLineNumber", 0);
+    // this.editor = ace.edit(this.$(".editor")[0]);
+    // this.editor.setTheme("ace/theme/github");
+    // this.editor.setOption("firstLineNumber", 0);
 
-    this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
-    this.editor.focus();
+    // this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
+    // this.editor.focus();
 
 
     this.mars = new Mars.MarsCore()
@@ -218,4 +214,7 @@ CodeWarsConsole = Backbone.View.extend({
     this.runButton.removeClass("btn-primary");
     console.log("roundComplete", results)
   },
-})
+});
+
+
+});

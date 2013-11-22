@@ -1,4 +1,9 @@
-CodeWarsVisualizer = Backbone.View.extend({
+
+define(['backbone'],
+function(backbone) 
+{
+
+return Backbone.View.extend({
   el: "div",
 
   initialize: function(options) {
@@ -144,4 +149,7 @@ CodeWarsVisualizer = Backbone.View.extend({
 
  
 
-})
+});
+
+
+});

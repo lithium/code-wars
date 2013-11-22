@@ -1,18 +1,6 @@
 
-var main = function($, bootstrap,  underscore,  backbone,  ace, codewars) {
-
-  console.log("main.js")
-
-  window.application = new CodeWarsConsole();
-  if (window.userProfile) {
-    window.application.login(window.userProfile);
-  }
-
-};
-
-
 require.config({
-  baseUrl: 'js',
+  baseUrl: '',
   shim: {
     'backbone': {
       deps: ['underscore','jquery'],
@@ -23,18 +11,34 @@ require.config({
     },
     'bootstrap': ['jquery'],
     'codewars-visualizer': ['backbone'],
-    'codewars-console': ['backbone','ace'],
   },
   paths: {
-    ace: 'ace-min/ace',
-    bootstrap: 'bootstrap.min',
+    text: 'js/text.require',
+    jquery: 'js/jquery',
+    bootstrap: 'js/bootstrap.min',
+    underscore: 'js/underscore',
+    backbone: 'js/backbone',
+    ace: 'js/ace-min/ace',
 
-    'codewars': 'src/codewars',
-    'codewars-visualizer': 'src/codewars-visualizer',
-    'codewars-console': 'src/codewars-console',
+    'codewars': 'js/src/codewars',
+    'redasm': 'js/src/redasm',
+    'mars': 'js/src/mars',
+    'codewars-visualizer': 'js/src/codewars-visualizer',
+    'codewars-console': 'js/src/codewars-console',
   }
 });
 
 
-requirejs(['jquery','bootstrap','underscore','backbone','ace', 'codewars'], main);
+requirejs(['text','jquery','bootstrap','underscore','backbone','ace', 'codewars'], 
+  function(text,   $,       bootstrap,  underscpre,  backbone,  ace,   CodeWarsConsole) {
+
+    $(function() {
+      window.application = new CodeWarsConsole();
+      if (window.userProfile) {
+        window.application.login(window.userProfile);
+      }
+      $('body').html(application.$el) 
+    })
+
+  });
 
