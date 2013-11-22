@@ -240,3 +240,13 @@ GET /board/:board_name
 
 ```
 
+
+## Backbone Hierarchy
+
+
+- CodewarsConsole (game console + login / username)
+  - Editor Tabs
+    - CodewarsEditor (ace + byte code + compile/save buttons)
+  - CodewarsHelp (help model + rankings model + browse)
+  - MarsDisplay (memory + player/cycle summary + step/run/speed)
+  - MarsInspector (memory debugger + active player detail)

@@ -74,6 +74,10 @@ CodeWarsVisualizer = Backbone.View.extend({
   cellAt: function(address) {
     var row = parseInt(address/this.gridWidth);
     var column = address % this.gridWidth;
+    if (row == NaN || column == NaN || row < 0 || column < 0) {
+      debugger;
+      return null;
+    }
     return this.cells[row][column];
   }, 
 
