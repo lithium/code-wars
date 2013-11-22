@@ -1,98 +1,42 @@
 
 
-    <div id="console" class="container codewars">
+<div id="console" class="container codewars">
 
-      <div class="row message">
-        <h1>Hello Console </h1>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 editorColumn">
-          <div class="row">
-            <div class="col-md-2">
-              <button type="button" class="btn btn-default save">Save</button>
-            </div>
-            <div class="col-md-8 ">
-              <input class="scriptName" type="text" placeholder="script name...">
-            </div>
-            <div class="col-md-2 ">
-              <button type="button" class="btn btn-default compile">Compile</button>
-            </div>
-          </div>
-
-          <div class="row">
-
-
-          <div class="editor">// dwarf
-
-
-master:
-        (2048) = imp
-        fork (2047)
-
-
-dwarf:  *loc = bomb
-        loc += 4        // bomb every 4 locations
-        jmp dwarf
-bomb:   jmp (-3)        // this is the bomb to drop
-loc:    .DAT -1         // start bombing immediately before ourself
-imp:    (1) = imp
-</div>
-          </div>
-          <div class="row errors"></div>
-          <div class="row compiled"></div>
-        </div>
-
-        <div class="col-md-6 helpColumn">
-          <div class="help well">
-            <h2 class="title">LD</h2>
-            <h4 class="subtitle">Load data into memory</h4>
-            <div class="syntax">
-              ld <code>address</code>, <code>value</code>
-            </div>
-            <div class="description">
-              <p>The memory location referenced by <code>address</code> will be changed to <code>value</code>.</p>
-            </div>
-            <h5>Examples</h5>
-            <div class="examples">
-              <div class="row">
-                <div class="col-md-5 monospace"> ld (-1), 0 </div>
-                <div class="col-md-7"><em class="small">load previous memory location with 0</em></div>
-              </div>
-              <div class="row">
-                <div class="col-md-5 monospace"> ld @label, (-5) </div>
-                <div class="col-md-7"><em class="small">load the memory location at <strong>label</strong> with the data at memory location <strong>-5</strong></em></div>
-              </div>
-              <div class="row incorrect">
-                <div class="col-md-5 monospace"> <strike>ld 5, 0x42</strike> </div>
-                <div class="col-md-7"><em class="small">You cannot reference absolute memory locations.</em></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col-md-5">
-          Steps: <span class="stepCount"></span> Cycles: <span class="cycleCount"></span>
-        </div>
-
-        <div class="col-md-3 col-md-offset-4">
-          <button type="button" class="btn btn-default step">Step</button>
-          <button type="button" class="btn btn-default run">Run</button>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12 memoryDisplay"> </div>
-      </div>
-
-      <div class="row">
-        <div class="output"> </div>
-      </div>
-
-
+  <!-- heading row -->
+  <div class="row">
+    <div class="col-md-8 message">
+      <h1>Hello Console</h1>
     </div>
+    <div class="col-md-4 login">
+      <a href="#">login</a>
+
+      <div class="row">
+        <a class="btn btn-default debug" href="#">debug</a>
+        <a class="btn btn-default edit" href="#">edit</a>
+        <a class="btn btn-default inspector" href="#">inspector</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- editor row -->
+  <div class="row pane edit expanded">
+    <div class="col-md-7 pane editors">
+    </div>
+    <div class="cold-md-5 pane context">
+    </div>
+  </div>
+
+
+
+  <!-- visualizer/debugger row -->
+  <div class="row pane debug obscured">
+  </div>
+
+  <!-- inspector popover -->
+  <div class="pane inspector obscured">
+  </div>
+
+
+</div>
 
 

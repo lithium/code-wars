@@ -12,9 +12,34 @@ return Backbone.View.extend({
     "click .compile": "clickCompile",
     "click .step": "stepMars",
     "click .run": "runMars",
+
+    "click .debug": "animateToDebug",
+    "click .edit": "animateToEditor",
+    "click .inspector": "animateInspector",
+  },
+
+
+  animateToEditor: function() {
+    this.editPane.addClass('expanded')
+    this.debugPane.addClass('obscured')
+    this.inspectorPane.addClass('obscured')
+  },
+  animateToDebug: function() {
+    this.editPane.removeClass('expanded')
+    this.debugPane.removeClass('obscured')
+  },
+  animateInspector: function() {
+    this.inspectorPane.toggleClass('obscured')
   },
 
   initialize: function() {
+    this.editPane = this.$(".pane.edit")
+    this.debugPane = this.$(".pane.debug")
+    this.inspectorPane = this.$(".pane.inspector")
+
+
+
+
     this.output = this.$(".output");
     this.compiled = this.$(".compiled");
 
