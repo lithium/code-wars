@@ -10,7 +10,8 @@ require.config({
       exports: '_'
     },
     'bootstrap': ['jquery'],
-    'codewars-visualizer': ['backbone'],
+    'redasm': ['backbone'],
+    'mars': ['redasm','backbone'],
   },
   paths: {
     text: 'js/text.require',
@@ -25,13 +26,16 @@ require.config({
     'mars': 'js/src/mars',
     'codewars-visualizer': 'js/src/codewars-visualizer',
     'codewars-console': 'js/src/codewars-console',
+    'codewars-editor': 'js/src/codewars-editor',
   }
 });
 
 
-requirejs(['text','jquery','bootstrap','underscore','backbone','ace', 'codewars'], 
-  function(text,   $,       bootstrap,  underscpre,  backbone,  ace,   CodeWarsConsole) {
+requirejs(['text','jquery','ace','bootstrap','underscore','backbone', 'codewars'], 
+  function(text,   $,       ace,  bootstrap,  underscore,  backbone,   CodeWarsConsole) {
 
+    console.log("main", arguments)
+    
     $(function() {
       window.application = new CodeWarsConsole();
       if (window.userProfile) {

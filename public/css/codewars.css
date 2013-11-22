@@ -64,6 +64,11 @@ img#loading {
 
 
 
+
+input.scriptName {
+  width: 100%;
+}
+
 /*
 
 textarea:focus, input:focus {
@@ -95,9 +100,6 @@ h1 img.avatar {
   margin-right: 2px;
 }
 
-.editorColumn .scriptName {
-  width: 100%;
-}
 
 .help.well {
   height: 380px;

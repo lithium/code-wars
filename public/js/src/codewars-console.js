@@ -1,81 +1,59 @@
 
 
-define(['backbone','ace','codewars-visualizer', 'text!templates/console.html'], 
-function(backbone,  ace,  CodeWarsVisualizer,    consoleTemplate) 
+define(['backbone','codewars-editor','codewars-visualizer', 'text!templates/console.html'], 
+function(backbone,  CodeWarsEditor,   CodeWarsVisualizer,    consoleTemplate) 
 {
 
 return Backbone.View.extend({
   el: _.template(consoleTemplate),
 
   events: {
-    "click .save": "saveScript",
-    "click .compile": "clickCompile",
-    "click .step": "stepMars",
-    "click .run": "runMars",
-
-    "click .debug": "animateToDebug",
-    "click .edit": "animateToEditor",
-    "click .inspector": "animateInspector",
+    "click .btn.debug": "animateToDebug",
+    "click .btn.edit": "animateToEditor",
+    "click .btn.inspector": "animateInspector",
   },
 
 
   animateToEditor: function() {
-    this.editPane.addClass('expanded')
-    this.debugPane.addClass('obscured')
-    this.inspectorPane.addClass('obscured')
+    this.$editPane.addClass('expanded')
+    this.$debugPane.addClass('obscured')
+    this.$inspectorPane.addClass('obscured')
   },
   animateToDebug: function() {
-    this.editPane.removeClass('expanded')
-    this.debugPane.removeClass('obscured')
+    this.$editPane.removeClass('expanded')
+    this.$debugPane.removeClass('obscured')
   },
   animateInspector: function() {
-    this.inspectorPane.toggleClass('obscured')
+    this.$inspectorPane.toggleClass('obscured')
   },
 
   initialize: function() {
-    this.editPane = this.$(".pane.edit")
-    this.debugPane = this.$(".pane.debug")
-    this.inspectorPane = this.$(".pane.inspector")
+    this.$editPane = this.$(".pane.edit")
+    this.$debugPane = this.$(".pane.debug")
+    this.$inspectorPane = this.$(".pane.inspector")
 
+    this.$navTabs = this.$(".nav.nav-tabs")
+    this.$tabContent = this.$(".tab-content")
+    this.editors = []
 
-
-
-    this.output = this.$(".output");
-    this.compiled = this.$(".compiled");
-
-    this.help = this.$(".help.well");
-
-    this.errors = this.$(".errors");
-
-    this.scriptName = this.$(".scriptName");
-
-    // this.editor = ace.edit(this.$(".editor")[0]);
-    // this.editor.setTheme("ace/theme/github");
-    // this.editor.setOption("firstLineNumber", 0);
-
-    // this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
-    // this.editor.focus();
-
+    this.addEditorTab();
 
     this.mars = new Mars.MarsCore()
-    this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
-    this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
-    this.mars.on("mars:roundComplete", _.bind(this.roundComplete, this));
+    // this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
+    // this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
+    // this.mars.on("mars:roundComplete", _.bind(this.roundComplete, this));
 
 
-    this.cycleCount = this.$(".cycleCount");
-    this.stepCount = this.$(".stepCount");
-    this.runButton = this.$(".btn.run"); 
-    this.running = false;
-
-
-    this.clockDivider = 4;
+    // this.cycleCount = this.$(".cycleCount");
+    // this.stepCount = this.$(".stepCount");
+    // this.runButton = this.$(".btn.run"); 
+    // this.running = false;
+    // this.clockDivider = 4;
 
     this.visualizer = new CodeWarsVisualizer({
-      el: this.$(".memoryDisplay"), 
+      el: this.$(".memoryVisualizer"), 
       mars: this.mars,
     });
-
 
   },
 
@@ -101,9 +79,41 @@ return Backbone.View.extend({
     this.render();
   },
 
-  beforeCycle: function(thread, player) {
-    this.cycleCount.html(this.mars.cycleCount);
-    this.stepCount.html(this.mars.stepCount);
+
+  addEditorTab: function(name, initialScript) {
+    var name = name || '(unnamed)';
+    var initialScript = initialScript || '';
+
+    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><%= tabName %></a></li>');
+    var tab_template = _.template('<div class="tab-pane " id="editor-tab<%= tabId %>"></div>');
+    var context =  {
+      tabId: this.editors.length,
+      tabName: name,
+      script: initialScript,
+    }
+    var $nav = $(nav_template(context));
+    var $tab = $(tab_template(context));
+
+    var editor = new CodeWarsEditor({
+      'initialScript': initialScript,
+    })
+    editor.$nav = $nav;
+    editor.$tab = $tab;
+    $tab.append(editor.$el)
+    this.editors.push(editor);
+
+    this.$navTabs.append($nav);
+    this.$tabContent.append($tab);
+
+    $tab.ready(function() {
+     $nav.find('a').tab("show");
+    })
+
+  },
+
+  // beforeCycle: function(thread, player) {
+  //   this.cycleCount.html(this.mars.cycleCount);
+  //   this.stepCount.html(this.mars.stepCount);
 
     // var slice = this.mars.memorySlice(thread.PC - 3, 7);
     // var source = RedAsm.decompile(slice);
@@ -131,70 +141,70 @@ return Backbone.View.extend({
     //   $monitor.append($row);
     // }
 
-    var $output = this.$('.dissassembly.player'+player.playerNumber);
+  //   var $output = this.$('.dissassembly.player'+player.playerNumber);
 
-    if ($output.length < 1) {
-      $output = $('<div class="col-md-6 dissassembly player'+player.playerNumber+'"></div>');
-      this.output.append($output);
-    }
-    $output.empty();
+  //   if ($output.length < 1) {
+  //     $output = $('<div class="col-md-6 dissassembly player'+player.playerNumber+'"></div>');
+  //     this.output.append($output);
+  //   }
+  //   $output.empty();
 
-    var $title = $('<h4></h4>');
-    $title.html("Player"+player.playerNumber);
-    $output.append($title)
+  //   var $title = $('<h4></h4>');
+  //   $title.html("Player"+player.playerNumber);
+  //   $output.append($title)
 
-    $output.append("Threads: "+player.runningThreadCount);
-    // $output.append($monitor);
-
-
-    // console.log(source);
-  },
-
-  editorCursorChanged: function(evt, selection) {
-      var cursor = selection.getCursor()
-      var line = this.editor.session.getLine(cursor.row)
-      if (line.indexOf(':') != -1)
-        line = line.replace(/.+:/,'')
-      var word = line.trim().split(/\s+/)[0]
-      if (word.toUpperCase() in RedAsm.MNEUMONICS) {
-        // this.help.html(word);
-      } else {
-        // this.help.html("");
-      }
-  },
-
-  clickCompile: function() {
-    this.$('.pc').remove();
-    this.$('.dissassembly').remove();
-    var playerScript = this.editor.getValue();
-    var result = RedAsm.compile(playerScript);
-    if (result.success) {
-      var disasm = RedAsm.disassemble(result.compiledBytes);
-      var o = [];
-      for (var i=0; i < disasm.length; i++) {
-        o.push(disasm[i].join(" "));
-      }
-      this.compiled.html("<pre>"+o.join("\n")+"</pre>");
-
-      this.visualizer.clearMemory();
-      this.running = false;
-      this.mars.startMatch([_.clone(result),result]);
-    } else {
-      this.errors.html(result.error);
-    }
-
-  },
+  //   $output.append("Threads: "+player.runningThreadCount);
+  //   // $output.append($monitor);
 
 
-  saveScript: function() {
-    var playerScript = this.editor.getValue();
-    var name = this.scriptName.val();
-    var form = {'name': name, 'source': playerScript}
-    $.post('/script/', form, function(data) {
-      console.log(data);
-    })
+  //   // console.log(source);
+  // },
 
-  },
+  // editorCursorChanged: function(evt, selection) {
+  //     var cursor = selection.getCursor()
+  //     var line = this.editor.session.getLine(cursor.row)
+  //     if (line.indexOf(':') != -1)
+  //       line = line.replace(/.+:/,'')
+  //     var word = line.trim().split(/\s+/)[0]
+  //     if (word.toUpperCase() in RedAsm.MNEUMONICS) {
+  //       // this.help.html(word);
+  //     } else {
+  //       // this.help.html("");
+  //     }
+  // },
+
+  // clickCompile: function() {
+  //   this.$('.pc').remove();
+  //   this.$('.dissassembly').remove();
+  //   var playerScript = this.editor.getValue();
+  //   var result = RedAsm.compile(playerScript);
+  //   if (result.success) {
+  //     var disasm = RedAsm.disassemble(result.compiledBytes);
+  //     var o = [];
+  //     for (var i=0; i < disasm.length; i++) {
+  //       o.push(disasm[i].join(" "));
+  //     }
+  //     this.compiled.html("<pre>"+o.join("\n")+"</pre>");
+
+  //     this.visualizer.clearMemory();
+  //     this.running = false;
+  //     this.mars.startMatch([_.clone(result),result]);
+  //   } else {
+  //     this.errors.html(result.error);
+  //   }
+
+  // },
+
+
+  // saveScript: function() {
+  //   var playerScript = this.editor.getValue();
+  //   var name = this.scriptName.val();
+  //   var form = {'name': name, 'source': playerScript}
+  //   $.post('/script/', form, function(data) {
+  //     console.log(data);
+  //   })
+
+  // },
 
   stepMars: function() {
     this.mars.executeNextStep();
