@@ -5,6 +5,7 @@
     "express": "3.1.x",
     "redis-url": "0.1.0",
     "request": "2.27.0",
+    "requirejs": "2.1.9",
     "underscore": "1.5.2",
     "backbone": "1.1.0",
     "consolidate": "0.9.1",
