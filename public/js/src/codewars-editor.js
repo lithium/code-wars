@@ -1,7 +1,7 @@
-define(['backbone','ace', 'redasm', 'text!templates/editor.html'], 
-function(backbone,  ace,   RedAsm,   editorTemplate) 
+define(['backbone','ace/ace', 'redasm', 'text!templates/editor.html'], 
+function(backbone,  ace,        RedAsm,   editorTemplate) 
 {
-  console.log("editor", arguments)
+
 return Backbone.View.extend({
   el: _.template(editorTemplate),
 
@@ -20,16 +20,16 @@ return Backbone.View.extend({
     this.$scriptName = this.$("input.scriptName");
 
 
+    this.editor = ace.edit(this.$editor[0]);
+    this.editor.setTheme("ace/theme/github");
+    this.editor.setOption("firstLineNumber", 0);
+
+    this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
+    this.editor.focus();
+
     if (this.options.initialScript) {
-      this.$editor.html(this.options.initialScript)
+      this.editor.setValue(this.options.initialScript);
     }
-    // this.editor = ace.edit(this.$editor[0]);
-    // this.editor.setTheme("ace/theme/github");
-    // this.editor.setOption("firstLineNumber", 0);
-
-    // this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
-    // this.editor.focus();
-
 
   },
 
