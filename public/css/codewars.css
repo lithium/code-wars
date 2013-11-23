@@ -48,8 +48,8 @@ img#loading {
 }
 .pane.debug {
   /*background: blue;*/
-  height: 300px;
-  max-height: 300px;
+  height: 320px;
+  max-height: 320px;
 
   -webkit-transition: max-height 0.6s ease;
   -moz-transition: max-height 0.6s ease;
@@ -80,6 +80,10 @@ img#loading {
   overflow: hidden;
 }
 
+
+.pane.debug .panel-heading {
+  padding: 0;
+}
 
 .panel-heading .nav > li > a {
   padding: 5px;
@@ -225,7 +229,6 @@ h1 img.avatar {
 .visualizer {
   border: 1px solid black;
   width: 1026px;
-  margin: auto;
 }
 .visualizer .cell {
   width: 8px;
