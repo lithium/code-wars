@@ -1,7 +1,7 @@
 
 
-define(['backbone','mars','redasm','codewars-editor','codewars-visualizer', 'text!templates/console.html'], 
-function(backbone,  mars,  redasm,  CodeWarsEditor,   CodeWarsVisualizer,    consoleTemplate) 
+define(['backbone','mars','redasm','codewars-editor','codewars-help', 'codewars-visualizer', 'text!templates/console.html'], 
+function(backbone,  mars,  redasm,  CodeWarsEditor,   CodeWarsHelp,    CodeWarsVisualizer,    consoleTemplate) 
 {
 
 return Backbone.View.extend({
@@ -62,6 +62,10 @@ return Backbone.View.extend({
       mars: this.mars,
     });
 
+
+    this.help = new CodeWarsHelp()
+    this.$('.helpContainer').html(this.help.$el)
+
   },
 
   render: function() {
@@ -110,6 +114,7 @@ return Backbone.View.extend({
     this.editors.push(editor);
 
     editor.on("codewars:compilerMessage", this.compilerMessage, this);
+    editor.on("codewars:helpContext", this.helpContext, this);
 
     this.$navTabs.append($nav);
     this.$tabContent.append($tab);
@@ -122,6 +127,9 @@ return Backbone.View.extend({
 
   compilerMessage: function(msg, type) {
     this.$compilerMessages.html(msg)
+  },
+  helpContext: function(mneumonic) {
+    this.help.showHelpFor(mneumonic);
   },
 
   // beforeCycle: function(thread, player) {

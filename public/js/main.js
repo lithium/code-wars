@@ -27,6 +27,7 @@ require.config({
     'codewars-console': 'src/codewars-console',
     'codewars-visualizer': 'src/codewars-visualizer',
     'codewars-editor': 'src/codewars-editor',
+    'codewars-help': 'src/codewars-help',
   }
 });
 

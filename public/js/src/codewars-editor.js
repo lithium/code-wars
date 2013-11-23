@@ -83,11 +83,6 @@ return Backbone.View.extend({
   message: function(msg, type) {
     var type = type || 'info'
 
-    // var t = '<div class="alert alert-<%= type%>">'
-    //         +'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
-    //         +'<%= msg %></div>';
-    // this.$messages.html(_.template(t, {'type': type, 'msg': msg}));
-    
     this.trigger("codewars:compilerMessage", msg, type)
   },
 
