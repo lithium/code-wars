@@ -91,6 +91,8 @@ return Backbone.View.extend({
     this.$('.inspectorContainer').html(this.inspector.$el)
     this.visualizer.on('mars:inspectAddress', this.inspectAddress, this);
     this.inspector.on('mars:closeInspector', this.closeInspector, this);
+
+    this.clearMars();
   },
 
   inspectAddress: function(mars, position, $cell) {

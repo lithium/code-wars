@@ -30,12 +30,12 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
 
-  runBattle: function(players, numRounds) {
+  runMatch: function(players, numRounds) {
+    // run numRounds of Rounds between all players, 
+    // randomizing order/starting position each Round.
     var results = []
-
     var matchRunning;
     var roundResults;
-
     this.on("mars:roundComplete", function(results) {
       matchRunning = false;
       roundResults = results;
@@ -48,9 +48,30 @@ _.extend(Mars.MarsCore.prototype, {
       }
       results.push(_.clone(roundResults));
     }
-    return results
+
+    return this.aggregateMatchResults(players, results);
   },
 
+
+  aggregateMatchResults: function(players, results) {
+    var scores = {
+      'results': results,
+      'numRounds': results.length,
+    }
+    for (var p=0; p < players.length; p++) {
+      scores[players[p].name] = 0;
+    }
+    for (var i=0; i < results.length; i++) {
+      var roundResult = results[i];
+      for (var p=0; p < roundResult.players; p++) {
+        var player = roundResult.players[p]
+        scores[player.name] += player.score
+      }
+    }
+
+    return scores;
+  }
+   
 
   reset: function() {
     this._memset(0,0,this.options.memorySize);
@@ -166,9 +187,7 @@ _.extend(Mars.MarsCore.prototype, {
 
       for (var i=0; i < this.players.length; i++) {
         var player = this.players[i];
-        if (player.running) { 
-          player.score = score;
-        }
+        player.score = player.running ? score : 0;
       }
 
       var results = {
