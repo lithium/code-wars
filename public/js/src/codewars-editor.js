@@ -7,6 +7,8 @@ return Backbone.View.extend({
 
   events: {
     "click .btn.save": "saveAndCompile",
+    "click .btn.compile": "compileScript",
+    "click .btn.deploy": "deployScript",
     "click .pane.compiledBytes .close": "closeCompilePane",
   },
 
@@ -36,6 +38,10 @@ return Backbone.View.extend({
       this.editor.setValue(this.options.initialScript);
     }
 
+  },
+
+  scriptName: function() {
+    return this.$scriptName.val() || '(unnamed)';
   },
 
   editorCursorChanged: function(evt, selection) {
@@ -103,6 +109,7 @@ return Backbone.View.extend({
     var result = RedAsm.compile(script);
 
     if (result.success) {
+      this.compiledBytes = result.compiledBytes;
       var disasm = RedAsm.disassemble(result.compiledBytes);
       var o = [];
       for (var i=0; i < disasm.length; i++) {
@@ -120,6 +127,13 @@ return Backbone.View.extend({
     this.closeCompilePane();
     this.message(result.error, 'danger');
     return false;
+  },
+
+  deployScript: function() {
+    if (this.compileScript()) {
+      this.trigger("codewars:scriptDeployed", this.scriptName(), this.compiledBytes);
+    }
+
   },
 
   showCompilePane: function() {

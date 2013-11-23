@@ -43,7 +43,7 @@ return Backbone.View.extend({
 
 
 
-
+    this.deployed = []
 
     this.mars = new Mars.MarsCore()
     // this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
@@ -115,6 +115,7 @@ return Backbone.View.extend({
 
     editor.on("codewars:compilerMessage", this.compilerMessage, this);
     editor.on("codewars:helpContext", this.helpContext, this);
+    editor.on("codewars:scriptDeployed", this.scriptDeployed, this);
 
     this.$navTabs.append($nav);
     this.$tabContent.append($tab);
@@ -130,6 +131,17 @@ return Backbone.View.extend({
   },
   helpContext: function(mneumonic) {
     this.help.showHelpFor(mneumonic);
+  },
+  scriptDeployed: function(scriptName, compiledBytes) {
+    this.animateToDebug();
+    console.log("deploy", scriptName, compiledBytes)
+
+    this.deployed.append({
+      'name': scriptName,
+      'compiledBytes': compiledBytes,
+    });
+
+
   },
 
   // beforeCycle: function(thread, player) {

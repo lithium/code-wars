@@ -99,13 +99,12 @@ img#loading {
 }
 
 
-.saveScript:hover {
-  color: blue;
+
+.pane.editors .button-bar {
+  padding: 5px 20px;
+  text-align: right;
 }
 
-input.scriptName {
-  width: 20em;
-}
 
 .aceEditor {
   font-family: monospace;
