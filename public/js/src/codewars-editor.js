@@ -41,19 +41,37 @@ return Backbone.View.extend({
 
       //get current line
       var cursor = selection.getCursor()
-      var line = this.editor.session.getLine(cursor.row)
+      var line = this.editor.session.getLine(cursor.row).toLowerCase()
 
       //strip label
       if (line.indexOf(':') != -1)
         line = line.replace(/.+:/,'')
 
-      // var word = line.trim().split(/\s+/)[0]
-      // if (word.toUpperCase() in RedAsm.MNEUMONICS) {
-      //   // this.help.html(word);
-      // } else {
-      //   // this.help.html("");
-      // }
+      jumpTable = {
+        'data': /\.dat/,
+        'add': /\+=/,
+        'sub': /-=/,
+        'mul': /\*=/,
+        'div': /\/=/,
+        'mod': /%=/,
+        'mov': /[^=!<>+\-*\/%]=/,
+        'seq': /!=/,
+        'sne': /==/,
+        'sge.1': /<[^=]/,
+        'sge.2': />[^=]/,
+        'slt.1': />=/,
+        'slt.2': /<=/,
+        'jmp': /jmp/,
+        'fork': /fork/,
+      }
+      for (var mneumonic in jumpTable) {
+        if (jumpTable[mneumonic].test(line)) {
+          this.trigger("codewars:helpContext", mneumonic)
+          break;
+        }
+      }
   },
+
 
   saveAndCompile: function() {
     this.saveScript();
@@ -86,7 +104,6 @@ return Backbone.View.extend({
       var o = [];
       for (var i=0; i < disasm.length; i++) {
         o.push('<div class="nowrap">'+disasm[i][0]+": "+disasm[i][6]+'</div>');
-        // o.push(disasm[i].join(" "));
       }
 
       this.$compiled.html(o.join(""));
@@ -97,12 +114,11 @@ return Backbone.View.extend({
         this.compiledShown = true;
       }
 
-
-      this.message('');
+      this.message('Compiled successfully.');
       return true;
-
     }
 
+    this.$compiled.html('');
     this.message(result.error);
     return false;
   },
