@@ -29,17 +29,21 @@ Console
 - [ ] Reference and Help Routes
 - [ ] Rankings View
 - [ ] Browse View
-- [*] Memory inspector
-- [*] cleanup pc handling
+- [ ] PC update on STEP
+- [x] Memory inspector
+- [x] cleanup pc handling
 
 Mars
 ----
-- [*] Round Scoring
-- [*] Match Scoring
+- [x] Round Scoring
+- [x] Match Scoring
 - [ ] 52-bit packing
 - [ ] pre/post inc/dec adressing
 
 
+Content
+-------
+- [ ] Help Content
 - [ ] Reference Content
   - [ ] Welcome
   - [ ] Mars
@@ -53,5 +57,3 @@ Mars
   - [ ] Scissors
   - [ ] CoreWar
   - [ ] RedCode
-
-- [ ] Help Content
