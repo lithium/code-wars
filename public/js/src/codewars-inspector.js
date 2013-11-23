@@ -14,6 +14,15 @@ return Backbone.View.extend({
       'numberMonitorLines': 12,
     }, options || {})
 
+
+    if (this.options.mars) {
+      this.options.mars.on("mars:memoryChanged", this.memoryChanged, this);
+
+
+    }
+
+    this.inspecting = null;
+
     this.$heading = this.$('.inspector-heading')
     this.$value = this.$('.value')
     this.$monitor = this.$('.monitor')
@@ -21,17 +30,30 @@ return Backbone.View.extend({
 
   inspectAddress: function(mars, position, $cell)
   {
-    var value = mars.memory[position.memory];
-
     this.$heading.html( "Location: "+RedAsm.hexdump(position.memory, 3).toUpperCase() )
-    // this.$value.html( RedAsm.decompile([value]) );
-
-    this.$monitor.empty();
-
     var start = position.memory - parseInt(this.options.numberMonitorLines / 2);
-    var slice = mars.memorySlice(start, this.options.numberMonitorLines);
+    this.inspecting = {
+      'addr': position.memory, 
+      'start':start, 
+      'end':start+this.options.numberMonitorLines
+    };
+    this.updateDissassembly(this.inspecting.start, this.options.numberMonitorLines, this.inspecting.addr);
+  },
+  
+  memoryChanged: function(address, count, thread) {
+    if (this.inspecting && 
+        address >= this.inspecting.start &&
+        address <= this.inspecting.end) {
+      this.updateDissassembly(this.inspecting.start, this.options.numberMonitorLines, this.inspecting.addr);
+    }
+  },
+
+  updateDissassembly: function(start, numLines, current) {
+
+    var slice = this.options.mars.memorySlice(start, numLines);
     var source = RedAsm.decompileToRedscript(slice);
 
+    this.$monitor.empty();
     for (var i=0; i < slice.length; i++) {
       var $row = $('<div class="monitor-row"></div>');
       var $addr = $('<span class="address"></span>');
@@ -42,7 +64,7 @@ return Backbone.View.extend({
       $hex.html(RedAsm.hexdump(slice[i]>>>0, 8));
       $assembly.html("; "+source[i]);
 
-      if (start+i == position.memory) {
+      if (start+i == current) {
         $row.addClass("active");
       }
 
@@ -51,16 +73,12 @@ return Backbone.View.extend({
       $row.append($assembly);
       this.$monitor.append($row);
     }
-
-    // this.$body.html(JSON.stringify(position));
-
-    // this.$inspectorAddress.html(pos.memory.toString(16))
-    // this.$inspectorValue.html(RedAsm.decompile([value]))
   },
 
   close: function() {
     this.trigger("mars:closeInspector")
   },
+
 
 });
 

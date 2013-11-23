@@ -91,6 +91,7 @@ return Backbone.View.extend({
 
 
     this.inspector = new CodeWarsInspector({
+      'mars': this.mars,
     })
     this.$('.inspectorContainer').html(this.inspector.$el)
     this.visualizer.on('mars:inspectAddress', this.inspectAddress, this);
