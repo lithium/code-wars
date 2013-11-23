@@ -10,7 +10,7 @@
 - [ ] Script Name updates Tab
 - [ ] Editor Save
 - [ ] Script Submission
-- [ ] Round Scoring
+- [*] Round Scoring
 - [ ] Match Scoring
 - [ ] Championship Hill
 - [ ] Battle Royale Hill
@@ -21,7 +21,7 @@
 - [ ] run/flash toggle button states
 - [*] Memory inspector
 - [*] cleanup pc handling
-
+- [ ] PC inspector
 
 - [ ] Reference Content
   - [ ] Welcome

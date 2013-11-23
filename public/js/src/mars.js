@@ -18,6 +18,7 @@ _.extend(Mars.MarsCore.prototype, {
       'maxSteps': 0,
       'maxCycles': 0,
       'maxThreads': 128,
+      'minPlayers': 2,
     }
     this.options = _.extend(_.clone(defaults), options)
 
@@ -158,29 +159,27 @@ _.extend(Mars.MarsCore.prototype, {
     this.stepCount++;
 
     if ((this.options.maxSteps && this.stepCount >= this.options.maxSteps) ||
-        (this.options.maxCycles && this.cycleCount >= this.options.maxCycles))
+        (this.options.maxCycles && this.cycleCount >= this.options.maxCycles) || 
+        (this.remainingPlayerCount < this.options.minPlayers))
     {
+      var score = (this.players.length*(this.players.length-1)) / this.remainingPlayerCount;
+
       for (var i=0; i < this.players.length; i++) {
         var player = this.players[i];
-        if (!player.lastCycle) {
-          player.lastCycle = this.cycleCount+player.playerNumber/10;
-          this.remainingPlayerCount--;
+        if (player.running) { 
+          player.score = score;
         }
       }
-    }
 
-    if (this.remainingPlayerCount < 2) {
-      var placements = _.sortBy(this.players, function(player) { 
-        return player.lastCycle || this.cycleCount;
-      });
       var results = {
         'stepCount': this.stepCount,
         'cycleCount': this.cycleCount,
-        'currentPlayer': this.currentPlayer,
-        'players': placements,
+        'remainingPlayers': this.remainingPlayerCount,
+        'players': _.map(this.players, _.clone),
       }
       this.trigger("mars:roundComplete", results);
-    } 
+
+    }
 
   },
 
