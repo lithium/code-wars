@@ -45,12 +45,12 @@ return Backbone.View.extend({
     this.$el.append(this.$container);
 
 
-    this.$inspector = $('<div class="inspector"></div>');
-    this.$inspectorValue = $('<div class="value"></div>');
-    this.$inspectorAddress = $('<div class="address"></div>');
-    this.$inspector.append(this.$inspectorValue);
-    this.$inspector.append(this.$inspectorAddress);
-    this.$el.append(this.$inspector);
+    // this.$inspector = $('<div class="inspector"></div>');
+    // this.$inspectorValue = $('<div class="value"></div>');
+    // this.$inspectorAddress = $('<div class="address"></div>');
+    // this.$inspector.append(this.$inspectorValue);
+    // this.$inspector.append(this.$inspectorAddress);
+    // this.$el.append(this.$inspector);
 
     this.mars.on("mars:memoryChanged", _.bind(this.memoryChanged, this));
     this.mars.on("mars:instructionPointerChanged", _.bind(this.instructionPointerChanged, this));
@@ -144,9 +144,10 @@ return Backbone.View.extend({
   hoverCell: function(e) {
     var $cell = $(e.target)
     var pos = $cell.data("mars_position");
-    var value = this.mars.memory[pos.memory];
-    this.$inspectorAddress.html(pos.memory.toString(16))
-    this.$inspectorValue.html(RedAsm.decompile([value]))
+    this.trigger("mars:inspectAddress", this.mars, pos, $cell);
+    // var value = this.mars.memory[pos.memory];
+    // this.$inspectorAddress.html(pos.memory.toString(16))
+    // this.$inspectorValue.html(RedAsm.decompile([value]))
   },
 
  

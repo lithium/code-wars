@@ -1,7 +1,21 @@
 
 
-define(['backbone','mars','redasm','codewars-editor','codewars-help', 'codewars-visualizer', 'text!templates/console.html'], 
-function(backbone,  mars,  redasm,  CodeWarsEditor,   CodeWarsHelp,    CodeWarsVisualizer,    consoleTemplate) 
+define(['backbone',
+        'mars',
+        'redasm',
+        'codewars-editor',
+        'codewars-help', 
+        'codewars-visualizer', 
+        'codewars-inspector', 
+        'text!templates/console.html'], 
+function(backbone,  
+         mars,  
+         redasm,  
+         CodeWarsEditor,   
+         CodeWarsHelp,    
+         CodeWarsVisualizer,    
+         CodeWarsInspector,    
+         consoleTemplate) 
 {
 
 return Backbone.View.extend({
@@ -30,6 +44,12 @@ return Backbone.View.extend({
   },
   animateInspector: function() {
     this.$inspectorPane.toggleClass('obscured')
+  },
+  openInspector: function() {
+    this.$inspectorPane.removeClass('obscured')
+  },
+  closeInspector: function() {
+    this.$inspectorPane.addClass('obscured')
   },
 
   initialize: function() {
@@ -69,6 +89,17 @@ return Backbone.View.extend({
     this.help = new CodeWarsHelp()
     this.$('.helpContainer').html(this.help.$el)
 
+
+    this.inspector = new CodeWarsInspector({
+    })
+    this.$('.inspectorContainer').html(this.inspector.$el)
+    this.visualizer.on('mars:inspectAddress', this.inspectAddress, this);
+    this.inspector.on('mars:closeInspector', this.closeInspector, this);
+  },
+
+  inspectAddress: function(mars, position, $cell) {
+    this.inspector.inspectAddress(mars, position, $cell);
+    this.openInspector();
   },
 
   render: function() {

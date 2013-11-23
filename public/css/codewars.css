@@ -34,6 +34,7 @@ img#loading {
 
 }
 
+
 .pane.edit {
   height: 700px;
   max-height: 475px;
@@ -62,7 +63,6 @@ img#loading {
 }
 
 .pane.inspector {
-  background: yellow;
   width: 300px;
   height: 300px;
   position: absolute;
@@ -78,6 +78,9 @@ img#loading {
 .pane.inspector.obscured {
   width: 0;
   overflow: hidden;
+}
+.pane.inspector .inspectorContainer {
+  height: 100%;
 }
 
 

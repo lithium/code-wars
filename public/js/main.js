@@ -28,6 +28,7 @@ require.config({
     'codewars-visualizer': 'src/codewars-visualizer',
     'codewars-editor': 'src/codewars-editor',
     'codewars-help': 'src/codewars-help',
+    'codewars-inspector': 'src/codewars-inspector',
   }
 });
 
