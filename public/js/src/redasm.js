@@ -248,7 +248,7 @@ RedAsm.decompileToRedcode = function(compiledBytes) {
 
     var stmt= RedAsm.mneumonicFromOpcode(instruction.opcode);
     if (!stmt) { //unknown opcode
-      stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i],8)
+      stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i]>>>0,8)
     } else {
       //the only ones without operand2 are: JMP(0xB), FORK(0xC)
       if (instruction.opcode < 0xB)
@@ -304,11 +304,12 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
         rows.push("fork "+op1+"\n");
         break;
       default:
-        rows.push(RedAsm.mneumonicFromOpcode(instruction.opcode))
+        rows.push(".data "+RedAsm.hexdump(compiledBytes[i]>>>0, 8)+"\n");
+        // rows.push(RedAsm.mneumonicFromOpcode(instruction.opcode))
         break;
     }
   }
-  return rows.join("");
+  return rows;
 }
 
 

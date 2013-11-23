@@ -68,12 +68,21 @@ img#loading {
   position: absolute;
   right: 0;
   top: 160px;
+  white-space: nowrap;
 
   -webkit-transition: width 0.6s ease;
   -moz-transition: width 0.6s ease;
   -o-transition: width 0.6s ease;
   transition: width 0.6s ease;
 }
+
+.pane.inspector button.close {
+  float: none; 
+}
+.pane.inspector .panel-heading {
+  padding: 3px 6px;
+}
+
 
 .pane.inspector.obscured {
   width: 0;
@@ -206,26 +215,18 @@ h1 img.avatar {
 }
 
 
-.output pre {
-  font-size: 0.7em;
-}
-.output .monitor .monitorRow span {
+*/
+.monitor .monitor-row {
   font-family: monospace;
-  font-size: 0.8em;
+  white-space: nowrap;
 }
-.output .monitor .monitorRow .hexdump {
-  margin: 0 0.5em;
+.monitor .monitor-row .hexdump {
+  margin: 0 1em;
 }
-.output .monitor .monitorRow.active {
+.monitor .monitor-row.active {
   background: #eee;
 }
 
-.output .monitor {
-  border: 1px solid black;
-  padding: 2px;
-}
-
-*/
 
 
 .visualizer {
