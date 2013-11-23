@@ -22,17 +22,16 @@ require.config({
     text: 'text.require',
     bootstrap: 'bootstrap.min',
 
-    'codewars': 'src/codewars',
     'redasm': 'src/redasm',
     'mars': 'src/mars',
-    'codewars-visualizer': 'src/codewars-visualizer',
     'codewars-console': 'src/codewars-console',
+    'codewars-visualizer': 'src/codewars-visualizer',
     'codewars-editor': 'src/codewars-editor',
   }
 });
 
 
-requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars'], 
+requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars-console'], 
   function(text,   $,       ace,      bootstrap,  underscore,  backbone,   CodeWarsConsole) {
 
     $(function() {

@@ -1,7 +1,7 @@
 
 
-define(['backbone','codewars-editor','codewars-visualizer', 'text!templates/console.html'], 
-function(backbone,  CodeWarsEditor,   CodeWarsVisualizer,    consoleTemplate) 
+define(['backbone','mars','redasm','codewars-editor','codewars-visualizer', 'text!templates/console.html'], 
+function(backbone,  mars,  redasm,  CodeWarsEditor,   CodeWarsVisualizer,    consoleTemplate) 
 {
 
 return Backbone.View.extend({
