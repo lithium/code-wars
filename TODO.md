@@ -3,13 +3,14 @@
 
 Editing
 -------
-- [ ] Clear compilerMessages on tab switch.
-- [ ] Script Name updates Tab name
-- [ ] Add new Editor
 - [ ] Editor Dirty Flag
 - [ ] Editor Save
+- [ ] Editor close tab
 - [ ] Script Submission
 - [ ] LocalStorage browser?
+- [x] Clear compilerMessages on tab switch.
+- [x] Script Name updates Tab name
+- [x] Add new Editor
 
 Server
 ------

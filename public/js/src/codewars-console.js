@@ -154,12 +154,17 @@ return Backbone.View.extend({
       $nav.find('a').html(newName)
     }, this);
 
+    $nav.on("click", _.bind(function() {
+      this.compilerMessage('');
+    }, this));
+
     this.$navTabs.append($nav);
     this.$tabContent.append($tab);
 
-    $tab.ready(function() {
-     $nav.find('a').tab("show");
-    })
+    $tab.ready(_.bind(function() {
+      $nav.find('a').tab("show");
+      this.compilerMessage('');
+    }, this))
 
   },
 
