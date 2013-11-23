@@ -43,8 +43,6 @@ return Backbone.View.extend({
 
 
 
-    this.deployed = []
-
     this.mars = new Mars.MarsCore()
     // this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
     // this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
@@ -136,10 +134,12 @@ return Backbone.View.extend({
     this.animateToDebug();
     console.log("deploy", scriptName, compiledBytes)
 
-    this.deployed.append({
+    var player = {
       'name': scriptName,
       'compiledBytes': compiledBytes,
-    });
+    };
+
+    this.mars.deployPlayer(player);
 
 
   },

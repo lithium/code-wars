@@ -24,12 +24,12 @@ _.extend(Mars.MarsCore.prototype, {
     _.extend(this, Backbone.Events);
 
     this.memory = new Array(this.options.memorySize)
-    this.players = null;
+    this.reset();
     return this;
   },
 
 
-  runBattle: function(players, numRounds, maxSteps) {
+  runBattle: function(players, numRounds) {
     var results = []
 
     var matchRunning;
@@ -51,61 +51,65 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
 
-  
-
-  startMatch: function(players) {
-
+  reset: function() {
     this._memset(0,0,this.options.memorySize);
-
-    this.players = _.map(_.shuffle(players), _.clone);
-
-    var usedRanges = []
-    var _overlapsRanges = function(offset) {
-      for (var i=0; i < usedRanges.length; i++) {
-        if (offset >= usedRanges[i].start && offset <= usedRanges[i].end) {
-          return true;
-        }
+    this.usedRanges = [];
+    this.stepCount = 0;
+    this.cycleCount = 0;
+    this.players = [];
+  },
+  overlapsExistingRanges: function(offset) {
+    for (var i=0; i < this.usedRanges.length; i++) {
+      if (offset >= this.usedRanges[i].start && offset <= this.usedRanges[i].end) {
+        return true;
       }
-      return false;
     }
+    return false;
+  },
 
-    //place each player in a random memory location and spawn their first thread
+  deployPlayer: function(player) {
+    var player = _.clone(player)
+    var offset;
+    do {
+      offset = parseInt(Math.random() * this.options.memorySize);
+    } while (this.overlapsExistingRanges(offset));
+    this.usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
+
+    var thread = {
+      PC: offset,
+      threadNumber: 0,
+      owner: player,
+      running: true,
+    };
+    player.threads = [thread];
+    player.runningThreadCount = 1;
+    player.startingLocation = offset;
+    player.running = true;
+
+    this.players.push(player)
+
+    this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
+    this.trigger("mars:memoryChanged", offset, player.compiledBytes.length, thread);
+  },
+
+  startMatch: function() {
+
+    this.players = _.shuffle(this.players);
+
     for (var i=0; i < this.players.length; i++) {
       var player = this.players[i];
       player.playerNumber = i;
 
-      var offset;
-      do {
-        offset = parseInt(Math.random() * this.options.memorySize);
-      } while (_overlapsRanges(offset));
-
-
-      var thread = {
-        PC: offset,
-        running: true,
-        threadNumber: 0,
-        owner: player,
-      };
-      player.threads = [thread];
+      player.threads[0].running = true;
       player.currentThread = 0;
-      player.runningThreadCount = 1;
-      player.startingLocation = offset;
       player.running = true;
-      this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
-
-      usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
-
       this.trigger("mars:instructionPointerChanged", thread.PC, thread);
     }
 
     // initialize counters 
-    this.stepCount = 0;
-    this.cycleCount = 0;
     this.currentPlayer = 0;
     this.remainingPlayerCount = this.players.length;
-
     this.trigger("mars:matchStarted", this.players);
-
   },
 
   executeOneCycle: function(player) {
@@ -179,7 +183,7 @@ _.extend(Mars.MarsCore.prototype, {
 
   loadMemory: function(address, value, thread) {
     this.memory[address] = value;
-    this.trigger("mars:memoryChanged", address, value, thread);
+    this.trigger("mars:memoryChanged", address, 1, thread);
   },
 
   advancePC: function(thread, offset) { 

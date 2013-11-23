@@ -99,8 +99,10 @@ return Backbone.View.extend({
     }
   },
 
-  memoryChanged: function(address, value, thread) {
-    this.touchMemoryLocation(address, thread.owner)
+  memoryChanged: function(address, size, thread) {
+    while (--size >= 0) {
+      this.touchMemoryLocation(address+size, thread.owner)
+    }
   },
   instructionPointerChanged: function(PC, thread) {
     this.setInstructionCursor(thread);
