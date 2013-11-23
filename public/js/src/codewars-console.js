@@ -39,6 +39,7 @@ return Backbone.View.extend({
     this.addEditorTab();
     this.addEditorTab('foo','\n');
 
+    this.$compilerMessages = this.$(".compilerMessages")
 
 
 
@@ -108,6 +109,8 @@ return Backbone.View.extend({
     $tab.append(editor.$el)
     this.editors.push(editor);
 
+    editor.on("codewars:compilerMessage", this.compilerMessage, this);
+
     this.$navTabs.append($nav);
     this.$tabContent.append($tab);
 
@@ -115,6 +118,10 @@ return Backbone.View.extend({
      $nav.find('a').tab("show");
     })
 
+  },
+
+  compilerMessage: function(msg, type) {
+    this.$compilerMessages.html(msg)
   },
 
   // beforeCycle: function(thread, player) {

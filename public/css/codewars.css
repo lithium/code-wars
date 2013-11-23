@@ -29,6 +29,11 @@ img#loading {
   height: 100%;
 }
 
+.pane.editors .panel-body {
+  padding: 0;
+
+}
+
 .pane.edit {
   height: 700px;
   max-height: 475px;
@@ -100,8 +105,8 @@ input.scriptName {
 
 .aceEditor {
   font-family: monospace;
-  max-height: 320px; 
-  height: 540px; 
+  max-height: 355px; 
+  height: 580px; 
 
   -webkit-transition: max-height 0.6s ease;
   -moz-transition: max-height 0.6s ease;
@@ -110,7 +115,7 @@ input.scriptName {
 }
 
 .pane.expanded .aceEditor {
-  max-height: 540px; 
+  max-height: 580px; 
 }
 
 .compileMessages {
