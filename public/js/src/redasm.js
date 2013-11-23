@@ -15,7 +15,7 @@ _.extend(RedAsm, {
   OPCODE_SNE: 7,
   OPCODE_SEQ: 8,
   OPCODE_SLT: 9,
-  OPCODE_SGT: 0xA,
+  OPCODE_SGE: 0xA,
   OPCODE_JMP:  0xB,
   OPCODE_FORK: 0xC,
 
@@ -35,7 +35,7 @@ _.extend(RedAsm, {
     'SEQ': RedAsm.OPCODE_SEQ,
     'SNE': RedAsm.OPCODE_SNE,
     'SLT': RedAsm.OPCODE_SLT,
-    'SGT': RedAsm.OPCODE_SGT,
+    'SGE': RedAsm.OPCODE_SGE,
     'JMP': RedAsm.OPCODE_JMP,
     'FORK': RedAsm.OPCODE_FORK,
   }
@@ -164,18 +164,18 @@ RedAsm.compile = function(assembly_string) {
           instruction.opcode = RedAsm.OPCODE_SEQ;
           break;
         case '<':
-          instruction.opcode = RedAsm.OPCODE_SLT;
-          break;
-        case '>':
-          instruction.opcode = RedAsm.OPCODE_SGT;
-          break;
-        case '>=':
-          instruction.opcode = RedAsm.OPCODE_SLT;
+          instruction.opcode = RedAsm.OPCODE_SGE;
           firstOperand = tokens[3]
           secondOperand = tokens[1]
           break;
+        case '>':
+          instruction.opcode = RedAsm.OPCODE_SGE;
+          break;
         case '<=':
-          instruction.opcode = RedAsm.OPCODE_SGT;
+          instruction.opcode = RedAsm.OPCODE_SLT;
+          break;
+        case '>=':
+          instruction.opcode = RedAsm.OPCODE_SLT;
           firstOperand = tokens[3]
           secondOperand = tokens[1]
           break;
@@ -294,8 +294,8 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
       case RedAsm.OPCODE_SLT:
         rows.push("if "+op1+" < "+op2+"\n  ")
         break;
-      case RedAsm.OPCODE_SGT:
-        rows.push("if "+op1+" > "+op2+"\n  ")
+      case RedAsm.OPCODE_SGE:
+        rows.push("if "+op1+" >= "+op2+"\n  ")
         break;
       case RedAsm.OPCODE_JMP:
         rows.push("jmp "+op1+"\n");

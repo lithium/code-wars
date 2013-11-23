@@ -106,9 +106,9 @@ Players are ranked by their average match score.
   </tr>
   <tr>
     <td>0A</td>
-    <td>if a > b:</td>
-    <td>--</td>
-    <td>If the value A is greater than B, skip the next instruction.</td>
+    <td>if a >= b:</td>
+    <td>sge A,B</td>
+    <td>If the value A is greater than or equal to B, skip the next instruction.</td>
   </tr>
   <tr>
     <td>0D</td>

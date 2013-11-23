@@ -273,11 +273,11 @@ _.extend(Mars.MarsCore.prototype, {
         }
         return true;
 
-      case RedAsm.OPCODE_SGT:
+      case RedAsm.OPCODE_SGE:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
 
-        if (op1 > op2) {
+        if (op1 >= op2) {
           this.advancePC(thread, 2);
         } else {
           this.advancePC(thread, 1);
