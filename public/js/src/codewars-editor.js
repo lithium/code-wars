@@ -17,6 +17,7 @@ return Backbone.View.extend({
 
     this.$editorPane = this.$(".pane.fileEditor")
     this.$compiledPane = this.$(".pane.compiledBytes");
+    this.$compiledContents = this.$(".pane.compiledBytes .contents");
 
 
     this.$messages = this.$(".compileMessages");
@@ -79,8 +80,14 @@ return Backbone.View.extend({
   },
 
 
-  message: function(msg) {
-    this.$messages.html(msg);
+  message: function(msg, type) {
+    var type = type || 'info'
+
+    var t = '<div class="alert alert-<%= type%>">'
+            +'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
+            +'<%= msg %></div>';
+
+    this.$messages.html(_.template(t, {'type': type, 'msg': msg}));
   },
 
 
@@ -107,30 +114,34 @@ return Backbone.View.extend({
       }
 
       this.$compiled.html(o.join(""));
+      this.showCompilePane();
 
-      if (!this.compiledShown) { 
-        this.$compiledPane.toggleClass("col-md-0 col-md-3")
-        this.$editorPane.toggleClass("col-md-12 col-md-9")
-        this.compiledShown = true;
-      }
 
-      this.message('Compiled successfully.');
+      this.message('Compiled successfully.','success');
       return true;
     }
 
-    this.$compiled.html('');
-    this.message(result.error);
+    this.closeCompilePane();
+    this.message(result.error, 'danger');
     return false;
+  },
+
+  showCompilePane: function() {
+    if (!this.compiledShown) { 
+      this.$compiledContents.show();
+      this.$compiledPane.toggleClass("col-md-0 col-md-3")
+      this.$editorPane.toggleClass("col-md-12 col-md-9")
+      this.compiledShown = true;
+    }
   },
 
   closeCompilePane: function() {
     if (this.compiledShown) {
-      this.$compiled.html("")
+      this.$compiledContents.hide();
       this.$compiledPane.toggleClass("col-md-0 col-md-3")
       this.$editorPane.toggleClass("col-md-12 col-md-9")
       this.compiledShown = false;
     }
-
   },
 
 

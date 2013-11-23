@@ -7,12 +7,14 @@ img#loading {
 
 
 .pane.editors {
-  background: green;
+  /*background: green;*/
   height: 100%;
+  border: 1px solid green;
 }
 .pane.context {
-  background: red;
+  /*background: red;*/
   height: 100%;
+  border: 1px solid red;
 }
 
 
@@ -29,7 +31,7 @@ img#loading {
   max-height: 700px;
 }
 .pane.debug {
-  background: blue;
+  /*background: blue;*/
   height: 300px;
   max-height: 300px;
 
@@ -72,8 +74,8 @@ input.scriptName {
 
 .aceEditor {
   font-family: monospace;
-  max-height: 380px; 
-  height: 580px; 
+  max-height: 320px; 
+  height: 540px; 
 
   -webkit-transition: max-height 0.6s ease;
   -moz-transition: max-height 0.6s ease;
@@ -82,12 +84,14 @@ input.scriptName {
 }
 
 .pane.expanded .aceEditor {
-  max-height: 580px; 
+  max-height: 540px; 
 }
 
 .compileMessages {
-  max-height: 2em;
-  height: 2em;
+  min-height: 70px;
+}
+.compileMessages .alert {
+  margin: 10px 10px 0 10px;
 }
 
 .pane.fileEditor {
