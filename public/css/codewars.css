@@ -8,16 +8,24 @@ img#loading {
 
 .pane.editors {
   height: 100%;
-  border: 1px solid green;
+  padding-left: 0;
+  padding-right: 1px;
+}
+.btn.newEditorTab {
+  float: left;
+  padding-top: 2px;
+}
+.btn.newEditorTab .glyphicon {
+  top: 5px;
 }
 
 .pane.context {
   height: 100%;
   padding-right: 0;
-  padding-left: 5px;
+  padding-left: 1px;
 }
 
-.pane.context .panel {
+.pane .panel {
   height: 100%;
 }
 
@@ -69,15 +77,18 @@ img#loading {
 
 
 .panel-heading .nav > li > a {
-  color: #aaa;
   padding: 5px;
 }
-.panel-heading .nav > li.active > a {
+.pane.context .panel-heading .nav > li > a {
+  color: #aaa;
+}
+.pane.context .panel-heading .nav > li.active > a {
   color: #428bca;
 }
-.panel-heading .nav-pills > li.active > a {
+.pane.context .panel-heading .nav-pills > li.active > a {
   background-color: transparent;
 }
+
 
 .saveScript:hover {
   color: blue;

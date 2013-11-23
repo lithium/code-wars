@@ -32,11 +32,17 @@ return Backbone.View.extend({
     this.$debugPane = this.$(".pane.debug")
     this.$inspectorPane = this.$(".pane.inspector")
 
-    this.$navTabs = this.$(".editors .nav.nav-tabs")
+    this.$navTabs = this.$(".editors .nav.nav-pills")
     this.$tabContent = this.$(".editors .tab-content")
     this.editors = []
 
     this.addEditorTab();
+    this.addEditorTab('foo','\n');
+
+
+
+
+
 
     this.mars = new Mars.MarsCore()
     // this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
