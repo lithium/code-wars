@@ -7,16 +7,19 @@ img#loading {
 
 
 .pane.editors {
-  /*background: green;*/
   height: 100%;
   border: 1px solid green;
 }
+
 .pane.context {
-  /*background: red;*/
   height: 100%;
-  border: 1px solid red;
+  padding-right: 0;
+  padding-left: 5px;
 }
 
+.pane.context .panel {
+  height: 100%;
+}
 
 .pane.edit {
   height: 700px;
@@ -65,8 +68,20 @@ img#loading {
 }
 
 
+.panel-heading .nav > li > a {
+  color: #aaa;
+  padding: 5px;
+}
+.panel-heading .nav > li.active > a {
+  color: #428bca;
+}
+.panel-heading .nav-pills > li.active > a {
+  background-color: transparent;
+}
 
-
+.saveScript:hover {
+  color: blue;
+}
 
 input.scriptName {
   width: 20em;

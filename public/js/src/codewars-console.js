@@ -32,8 +32,8 @@ return Backbone.View.extend({
     this.$debugPane = this.$(".pane.debug")
     this.$inspectorPane = this.$(".pane.inspector")
 
-    this.$navTabs = this.$(".nav.nav-tabs")
-    this.$tabContent = this.$(".tab-content")
+    this.$navTabs = this.$(".editors .nav.nav-tabs")
+    this.$tabContent = this.$(".editors .tab-content")
     this.editors = []
 
     this.addEditorTab();
