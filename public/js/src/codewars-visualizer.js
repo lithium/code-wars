@@ -37,33 +37,27 @@ return Backbone.View.extend({
           'col': col,
           'memory': row*this.gridWidth+col,
         });
-        $cell.on('click', _.bind(this.hoverCell, this));
+        $cell.on('click', _.bind(this.clickCell, this));
       }
       $row.append('<div style="clear: both"></div>');
       this.$container.append($row);
     }
     this.$el.append(this.$container);
 
-
-    // this.$inspector = $('<div class="inspector"></div>');
-    // this.$inspectorValue = $('<div class="value"></div>');
-    // this.$inspectorAddress = $('<div class="address"></div>');
-    // this.$inspector.append(this.$inspectorValue);
-    // this.$inspector.append(this.$inspectorAddress);
-    // this.$el.append(this.$inspector);
-
     this.mars.on("mars:memoryChanged", _.bind(this.memoryChanged, this));
     this.mars.on("mars:instructionPointerChanged", _.bind(this.instructionPointerChanged, this));
     this.mars.on("mars:matchStarted", _.bind(this.matchStarted, this));
     this.mars.on("mars:threadSpawned", _.bind(this.threadSpawned, this));
-  },
-
-  render: function() {
-
+    this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
   },
 
   playerColor: function(playerNumber) {
     return playerNumber ? "#6060ff" : "#ff6060";
+  },
+
+  reset: function() {
+    this.clearMemory;
+    this.$container.find('.pc').remove();
   },
 
   clearMemory: function () {
@@ -80,7 +74,6 @@ return Backbone.View.extend({
     var row = parseInt(address/this.gridWidth);
     var column = address % this.gridWidth;
     if (row == NaN || column == NaN || row < 0 || column < 0) {
-      debugger;
       return null;
     }
     return this.cells[row][column];
@@ -88,6 +81,10 @@ return Backbone.View.extend({
 
   touchMemoryLocation: function(address, player) {
     var $cell = this.cellAt(address);
+    if (!$cell) {
+      console.log("failed to get cell for: ", address)
+      return;
+    }
     $cell.css("background-color", player ? this.playerColor(player.playerNumber) : "white");
     var value = this.mars.memory[address]
     var instr = RedAsm.parseInstruction(value);
@@ -110,6 +107,10 @@ return Backbone.View.extend({
 
   setInstructionCursor: function(thread) {
     var $cell = this.cellAt(thread.PC);
+    if (!$cell) {
+      console.log("failed to get cell for: ", address)
+      return;
+    }
     var pos = $cell.position();
     if (thread.$pc) {
       thread.$pc.css('left', pos.left-2);
@@ -125,7 +126,7 @@ return Backbone.View.extend({
       var start = player.threads[0].PC;
       var end = start+player.compiledBytes.length;
 
-      player.threads[0].$pc = $('<div class="pc player'+player.playerNumber+'"></div>')
+      player.threads[0].$pc = $('<div class="pc player'+player.playerNumber+'"></div>');
       this.$container.append(player.threads[0].$pc);
 
       while (start<end) {
@@ -141,15 +142,19 @@ return Backbone.View.extend({
     this.$container.append(thread.$pc);
     this.setInstructionCursor(thread)
   },
-  hoverCell: function(e) {
+
+  threadDied: function(thread) {
+    if (thread.$pc) {
+      thread.$pc.remove();
+      thread.$pc = null;
+    }
+  },
+
+  clickCell: function(e) {
     var $cell = $(e.target)
     var pos = $cell.data("mars_position");
     this.trigger("mars:inspectAddress", this.mars, pos, $cell);
-    // var value = this.mars.memory[pos.memory];
-    // this.$inspectorAddress.html(pos.memory.toString(16))
-    // this.$inspectorValue.html(RedAsm.decompile([value]))
   },
-
  
 
 });

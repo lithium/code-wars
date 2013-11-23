@@ -62,20 +62,15 @@ return Backbone.View.extend({
     this.editors = []
 
     this.addEditorTab();
-    this.addEditorTab('foo','\n');
 
     this.$compilerMessages = this.$(".compilerMessages")
 
 
 
     this.mars = new Mars.MarsCore()
-    // this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
-    // this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
     this.mars.on("mars:roundComplete", this.roundComplete, this);
 
 
-    // this.cycleCount = this.$(".cycleCount");
-    // this.stepCount = this.$(".stepCount");
     this.running = false;
     this.flash = false;
     this.toggleFlash();
@@ -177,58 +172,7 @@ return Backbone.View.extend({
     };
 
     this.mars.deployPlayer(player);
-
-
   },
-
-  // beforeCycle: function(thread, player) {
-  //   this.cycleCount.html(this.mars.cycleCount);
-  //   this.stepCount.html(this.mars.stepCount);
-
-    // var slice = this.mars.memorySlice(thread.PC - 3, 7);
-    // var source = RedAsm.decompile(slice);
-
-    // var $monitor = $('<div class="monitor"></div>');
-    // for (var i=0; i < slice.length; i++) {
-    //   var $row = $('<div class="monitorRow"></div>');
-    //   var $addr = $('<span class="address"></span>');
-    //   var $hex = $('<span class="hexdump"></span>');
-    //   var $assembly = $('<span class="assembly"></span>');
-
-    //   $addr.html(RedAsm.hexdump(thread.PC-3+i, 3)+":");
-
-    //   $hex.html(RedAsm.hexdump(slice[i]>>>0, 8));
-
-    //   $assembly.html("; "+source[i]);
-
-    //   if (i == 4) {
-    //     $row.addClass("active");
-    //   }
-
-    //   $row.append($addr);
-    //   $row.append($hex);
-    //   $row.append($assembly);
-    //   $monitor.append($row);
-    // }
-
-  //   var $output = this.$('.dissassembly.player'+player.playerNumber);
-
-  //   if ($output.length < 1) {
-  //     $output = $('<div class="col-md-6 dissassembly player'+player.playerNumber+'"></div>');
-  //     this.output.append($output);
-  //   }
-  //   $output.empty();
-
-  //   var $title = $('<h4></h4>');
-  //   $title.html("Player"+player.playerNumber);
-  //   $output.append($title)
-
-  //   $output.append("Threads: "+player.runningThreadCount);
-  //   // $output.append($monitor);
-
-
-  //   // console.log(source);
-  // },
 
 
   toggleFlash: function() {
@@ -247,6 +191,7 @@ return Backbone.View.extend({
   clearMars: function() {
     this.stopRunning();
     this.mars.reset();
+    this.visualizer.reset();
   },
 
   stepMars: function() {
@@ -270,15 +215,6 @@ return Backbone.View.extend({
       setTimeout(_.bind(this._runcycle, this), this.clockTimeout);
   },
 
-
-  // threadDied: function(thread) {
-  //   console.log("thread died", thread)
-  //   this.beforeCycle(thread, thread.owner);
-  //   if (thread.$pc) {
-  //     thread.$pc.remove();
-  //     thread.$pc = null;
-  //   }
-  // },
 
   playerDied: function(player) {
     console.log("player died", player);

@@ -16,12 +16,16 @@
 - [ ] Battle Royale Hill
 - [ ] Leaderboard endpoints
 - [ ] browse users endpoint
-
+- [ ] player list
+- [ ] player memory/pc colors
+- [ ] run/flash toggle button states
+- [*] Memory inspector
+- [*] cleanup pc handling
 
 
 - [ ] Reference Content
   - [ ] Welcome
-  - [ ] Remus
+  - [ ] Mars
   - [ ] RedScript Syntax
   - [ ] Addressing Modes
   - [ ] Conditionals
