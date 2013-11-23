@@ -26,6 +26,8 @@ return Backbone.View.extend({
     "click .btn.edit": "animateToEditor",
     "click .btn.inspector": "animateInspector",
 
+    "click .btn.newEditorTab": "newEditorTab",
+
     "click .clearMars": "clearMars",
     "click .stepMars": "stepMars",
     "click .runMars": "runMars",
@@ -148,6 +150,9 @@ return Backbone.View.extend({
     editor.on("codewars:compilerMessage", this.compilerMessage, this);
     editor.on("codewars:helpContext", this.helpContext, this);
     editor.on("codewars:scriptDeployed", this.scriptDeployed, this);
+    editor.on("codewars:scriptNameChanged", function(editor, newName) {
+      $nav.find('a').html(newName)
+    }, this);
 
     this.$navTabs.append($nav);
     this.$tabContent.append($tab);
@@ -240,6 +245,10 @@ return Backbone.View.extend({
     }
 
   },
+
+  newEditorTab: function() {
+    this.addEditorTab();
+  }
 });
 
 

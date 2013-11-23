@@ -70,7 +70,7 @@ _.extend(Mars.MarsCore.prototype, {
     }
 
     return scores;
-  }
+  },
    
 
   reset: function() {

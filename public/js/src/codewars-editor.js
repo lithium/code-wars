@@ -10,6 +10,7 @@ return Backbone.View.extend({
     "click .btn.compile": "compileScript",
     "click .btn.deploy": "deployScript",
     "click .pane.compiledBytes .close": "closeCompilePane",
+    "change input.scriptName": "updateScriptName",
   },
 
   initialize: function(options) {
@@ -42,6 +43,10 @@ return Backbone.View.extend({
 
   scriptName: function() {
     return this.$scriptName.val() || '(unnamed)';
+  },
+
+  updateScriptName: function() {
+    this.trigger("codewars:scriptNameChanged", this, this.scriptName())
   },
 
   editorCursorChanged: function(evt, selection) {
