@@ -57,6 +57,7 @@ _.extend(Mars.MarsCore.prototype, {
     this.stepCount = 0;
     this.cycleCount = 0;
     this.players = [];
+    this.trigger("mars:memoryChanged", 0, this.options.memorySize, null);
   },
   overlapsExistingRanges: function(offset) {
     for (var i=0; i < this.usedRanges.length; i++) {
@@ -81,9 +82,11 @@ _.extend(Mars.MarsCore.prototype, {
       owner: player,
       running: true,
     };
+    player.playerNumber = this.players.length;
     player.threads = [thread];
     player.runningThreadCount = 1;
     player.startingLocation = offset;
+    player.currentThread = 0;
     player.running = true;
 
     this.players.push(player)
@@ -103,7 +106,7 @@ _.extend(Mars.MarsCore.prototype, {
       player.threads[0].running = true;
       player.currentThread = 0;
       player.running = true;
-      this.trigger("mars:instructionPointerChanged", thread.PC, thread);
+      this.trigger("mars:instructionPointerChanged", player.threads[0].PC, player.threads[0]);
     }
 
     // initialize counters 

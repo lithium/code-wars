@@ -11,6 +11,11 @@ return Backbone.View.extend({
     "click .btn.debug": "animateToDebug",
     "click .btn.edit": "animateToEditor",
     "click .btn.inspector": "animateInspector",
+
+    "click .clearMars": "clearMars",
+    "click .stepMars": "stepMars",
+    "click .runMars": "runMars",
+    "click .toggleFlash": "toggleFlash",
   },
 
 
@@ -46,14 +51,14 @@ return Backbone.View.extend({
     this.mars = new Mars.MarsCore()
     // this.mars.on("mars:beforeCycleExecute", _.bind(this.beforeCycle, this));
     // this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
-    // this.mars.on("mars:roundComplete", _.bind(this.roundComplete, this));
+    this.mars.on("mars:roundComplete", this.roundComplete, this);
 
 
     // this.cycleCount = this.$(".cycleCount");
     // this.stepCount = this.$(".stepCount");
-    // this.runButton = this.$(".btn.run"); 
-    // this.running = false;
-    // this.clockDivider = 4;
+    this.running = false;
+    this.flash = false;
+    this.toggleFlash();
 
     this.visualizer = new CodeWarsVisualizer({
       el: this.$(".memoryVisualizer"), 
@@ -193,84 +198,55 @@ return Backbone.View.extend({
   //   // console.log(source);
   // },
 
-  // editorCursorChanged: function(evt, selection) {
-  //     var cursor = selection.getCursor()
-  //     var line = this.editor.session.getLine(cursor.row)
-  //     if (line.indexOf(':') != -1)
-  //       line = line.replace(/.+:/,'')
-  //     var word = line.trim().split(/\s+/)[0]
-  //     if (word.toUpperCase() in RedAsm.MNEUMONICS) {
-  //       // this.help.html(word);
-  //     } else {
-  //       // this.help.html("");
-  //     }
-  // },
 
-  // clickCompile: function() {
-  //   this.$('.pc').remove();
-  //   this.$('.dissassembly').remove();
-  //   var playerScript = this.editor.getValue();
-  //   var result = RedAsm.compile(playerScript);
-  //   if (result.success) {
-  //     var disasm = RedAsm.disassemble(result.compiledBytes);
-  //     var o = [];
-  //     for (var i=0; i < disasm.length; i++) {
-  //       o.push(disasm[i].join(" "));
-  //     }
-  //     this.compiled.html("<pre>"+o.join("\n")+"</pre>");
+  toggleFlash: function() {
+    this.flash = !this.flash;
+    if (this.flash) {
+      this.clockDivider = 4;
+      this.clockTimeout = 10;
+    }
+    else {
+      this.clockDivider = 1;
+      this.clockTimeout = 70;
+    }
 
-  //     this.visualizer.clearMemory();
-  //     this.running = false;
-  //     this.mars.startMatch([_.clone(result),result]);
-  //   } else {
-  //     this.errors.html(result.error);
-  //   }
+  },
 
-  // },
-
-
-  // saveScript: function() {
-  //   var playerScript = this.editor.getValue();
-  //   var name = this.scriptName.val();
-  //   var form = {'name': name, 'source': playerScript}
-  //   $.post('/script/', form, function(data) {
-  //     console.log(data);
-  //   })
-
-  // },
+  clearMars: function() {
+    this.stopRunning();
+    this.mars.reset();
+  },
 
   stepMars: function() {
     this.mars.executeNextStep();
   },
 
   runMars: function() {
-    this.running = !this.running;
-    if (this.running) {
+    if (!this.running) {
+      this.startRunning();
       this._runcycle();
-      this.runButton.addClass("btn-primary");
     } else {
-      this.runButton.removeClass("btn-primary");
+      this.stopRunning();
     }
   },
 
   _runcycle: function() {
-    if (!this.running) 
-      return;
-    for (var i=0; i < this.clockDivider; i++) {
+    for (var i=0; this.running && i < this.clockDivider; i++) {
       this.stepMars();
     }
-    setTimeout(_.bind(this._runcycle, this), 10);
+    if (this.running) 
+      setTimeout(_.bind(this._runcycle, this), this.clockTimeout);
   },
 
 
-  threadDied: function(thread) {
-    console.log("thread died", thread)
-    this.beforeCycle(thread, thread.owner);
-    if (thread.$pc) {
-      thread.$pc.remove();
-      thread.$pc = null;
-    }
-  },
+  // threadDied: function(thread) {
+  //   console.log("thread died", thread)
+  //   this.beforeCycle(thread, thread.owner);
+  //   if (thread.$pc) {
+  //     thread.$pc.remove();
+  //     thread.$pc = null;
+  //   }
+  // },
 
   playerDied: function(player) {
     console.log("player died", player);
@@ -278,9 +254,21 @@ return Backbone.View.extend({
   },
 
   roundComplete: function(results) {
-    this.running = false;
-    this.runButton.removeClass("btn-primary");
+    this.stopRunning();
     console.log("roundComplete", results)
+  },
+
+  stopRunning: function() {
+    this.running = false;
+    // this.runButton.removeClass("btn-primary");
+  },
+  startRunning: function() {
+    if (!this.running) {
+      this.running = true;
+      this.mars.startMatch();
+      // this.runButton.addClass("btn-primary");
+    }
+
   },
 });
 

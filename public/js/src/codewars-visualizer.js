@@ -88,7 +88,7 @@ return Backbone.View.extend({
 
   touchMemoryLocation: function(address, player) {
     var $cell = this.cellAt(address);
-    $cell.css("background-color", this.playerColor(player.playerNumber));
+    $cell.css("background-color", player ? this.playerColor(player.playerNumber) : "white");
     var value = this.mars.memory[address]
     var instr = RedAsm.parseInstruction(value);
     var mneu = RedAsm.mneumonicFromOpcode(instr.opcode);
@@ -101,7 +101,7 @@ return Backbone.View.extend({
 
   memoryChanged: function(address, size, thread) {
     while (--size >= 0) {
-      this.touchMemoryLocation(address+size, thread.owner)
+      this.touchMemoryLocation(address+size, thread ? thread.owner : null)
     }
   },
   instructionPointerChanged: function(PC, thread) {
