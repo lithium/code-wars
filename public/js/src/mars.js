@@ -81,25 +81,31 @@ _.extend(Mars.MarsCore.prototype, {
     this.players = [];
     this.trigger("mars:memoryChanged", 0, this.options.memorySize, null);
   },
-  overlapsExistingRanges: function(offset) {
+  overlapsExistingRanges: function(offset, size) {
     for (var i=0; i < this.usedRanges.length; i++) {
-      if (offset >= this.usedRanges[i].start && offset <= this.usedRanges[i].end) {
+      if ((offset >= this.usedRanges[i].start && offset <= this.usedRanges[i].end) ||
+          (offset+size >= this.usedRanges[i].start && offset+size <= this.usedRanges[i].end))
+      {
         return true;
       }
     }
     return false;
   },
 
-  deployPlayer: function(player) {
+  deployPlayer: function(player, memoryLocation) {
     var player = _.clone(player)
-    var offset;
-    do {
-      offset = parseInt(Math.random() * this.options.memorySize);
-    } while (this.overlapsExistingRanges(offset));
-    this.usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
+
+    if (!memoryLocation) { 
+      var offset;
+      do {
+        offset = parseInt(Math.random() * this.options.memorySize);
+      } while (this.overlapsExistingRanges(offset, player.compiledBytes.length));
+      this.usedRanges.push({start: offset, end: offset+player.compiledBytes.length});
+      memoryLocation = offset;
+    }
 
     var thread = {
-      PC: offset,
+      PC: memoryLocation,
       threadNumber: 0,
       owner: player,
       running: true,
@@ -107,7 +113,7 @@ _.extend(Mars.MarsCore.prototype, {
     player.playerNumber = this.players.length;
     player.threads = [thread];
     player.runningThreadCount = 1;
-    player.startingLocation = offset;
+    player.startingLocation = memoryLocation;
     player.currentThread = 0;
     player.running = true;
 
@@ -115,7 +121,7 @@ _.extend(Mars.MarsCore.prototype, {
     this.remainingPlayerCount++;
 
     this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
-    this.trigger("mars:memoryChanged", offset, player.compiledBytes.length, thread);
+    this.trigger("mars:memoryChanged", memoryLocation, player.compiledBytes.length, thread);
   },
 
   startMatch: function() {
