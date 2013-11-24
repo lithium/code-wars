@@ -246,6 +246,7 @@ return Backbone.View.extend({
     this.mars.executeNextStep();
   },
   resetMars: function() {
+    this.stopRunning();
     this.visualizer.reset();
     this.mars.resetMatch();
     this.roundStarted = false;

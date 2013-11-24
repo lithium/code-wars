@@ -26,6 +26,7 @@ Server
 
 Editing
 -------
+- [ ] dont compile/deploy empty script
 - [ ] always have one tab open
 - [ ] activate tab instead of re-open if existing
 - [ ] Script Submission
