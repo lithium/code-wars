@@ -65,10 +65,12 @@ return Backbone.View.extend({
     this.flash = false;
     this.toggleFlash();
 
+
+
     this.visualizer = new CodeWarsVisualizer({
-      el: this.$(".memoryVisualizer"), 
       mars: this.mars,
     });
+    this.$('.visualizerContainer').html(this.visualizer.$el)
 
 
     this.help = new CodeWarsHelp()

@@ -1,10 +1,10 @@
 
-define(['backbone'],
-function(backbone) 
+define(['backbone', 'md5', 'identicon', 'text!templates/visualizer.html'],
+function(backbone,   md5,   identicon,   visualizerTemplate) 
 {
 
 return Backbone.View.extend({
-  el: "div",
+  el: _.template(visualizerTemplate),
 
   initialize: function(options) {
     this.options = _.extend({
@@ -13,17 +13,16 @@ return Backbone.View.extend({
 
     this.mars = this.options.mars
 
-
     this.memorySize = this.mars.options.memorySize;
 
+    this.$playerList = this.$('.playerList');
 
     var root = Math.sqrt(this.memorySize);
     this.gridWidth = parseInt(root*2);
     this.gridHeight = parseInt(root/2); 
 
-
     this.cells = [];
-    this.$container = $('<div class="visualizer"></div>');
+    this.$container = this.$('.visualizer');
     for (var row=0; row < this.gridHeight; row++) {
       this.cells[row] = [];
       var $row = $('<div class="cellRow"></div>');
@@ -42,17 +41,13 @@ return Backbone.View.extend({
       $row.append('<div style="clear: both"></div>');
       this.$container.append($row);
     }
-    this.$el.append(this.$container);
 
     this.mars.on("mars:memoryChanged", _.bind(this.memoryChanged, this));
     this.mars.on("mars:instructionPointerChanged", _.bind(this.instructionPointerChanged, this));
     this.mars.on("mars:matchStarted", _.bind(this.matchStarted, this));
     this.mars.on("mars:threadSpawned", _.bind(this.threadSpawned, this));
     this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
-  },
-
-  playerColor: function(playerNumber) {
-    return playerNumber ? "#6060ff" : "#ff6060";
+    this.mars.on("mars:playerDeployed", _.bind(this.playerDeployed, this));
   },
 
   reset: function() {
@@ -154,7 +149,17 @@ return Backbone.View.extend({
     var pos = $cell.data("mars_position");
     this.trigger("mars:inspectAddress", this.mars, pos, $cell);
   },
- 
+
+  playerDeployed: function(player) {
+    console.log("deployed", player);
+
+    var $li = $("<li></li>");
+    var $avatar = $('<span class="identicon">'+md5(player.name)+'</span>');
+    $avatar.identicon5({size:32})
+    $li.append($avatar);
+    this.$playerList.append($li); 
+
+  },
 
 });
 

@@ -122,6 +122,8 @@ _.extend(Mars.MarsCore.prototype, {
 
     this._memcpy(memoryLocation, player.compiledBytes, player.compiledBytes.length);
     this.trigger("mars:memoryChanged", memoryLocation, player.compiledBytes.length, thread);
+
+    this.trigger("mars:playerDeployed",  player);
   },
 
   startMatch: function() {

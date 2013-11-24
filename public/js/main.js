@@ -25,12 +25,23 @@ require.config({
       init: function() {
         return murmurhash2_32_gc
       }
+    },
+    'identicon': {
+      deps: ['jquery', 'md5'],
+    },
+    'md5': {
+      init: function() {
+        return window.md5
+      }
     }
   },
   paths: {
     text: 'text.require',
     bootstrap: 'bootstrap.min',
     localstorage: 'backbone.localStorage',
+
+    'identicon': 'jquery.identicon5',
+    'murmurhash': 'murmurhash2_gc',
 
     'redasm': 'src/redasm',
     'mars': 'src/mars',
@@ -43,7 +54,6 @@ require.config({
 
     'redscript-collection': 'src/collection-redscript',
     'redscript-model': 'src/model-redscript',
-    'murmurhash': 'murmurhash2_gc',
   }
 });
 
