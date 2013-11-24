@@ -96,6 +96,15 @@ img#loading {
 .pane.debug .panel-heading {
   padding: 0;
 }
+.pane.debug .panel-heading .nav > li > a {
+  color: #898E9B;
+}
+.pane.debug .panel-heading .nav > li.active > a {
+  color: #428bca;
+}
+.pane.debug .panel-heading .nav-pills > li.active > a {
+  background-color: transparent;
+}
 
 .panel-heading .nav > li > a {
   padding: 5px;

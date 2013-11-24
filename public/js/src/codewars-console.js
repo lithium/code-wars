@@ -33,6 +33,7 @@ return Backbone.View.extend({
     "click .clearMars": "clearMars",
     "click .stepMars": "stepMars",
     "click .runMars": "runMars",
+    "click .resetMars": "resetMars",
     "click .toggleFlash": "toggleFlash",
     "click .toggleDebug": "toggleDebug",
   },
@@ -58,6 +59,8 @@ return Backbone.View.extend({
     this.mars.on("mars:roundComplete", this.roundComplete, this);
 
 
+    this.$flash = this.$(".toggleFlash");
+    this.$runButton = this.$(".runMars");
     this.running = false;
     this.flash = false;
     this.toggleFlash();
@@ -219,10 +222,12 @@ return Backbone.View.extend({
     if (this.flash) {
       this.clockDivider = 4;
       this.clockTimeout = 10;
+      this.$flash.parent().addClass('active')
     }
     else {
       this.clockDivider = 1;
       this.clockTimeout = 70;
+      this.$flash.parent().removeClass('active')
     }
 
   },
@@ -234,6 +239,10 @@ return Backbone.View.extend({
   },
 
   stepMars: function() {
+    if (!this.roundStarted) {
+      this.mars.startMatch();
+      this.roundStarted = true;
+    }
     this.mars.executeNextStep();
   },
 
@@ -261,19 +270,19 @@ return Backbone.View.extend({
   },
 
   roundComplete: function(results) {
+    this.roundStarted = false;
     this.stopRunning();
     console.log("roundComplete", results)
   },
 
   stopRunning: function() {
     this.running = false;
-    // this.runButton.removeClass("btn-primary");
+    this.$runButton.parent().removeClass("active");
   },
   startRunning: function() {
     if (!this.running) {
       this.running = true;
-      this.mars.startMatch();
-      // this.runButton.addClass("btn-primary");
+      this.$runButton.parent().addClass("active");
     }
 
   },

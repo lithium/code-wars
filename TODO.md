@@ -4,9 +4,9 @@
 Console
 -------
 - [ ] player list
-- [ ] run/flash toggle button states
-- [ ] mars reset 
 - [ ] PC inspector
+- [ ] mars reset 
+- [x] run/flash toggle button states
 - [x] PC update on STEP
 
 - [ ] Reference View
