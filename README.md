@@ -42,6 +42,7 @@ For more details see [NOTES](NOTES.md).
 - [node-github](https://github.com/ajaxorg/node-github)
 - [Jekyll](https://github.com/mojombo/jekyll)
 - [Markdown](http://daringfireball.net/projects/markdown/)
+- [garycourt/murmurhash-js](https://github.com/garycourt/murmurhash-js)
 - [Chrome/Javascript](https://code.google.com/p/v8/)
 - [http://dailyjs.com/2012/01/26/effective-node-modules/](http://dailyjs.com/2012/01/26/effective-node-modules/)
 - [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript)

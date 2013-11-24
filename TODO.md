@@ -1,24 +1,6 @@
 
 
 
-Editing
--------
-- [ ] Script Submission
-- [ ] LocalStorage browser?
-- [x] Editor Dirty Flag
-- [x] Editor Save
-- [x] Editor close tab
-- [x] Clear compilerMessages on tab switch.
-- [x] Script Name updates Tab name
-- [x] Add new Editor
-
-Server
-------
-- [ ] Championship Hill
-- [ ] Battle Royale Hill
-- [ ] Leaderboard endpoints
-- [ ] browse users endpoint
-
 Console
 -------
 - [ ] player list
@@ -33,6 +15,25 @@ Console
 - [ ] PC update on STEP
 - [x] Memory inspector
 - [x] cleanup pc handling
+
+Server
+------
+- [ ] Championship Hill
+- [ ] Battle Royale Hill
+- [ ] Leaderboard endpoints
+- [ ] browse users endpoint
+
+Editing
+-------
+- [ ] Script Submission
+- [x] LocalStorage browser
+- [x] Editor Dirty Flag
+- [x] Editor Save
+- [x] Editor close tab
+- [x] Clear compilerMessages on tab switch.
+- [x] Script Name updates Tab name
+- [x] Add new Editor
+
 
 Mars
 ----

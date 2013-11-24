@@ -1,5 +1,5 @@
-define(['backbone','ace/ace', 'redasm', 'redscript-model', 'text!templates/editor.html'], 
-function(backbone,  ace,       RedAsm,   RedScriptModel,    editorTemplate) 
+define(['backbone','ace/ace', 'redasm', 'redscript-model', 'murmurhash', 'text!templates/editor.html'], 
+function(backbone,  ace,       RedAsm,   RedScriptModel,    murmurhash, editorTemplate) 
 {
 
 return Backbone.View.extend({
@@ -16,9 +16,11 @@ return Backbone.View.extend({
   initialize: function(options) {
     this.options = _.extend({
       'model': null,
+      'collection': null,
+      'hashSeed': 42,
     }, options || {})
 
-    this.model = this.options.model || RedScriptModel.create();
+    this.model = this.options.model || null;
 
     this.$editorPane = this.$(".pane.fileEditor")
     this.$compiledPane = this.$(".pane.compiledBytes");
@@ -42,15 +44,21 @@ return Backbone.View.extend({
     this.editor.focus();
 
 
-    this.model.on('change', this.render, this)
-    // this.model.on('destroy')
+    if (this.model) {
+      this.model.on('change', this.render, this)
+      // this.model.on('destroy')
+      this.render();
+    }
 
-    this.render();
 
     this.setDirty(false);
     this.saved = false;
   },
 
+  generateHashName: function() {
+    var hash = murmurhash(this.editor.getValue(), this.options.hashSeed);
+    return RedAsm.hexdump(hash);
+  },
 
   render: function() {
     this.editor.setValue(this.model.get('contents'));
@@ -92,6 +100,7 @@ return Backbone.View.extend({
 
   updateScriptName: function() {
     this.trigger("codewars:scriptNameChanged", this, this.scriptName())
+    this.setDirty(true);
   },
 
   editorCursorChanged: function(evt, selection) {
@@ -145,13 +154,21 @@ return Backbone.View.extend({
 
   saveScript: function() {
     var playerScript = this.editor.getValue();
-    var scriptName = this.$scriptName.val();
+    var scriptName = this.$scriptName.val().trim();
+
+    if (!scriptName) {
+      scriptName = this.generateHashName();
+    }
+
     // var form = {'name': name, 'source': playerScript}
     // $.post('/script/', form, function(data) {
     //   this.message(JSON.stringify(data));
     // })
     this.setDirty(false);
     this.saved = true;
+    if (!this.model) {
+      this.model = this.collection.add({})
+    }
     this.model.save({
       'scriptName': scriptName,
       'contents': playerScript,

@@ -19,6 +19,12 @@ require.config({
     },
     'localstorage': {
       deps: ['backbone']
+    },
+    'murmurhash': {
+      exports: 'murmurhash',
+      init: function() {
+        return murmurhash2_32_gc
+      }
     }
   },
   paths: {
@@ -37,6 +43,7 @@ require.config({
 
     'redscript-collection': 'src/collection-redscript',
     'redscript-model': 'src/model-redscript',
+    'murmurhash': 'murmurhash2_gc',
   }
 });
 

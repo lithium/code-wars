@@ -8,6 +8,7 @@ define(['backbone',
         'codewars-visualizer', 
         'codewars-inspector', 
         'codewars-storage', 
+        'redscript-collection', 
         'text!templates/console.html'], 
 function(backbone,  
          mars,  
@@ -17,6 +18,7 @@ function(backbone,
          CodeWarsVisualizer,    
          CodeWarsInspector,    
          CodeWarsStorage,    
+         RedScriptCollection,
          consoleTemplate) 
 {
 
@@ -67,10 +69,11 @@ return Backbone.View.extend({
     this.$tabContent = this.$(".editors .tab-content")
     this.editors = []
 
-    this.addEditorTab();
 
     this.$compilerMessages = this.$(".compilerMessages")
 
+
+    this.scriptCollection = new RedScriptCollection();
 
 
     this.mars = new Mars.MarsCore()
@@ -98,11 +101,20 @@ return Backbone.View.extend({
     this.visualizer.on('mars:inspectAddress', this.inspectAddress, this);
     this.inspector.on('mars:closeInspector', this.closeInspector, this);
 
-    this.storageBrowser = new CodeWarsStorage()
+    this.storageBrowser = new CodeWarsStorage({
+      'collection': this.scriptCollection,
+    })
     this.$('.storageContainer').html(this.storageBrowser.$el);
-    this.storageBrowser.addRow("foo")
+
+    this.storageBrowser.on('codewars:editScript', this.openScript, this);
+
+    this.addEditorTab();
 
     this.clearMars();
+  },
+
+  openScript: function(redScript) {
+    this.addEditorTab(redScript);
   },
 
   inspectAddress: function(mars, position, $cell) {
@@ -133,22 +145,21 @@ return Backbone.View.extend({
   },
 
 
-  addEditorTab: function(name, initialScript) {
-    var name = name || '(unnamed)';
-    var initialScript = initialScript || '';
+  addEditorTab: function(redScript) {
+    var name = redScript != null ? redScript.get("scriptName") : '(unnamed)';
 
     var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><%= tabName %> <button type="button" class="close" aria-hidden="true">&times;</button> </a></li>');
     var tab_template = _.template('<div class="tab-pane " id="editor-tab<%= tabId %>"></div>');
     var context =  {
       tabId: this.editors.length,
       tabName: name,
-      script: initialScript,
     }
     var $nav = $(nav_template(context));
     var $tab = $(tab_template(context));
 
     var editor = new CodeWarsEditor({
-      'initialScript': initialScript,
+      'collection': this.scriptCollection,
+      'model': redScript,
     })
     editor.$nav = $nav;
     editor.$tab = $tab;
@@ -161,7 +172,6 @@ return Backbone.View.extend({
     editor.on("codewars:scriptNameChanged", function(editor, newName) {
       $nav.find('a').html(newName)
     }, this);
-
 
     $nav.find('.close').on('click', _.bind(function() {
       var done = function() {
@@ -199,7 +209,6 @@ return Backbone.View.extend({
   },
   scriptDeployed: function(scriptName, compiledBytes) {
     this.animateToDebug();
-    console.log("deploy", scriptName, compiledBytes)
 
     var player = {
       'name': scriptName,
