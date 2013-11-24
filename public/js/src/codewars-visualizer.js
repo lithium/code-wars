@@ -112,10 +112,13 @@ return Backbone.View.extend({
       return;
     }
     var pos = $cell.position();
-    if (thread.$pc) {
-      thread.$pc.css('left', pos.left-2);
-      thread.$pc.css('top', pos.top-2);
+    if (!thread.$pc) {
+      thread.$pc = $('<div class="pc player'+(thread.owner.playerNumber%8)+'"></div>');
+      this.$container.append(thread.$pc);
     }
+
+    thread.$pc.css('left', pos.left-2);
+    thread.$pc.css('top', pos.top-2);
   },
 
   matchStarted: function(players) {

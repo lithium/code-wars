@@ -112,6 +112,7 @@ _.extend(Mars.MarsCore.prototype, {
     player.running = true;
 
     this.players.push(player)
+    this.remainingPlayerCount++;
 
     this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
     this.trigger("mars:memoryChanged", offset, player.compiledBytes.length, thread);

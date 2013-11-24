@@ -7,7 +7,7 @@ Console
 - [ ] run/flash toggle button states
 - [ ] mars reset 
 - [ ] PC inspector
-- [ ] PC update on STEP
+- [x] PC update on STEP
 
 - [ ] Reference View
 - [ ] Reference and Help Routes
