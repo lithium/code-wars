@@ -64,7 +64,6 @@ return Backbone.View.extend({
     for (var row=0; row < this.gridHeight; row++) {
       for (var col=0; col < this.gridWidth; col++) {
         var $cell = this.cells[row][col];
-        $cell.css("background-color", "white");
         $cell.removeClass().addClass("cell");
       }
     }
@@ -85,7 +84,6 @@ return Backbone.View.extend({
       console.log("failed to get cell for: ", address)
       return;
     }
-    $cell.css("background-color", player ? this.playerColor(player.playerNumber) : "white");
     var value = this.mars.memory[address]
     var instr = RedAsm.parseInstruction(value);
     var mneu = RedAsm.mneumonicFromOpcode(instr.opcode);
@@ -94,6 +92,8 @@ return Backbone.View.extend({
     } else {
       $cell.removeClass().addClass("cell");
     }
+    if (player)
+      $cell.addClass("player"+(player.playerNumber % 8));
   },
 
   memoryChanged: function(address, size, thread) {
@@ -108,7 +108,7 @@ return Backbone.View.extend({
   setInstructionCursor: function(thread) {
     var $cell = this.cellAt(thread.PC);
     if (!$cell) {
-      console.log("failed to get cell for: ", address)
+      console.log("failed to get cell for: ", thread.PC)
       return;
     }
     var pos = $cell.position();
@@ -126,7 +126,7 @@ return Backbone.View.extend({
       var start = player.threads[0].PC;
       var end = start+player.compiledBytes.length;
 
-      player.threads[0].$pc = $('<div class="pc player'+player.playerNumber+'"></div>');
+      player.threads[0].$pc = $('<div class="pc player'+(player.playerNumber%8)+'"></div>');
       this.$container.append(player.threads[0].$pc);
 
       while (start<end) {
@@ -138,7 +138,7 @@ return Backbone.View.extend({
   },
 
   threadSpawned: function(thread) {
-    thread.$pc = $('<div class="pc player'+thread.owner.playerNumber+'"></div>');
+    thread.$pc = $('<div class="pc player'+(thread.owner.playerNumber%8)+'"></div>');
     this.$container.append(thread.$pc);
     this.setInstructionCursor(thread)
   },

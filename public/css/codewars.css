@@ -218,7 +218,52 @@ td.actions {
   position:absolute;
 }
 .visualizer .pc.player0 {
-  border-color: #ff0000;
-}.visualizer .pc.player1 {
   border-color: #0000ff;
+}
+.visualizer .pc.player1 {
+  border-color: #ff0000;
+}
+.visualizer .pc.player2 {
+  border-color: #00ff00;
+}
+.visualizer .pc.player3 {
+  border-color: #000090;
+}
+.visualizer .pc.player4 {
+  border-color: #800000;
+}
+.visualizer .pc.player5 {
+  border-color: #009000;
+}
+.visualizer .pc.player6 {
+  border-color: #606060;
+}
+.visualizer .pc.player7 {
+  border-color: #a0a0a0;
+}
+
+
+.visualizer .cell.player0 {
+  background-color: #6060ff;
+}
+.visualizer .cell.player1 {
+  background-color: #ff6060;
+}
+.visualizer .cell.player2 {
+  background-color: #60ff60;
+}
+.visualizer .cell.player3 {
+  background-color: #606090;
+}
+.visualizer .cell.player4 {
+  background-color: #906060;
+}
+.visualizer .cell.player5 {
+  background-color: #609060;
+}
+.visualizer .cell.player6 {
+  background-color: #606060;
+}
+.visualizer .cell.player7 {
+  background-color: #909090;
 }

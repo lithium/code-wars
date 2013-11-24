@@ -4,15 +4,16 @@
 Console
 -------
 - [ ] player list
-- [ ] player memory/pc colors
 - [ ] run/flash toggle button states
 - [ ] mars reset 
 - [ ] PC inspector
+- [ ] PC update on STEP
+
 - [ ] Reference View
 - [ ] Reference and Help Routes
 - [ ] Rankings View
 - [ ] Browse View
-- [ ] PC update on STEP
+- [x] player memory/pc colors
 - [x] Memory inspector
 - [x] cleanup pc handling
 
@@ -25,6 +26,8 @@ Server
 
 Editing
 -------
+- [ ] always have one tab open
+- [ ] activate tab instead of re-open if existing
 - [ ] Script Submission
 - [x] LocalStorage browser
 - [x] Editor Dirty Flag
