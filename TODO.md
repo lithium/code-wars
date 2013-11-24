@@ -5,7 +5,7 @@ Console
 -------
 - [ ] player list
 - [ ] PC inspector
-- [ ] mars reset 
+- [x] mars reset 
 - [x] run/flash toggle button states
 - [x] PC update on STEP
 

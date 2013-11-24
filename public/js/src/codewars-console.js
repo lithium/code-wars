@@ -245,6 +245,12 @@ return Backbone.View.extend({
     }
     this.mars.executeNextStep();
   },
+  resetMars: function() {
+    this.visualizer.reset();
+    this.mars.resetMatch();
+    this.roundStarted = false;
+  },
+
 
   runMars: function() {
     if (!this.running) {

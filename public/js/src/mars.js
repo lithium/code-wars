@@ -120,7 +120,7 @@ _.extend(Mars.MarsCore.prototype, {
     this.players.push(player)
     this.remainingPlayerCount++;
 
-    this._memcpy(offset, player.compiledBytes, player.compiledBytes.length);
+    this._memcpy(memoryLocation, player.compiledBytes, player.compiledBytes.length);
     this.trigger("mars:memoryChanged", memoryLocation, player.compiledBytes.length, thread);
   },
 
@@ -142,6 +142,20 @@ _.extend(Mars.MarsCore.prototype, {
     this.currentPlayer = 0;
     this.remainingPlayerCount = this.players.length;
     this.trigger("mars:matchStarted", this.players);
+  },
+  resetMatch: function() {
+    var players = _.map(this.players, _.clone)
+
+    this.stepCount = 0;
+    this.cycleCount = 0;
+    this.players = [];
+
+    this._memset(0,0,this.options.memorySize);
+    this.trigger("mars:memoryChanged", 0, this.options.memorySize, null);
+    for (var i=0; i < players.length; i++) {
+      var player = players[i];
+      this.deployPlayer(player, player.startingLocation)
+    }
   },
 
   executeOneCycle: function(player) {
