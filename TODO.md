@@ -3,11 +3,11 @@
 
 Editing
 -------
-- [ ] Editor Dirty Flag
-- [ ] Editor Save
-- [ ] Editor close tab
 - [ ] Script Submission
 - [ ] LocalStorage browser?
+- [x] Editor Dirty Flag
+- [x] Editor Save
+- [x] Editor close tab
 - [x] Clear compilerMessages on tab switch.
 - [x] Script Name updates Tab name
 - [x] Add new Editor

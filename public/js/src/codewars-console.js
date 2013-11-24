@@ -129,7 +129,7 @@ return Backbone.View.extend({
     var name = name || '(unnamed)';
     var initialScript = initialScript || '';
 
-    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><%= tabName %></a></li>');
+    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><%= tabName %> <button type="button" class="close" aria-hidden="true">&times;</button> </a></li>');
     var tab_template = _.template('<div class="tab-pane " id="editor-tab<%= tabId %>"></div>');
     var context =  {
       tabId: this.editors.length,
@@ -154,8 +154,23 @@ return Backbone.View.extend({
       $nav.find('a').html(newName)
     }, this);
 
+
+    $nav.find('.close').on('click', _.bind(function() {
+      var done = function() {
+        $nav.remove();
+        $tab.remove();
+      }
+
+      if (editor.isDirty) {
+        this.compilerMessage('File is not saved', done)
+      }
+      else if (this.$navTabs.find('li').length > 1) {
+        done();
+      }
+    }, this));
+
     $nav.on("click", _.bind(function() {
-      this.compilerMessage('');
+      // this.compilerMessage('');
     }, this));
 
     this.$navTabs.append($nav);

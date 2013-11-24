@@ -112,6 +112,10 @@ img#loading {
 
 
 
+.pane.editors .nav li a button.close {
+  float: none;
+  font-size: 15px;
+}
 .pane.editors .button-bar {
   padding: 5px 20px;
   text-align: right;

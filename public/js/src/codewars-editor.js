@@ -22,6 +22,7 @@ return Backbone.View.extend({
     this.$compiledPane = this.$(".pane.compiledBytes");
     this.$compiledContents = this.$(".pane.compiledBytes .contents");
 
+    this.$saveButton = this.$("button.save");
 
     this.$messages = this.$(".compileMessages");
     this.$scriptName = this.$("input.scriptName");
@@ -33,12 +34,40 @@ return Backbone.View.extend({
     this.editor.setOption("firstLineNumber", 0);
 
     this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
+    this.editor.on("change", _.bind(function() {
+      this.setDirty(true);
+    }, this));
     this.editor.focus();
 
     if (this.options.initialScript) {
       this.editor.setValue(this.options.initialScript);
     }
 
+    this.setDirty(false);
+  },
+
+
+  setDirty: function(dirty) {
+    var old = this.isDirty;
+    this.isDirty = (dirty == null ? true : dirty)
+
+    if (old == this.isDirty)
+      return;
+
+    var $icon = this.$saveButton.find('.glyphicon')
+    var $label = this.$saveButton.find('.btn-label')
+
+    if (this.isDirty) {
+      $icon.removeClass().addClass('glyphicon glyphicon-floppy-disk')
+      $label.html('Save')
+      this.$saveButton.removeAttr("disabled")
+      this.$saveButton.removeClass("btn-success").addClass("btn-primary")
+    } else {
+      this.$saveButton.attr("disabled","disabled")
+      $icon.removeClass().addClass('glyphicon glyphicon-floppy-saved')
+      $label.html('Saved')
+      this.$saveButton.removeClass("btn-primary").addClass("btn-success")
+    }
   },
 
   scriptName: function() {
@@ -86,6 +115,7 @@ return Backbone.View.extend({
 
 
   saveAndCompile: function() {
+    this.setDirty(false);
     this.saveScript();
     this.compileScript();
   },
