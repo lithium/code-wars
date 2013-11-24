@@ -7,7 +7,6 @@
 // imports
 var express = require('express')
 var redis_url = require('redis-url');
-var GitHubApi = require("github");
 var engines = require("consolidate");
 var passport = require("passport");
 var GitHubStrategy = require('passport-github').Strategy;

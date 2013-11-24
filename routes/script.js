@@ -1,5 +1,5 @@
 
-var RedAsm = require('../public/src/js/redasm.js')
+var RedAsm = require('../public/js/src/redasm.js')
 var crypto = require('crypto')
 
 require('../local_settings')
