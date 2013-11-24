@@ -214,6 +214,7 @@ td.actions {
 .playerList {
   width: 90px;
   margin: auto;
+  font-size: 8px;
 }
 ul.playerList li {
   padding-left: 0;
@@ -223,14 +224,12 @@ ul.playerList li {
 ul.playerList li:nth-child(even) {
   padding-left: 8px;
 }
-.playerList p.scriptName {
-  margin: 0;
-  font-size: 8px;
-  text-align: center;
+.playerList .threads {
+  float: left;
+  width: 12px;
 }
 
 .visualizer {
-  border: 1px solid black;
   width: 1026px;
 }
 .visualizer .cell {
@@ -256,53 +255,53 @@ ul.playerList li:nth-child(even) {
   border: 2px solid orange;
   position:absolute;
 }
-.visualizer .pc.player0 {
+.pc.player0 {
   border-color: #0000ff;
 }
-.visualizer .pc.player1 {
+.pc.player1 {
   border-color: #ff0000;
 }
-.visualizer .pc.player2 {
+.pc.player2 {
   border-color: #00ff00;
 }
-.visualizer .pc.player3 {
+.pc.player3 {
   border-color: #000090;
 }
-.visualizer .pc.player4 {
+.pc.player4 {
   border-color: #800000;
 }
-.visualizer .pc.player5 {
+.pc.player5 {
   border-color: #009000;
 }
-.visualizer .pc.player6 {
+.pc.player6 {
   border-color: #606060;
 }
-.visualizer .pc.player7 {
+.pc.player7 {
   border-color: #a0a0a0;
 }
 
 
-.visualizer .cell.player0 {
+.cell.player0 {
   background-color: #6060ff;
 }
-.visualizer .cell.player1 {
+.cell.player1 {
   background-color: #ff6060;
 }
-.visualizer .cell.player2 {
+.cell.player2 {
   background-color: #60ff60;
 }
-.visualizer .cell.player3 {
+.cell.player3 {
   background-color: #606090;
 }
-.visualizer .cell.player4 {
+.cell.player4 {
   background-color: #906060;
 }
-.visualizer .cell.player5 {
+.cell.player5 {
   background-color: #609060;
 }
-.visualizer .cell.player6 {
+.cell.player6 {
   background-color: #606060;
 }
-.visualizer .cell.player7 {
+.cell.player7 {
   background-color: #909090;
 }

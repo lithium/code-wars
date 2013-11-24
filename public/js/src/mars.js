@@ -174,8 +174,9 @@ _.extend(Mars.MarsCore.prototype, {
 
     if (!this.executeInstruction(thread, instruction)) {
       thread.running = false;
+      player.runningThreadCount--;
       this.trigger("mars:threadDied", thread);
-      if (--player.runningThreadCount < 1) {
+      if (player.runningThreadCount < 1) {
         player.running = false;
         this.remainingPlayerCount--;
         player.lastCycle = this.cycleCount;

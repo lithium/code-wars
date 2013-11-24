@@ -53,6 +53,7 @@ return Backbone.View.extend({
   reset: function() {
     this.clearMemory;
     this.$container.find('.pc').remove();
+    this.$playerList.empty();
   },
 
   clearMemory: function () {
@@ -128,6 +129,7 @@ return Backbone.View.extend({
       }
       this.setInstructionCursor(player.threads[0])
 
+      player.$li.find('.threads').html(player.runningThreadCount)
     }
   },
 
@@ -135,6 +137,8 @@ return Backbone.View.extend({
     thread.$pc = $('<div class="pc player'+(thread.owner.playerNumber%8)+'"></div>');
     this.$container.append(thread.$pc);
     this.setInstructionCursor(thread)
+
+    thread.owner.$li.find('.threads').html(thread.owner.runningThreadCount)
   },
 
   threadDied: function(thread) {
@@ -142,6 +146,7 @@ return Backbone.View.extend({
       thread.$pc.remove();
       thread.$pc = null;
     }
+    thread.owner.$li.find('.threads').html(thread.owner.runningThreadCount)
   },
 
   clickCell: function(e) {
@@ -151,19 +156,22 @@ return Backbone.View.extend({
   },
 
   playerDeployed: function(player) {
-    console.log("deployed", player);
-
     var $li = $("<li></li>");
 
     var $avatar = $('<div class="identicon">'+md5(player.name)+'</div>');
     $avatar.identicon5({size:40})
     $li.append($avatar);
 
-    var $name = $('<p class="scriptName">'+player.name+'</p>')
+    var $threads = $('<div class="threads"></div>')
+    $li.append($threads);
+
+    var $name = $('<span class="scriptName">'+player.name+'</span>')
     $li.append($name);
+
 
     this.$playerList.append($li); 
 
+    player.$li = $li;
   },
 
 });
