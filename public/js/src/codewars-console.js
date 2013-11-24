@@ -28,37 +28,15 @@ return Backbone.View.extend({
   el: _.template(consoleTemplate),
 
   events: {
-    "click .btn.debug": "animateToDebug",
-    "click .btn.edit": "animateToEditor",
-    "click .btn.inspector": "animateInspector",
-
     "click .btn.newEditorTab": "newEditorTab",
 
     "click .clearMars": "clearMars",
     "click .stepMars": "stepMars",
     "click .runMars": "runMars",
     "click .toggleFlash": "toggleFlash",
+    "click .toggleDebug": "toggleDebug",
   },
 
-
-  animateToEditor: function() {
-    this.$editPane.addClass('expanded')
-    this.$debugPane.addClass('obscured')
-    this.$inspectorPane.addClass('obscured')
-  },
-  animateToDebug: function() {
-    this.$editPane.removeClass('expanded')
-    this.$debugPane.removeClass('obscured')
-  },
-  animateInspector: function() {
-    this.$inspectorPane.toggleClass('obscured')
-  },
-  openInspector: function() {
-    this.$inspectorPane.removeClass('obscured')
-  },
-  closeInspector: function() {
-    this.$inspectorPane.addClass('obscured')
-  },
 
   initialize: function() {
     this.$editPane = this.$(".pane.edit")
@@ -106,14 +84,31 @@ return Backbone.View.extend({
     })
     this.$('.storageContainer').html(this.storageBrowser.$el);
 
-    this.storageBrowser.on('codewars:editScript', this.openScript, this);
+    this.storageBrowser.on('codewars:editScript', this.openScriptInTab, this);
 
     this.addEditorTab();
 
     this.clearMars();
   },
 
-  openScript: function(redScript) {
+  openDebug: function() {
+    this.$editPane.removeClass('expanded')
+    this.$debugPane.removeClass('obscured')
+  },
+  toggleDebug: function() {
+    this.$debugPane.toggleClass('obscured')
+    this.$editPane.toggleClass('expanded')
+    if (this.$debugPane.hasClass('obscured'))
+      this.closeInspector();
+  },
+  openInspector: function() {
+    this.$inspectorPane.removeClass('obscured')
+  },
+  closeInspector: function() {
+    this.$inspectorPane.addClass('obscured')
+  },
+
+  openScriptInTab: function(redScript) {
     this.addEditorTab(redScript);
   },
 
@@ -208,7 +203,7 @@ return Backbone.View.extend({
     this.help.showHelpFor(mneumonic);
   },
   scriptDeployed: function(scriptName, compiledBytes) {
-    this.animateToDebug();
+    this.openDebug();
 
     var player = {
       'name': scriptName,

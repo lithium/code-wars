@@ -59,7 +59,7 @@ img#loading {
   overflow: hidden;
 }
 .pane.debug.obscured {
-  max-height: 0;
+  max-height: 32px;
 }
 
 .pane.inspector {
