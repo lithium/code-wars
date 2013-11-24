@@ -172,54 +172,11 @@ img#loading {
   line-height: 16px;
 }
 
-/*
 
-textarea:focus, input:focus {
-  outline: 0;
+td.actions {
+  text-align: right;
 }
 
-
-.monospace {
-  font-family: monospace;
-}
-
-.editor {
-  height: 380px;
-  overflow: hidden;
-  font-family: monospace;
-  border: 1px solid black;
-}
-
-
-
-h1 img.avatar {
-  width: 30px;
-  position: relative;
-  top: -4px;
-  margin-right: 2px;
-}
-
-
-.help.well {
-  height: 380px;
-  overflow-y: scroll;
-}
-.help.well h2 {
-  margin-top: 0;
-}
-.help.well .syntax {
-  margin: 1.3em 1em;
-  font-family: monospace;
-}
-.help.well .description {
-  margin-bottom: 1.3em;
-}
-.help.well .incorrect {
-  color: red;
-}
-
-
-*/
 .monitor .monitor-row {
   font-family: monospace;
   white-space: nowrap;

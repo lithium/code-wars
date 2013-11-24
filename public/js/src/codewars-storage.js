@@ -25,11 +25,11 @@ return Backbone.View.extend({
     var $row = $("<tr></tr>");
     var $name = $("<td>"+redScript.get("scriptName")+"</td>");
     $row.append($name);
-    $row.append("<td>"+redScript.get("mtime")+"</td>");
+    // $row.append("<td>"+redScript.get("mtime")+"</td>");
 
     redScript.$row = $row;
 
-    var $actions = $row.append("<td>"+
+    var $actions = $row.append('<td class="actions">'+
       '<button class="btn btn-link edit"><span class="glyphicon glyphicon-edit"></span></button>'+
       '<button class="btn btn-link delete"><span class="glyphicon glyphicon-trash"></span></button>'+
       '</td>');

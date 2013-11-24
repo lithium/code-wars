@@ -148,7 +148,7 @@ return Backbone.View.extend({
   addEditorTab: function(redScript) {
     var name = redScript != null ? redScript.get("scriptName") : '(unnamed)';
 
-    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><%= tabName %> <button type="button" class="close" aria-hidden="true">&times;</button> </a></li>');
+    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><span class="tabName"><%= tabName %></span> <button type="button" class="close" aria-hidden="true">&times;</button> </a></li>');
     var tab_template = _.template('<div class="tab-pane " id="editor-tab<%= tabId %>"></div>');
     var context =  {
       tabId: this.editors.length,
@@ -170,7 +170,7 @@ return Backbone.View.extend({
     editor.on("codewars:helpContext", this.helpContext, this);
     editor.on("codewars:scriptDeployed", this.scriptDeployed, this);
     editor.on("codewars:scriptNameChanged", function(editor, newName) {
-      $nav.find('a').html(newName)
+      $nav.find('a .tabName').html(newName)
     }, this);
 
     $nav.find('.close').on('click', _.bind(function() {
