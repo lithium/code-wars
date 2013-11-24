@@ -23,21 +23,23 @@ return Backbone.View.extend({
 
   addOne: function(redScript) {
     var $row = $("<tr></tr>");
-    var $name = $("<td>"+redScript.get("scriptName")+"</td>");
+
+    var $name = $('<td><a href="#">'+redScript.get("scriptName")+"</a></td>");
+    $name.find('a').on('click', _.bind(function() {
+      this.trigger("codewars:editScript", redScript);
+      return false;
+    }, this))
     $row.append($name);
     // $row.append("<td>"+redScript.get("mtime")+"</td>");
 
     redScript.$row = $row;
 
     var $actions = $row.append('<td class="actions">'+
-      '<button class="btn btn-link edit"><span class="glyphicon glyphicon-edit"></span></button>'+
       '<button class="btn btn-link delete"><span class="glyphicon glyphicon-trash"></span></button>'+
       '</td>');
-    $actions.find('.edit').on('click', _.bind(function() {
-      this.trigger("codewars:editScript", redScript);
-    }, this))
     $actions.find('.delete').on('click', _.bind(function() {
       redScript.destroy();
+      return false;
     }, this))
 
     redScript.on('change', function(model) {
