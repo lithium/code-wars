@@ -7,6 +7,7 @@ define(['backbone',
         'codewars-help', 
         'codewars-visualizer', 
         'codewars-inspector', 
+        'codewars-storage', 
         'text!templates/console.html'], 
 function(backbone,  
          mars,  
@@ -15,8 +16,11 @@ function(backbone,
          CodeWarsHelp,    
          CodeWarsVisualizer,    
          CodeWarsInspector,    
+         CodeWarsStorage,    
          consoleTemplate) 
 {
+
+
 
 return Backbone.View.extend({
   el: _.template(consoleTemplate),
@@ -93,6 +97,10 @@ return Backbone.View.extend({
     this.$('.inspectorContainer').html(this.inspector.$el)
     this.visualizer.on('mars:inspectAddress', this.inspectAddress, this);
     this.inspector.on('mars:closeInspector', this.closeInspector, this);
+
+    this.storageBrowser = new CodeWarsStorage()
+    this.$('.storageContainer').html(this.storageBrowser.$el);
+    this.storageBrowser.addRow("foo")
 
     this.clearMars();
   },

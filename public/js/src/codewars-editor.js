@@ -1,5 +1,5 @@
-define(['backbone','ace/ace', 'redasm', 'text!templates/editor.html'], 
-function(backbone,  ace,        RedAsm,   editorTemplate) 
+define(['backbone','ace/ace', 'redasm', 'redscript-model', 'text!templates/editor.html'], 
+function(backbone,  ace,       RedAsm,   RedScriptModel,    editorTemplate) 
 {
 
 return Backbone.View.extend({
@@ -15,8 +15,10 @@ return Backbone.View.extend({
 
   initialize: function(options) {
     this.options = _.extend({
-      'initialScript': "",
+      'model': null,
     }, options || {})
+
+    this.model = this.options.model || RedScriptModel.create();
 
     this.$editorPane = this.$(".pane.fileEditor")
     this.$compiledPane = this.$(".pane.compiledBytes");
@@ -39,11 +41,20 @@ return Backbone.View.extend({
     }, this));
     this.editor.focus();
 
-    if (this.options.initialScript) {
-      this.editor.setValue(this.options.initialScript);
-    }
+
+    this.model.on('change', this.render, this)
+    // this.model.on('destroy')
+
+    this.render();
 
     this.setDirty(false);
+    this.saved = false;
+  },
+
+
+  render: function() {
+    this.editor.setValue(this.model.get('contents'));
+    this.$scriptName.val(this.model.get('scriptName').trim());
   },
 
 
@@ -62,11 +73,16 @@ return Backbone.View.extend({
       $label.html('Save')
       this.$saveButton.removeAttr("disabled")
       this.$saveButton.removeClass("btn-success").addClass("btn-primary")
-    } else {
+    } else if (this.saved) {
       this.$saveButton.attr("disabled","disabled")
       $icon.removeClass().addClass('glyphicon glyphicon-floppy-saved')
       $label.html('Saved')
       this.$saveButton.removeClass("btn-primary").addClass("btn-success")
+    } else {
+      this.$saveButton.attr("disabled","disabled")
+      $icon.removeClass().addClass('glyphicon glyphicon-floppy-remove')
+      $label.html('Unsaved')
+      this.$saveButton.removeClass("btn-primary").addClass("btn-default")
     }
   },
 
@@ -115,7 +131,6 @@ return Backbone.View.extend({
 
 
   saveAndCompile: function() {
-    this.setDirty(false);
     this.saveScript();
     this.compileScript();
   },
@@ -130,13 +145,18 @@ return Backbone.View.extend({
 
   saveScript: function() {
     var playerScript = this.editor.getValue();
-    var name = this.$scriptName.val();
-    var form = {'name': name, 'source': playerScript}
-    $.post('/script/', form, function(data) {
-      this.message(JSON.stringify(data));
+    var scriptName = this.$scriptName.val();
+    // var form = {'name': name, 'source': playerScript}
+    // $.post('/script/', form, function(data) {
+    //   this.message(JSON.stringify(data));
+    // })
+    this.setDirty(false);
+    this.saved = true;
+    this.model.save({
+      'scriptName': scriptName,
+      'contents': playerScript,
     })
-
-    this.trigger("codewars:scriptSaved", name, playerScript);
+    // this.trigger("codewars:scriptSaved", scriptName, playerScript);
   },
 
   compileScript: function() {

@@ -45,6 +45,7 @@ Mars
 Content
 -------
 - [ ] Help Content
+  - [ ] Index
 - [ ] Reference Content
   - [ ] Welcome
   - [ ] Mars

@@ -17,10 +17,14 @@ require.config({
       deps: ['redasm','backbone'],
       exports: 'Mars',
     },
+    'localstorage': {
+      deps: ['backbone']
+    }
   },
   paths: {
     text: 'text.require',
     bootstrap: 'bootstrap.min',
+    localstorage: 'backbone.localStorage',
 
     'redasm': 'src/redasm',
     'mars': 'src/mars',
@@ -29,6 +33,10 @@ require.config({
     'codewars-editor': 'src/codewars-editor',
     'codewars-help': 'src/codewars-help',
     'codewars-inspector': 'src/codewars-inspector',
+    'codewars-storage': 'src/codewars-storage',
+
+    'redscript-collection': 'src/collection-redscript',
+    'redscript-model': 'src/model-redscript',
   }
 });
 
