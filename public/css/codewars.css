@@ -203,7 +203,7 @@ td.actions {
   padding-left: 8px;
   padding-right: 8px;
   overflow: auto;
-  height: 258px;
+  height: 265px;
   width: 12%;
 }
 .visualizerColumn {
@@ -223,10 +223,21 @@ ul.playerList li {
 }
 ul.playerList li:nth-child(even) {
   padding-left: 8px;
+  clear: both;
 }
 .playerList .threads {
   float: left;
-  width: 12px;
+  width: 15px;
+  margin-right: 3px;
+  padding: 1px;
+  text-align: center;
+  color: white;
+}
+.playerList .scriptName {
+  width: 20px;
+  float: left;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .visualizer {

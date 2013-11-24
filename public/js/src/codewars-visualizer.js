@@ -130,6 +130,7 @@ return Backbone.View.extend({
       this.setInstructionCursor(player.threads[0])
 
       player.$li.find('.threads').html(player.runningThreadCount)
+        .removeClass().addClass("threads cell player"+player.playerNumber);
     }
   },
 
@@ -162,11 +163,15 @@ return Backbone.View.extend({
     $avatar.identicon5({size:40})
     $li.append($avatar);
 
-    var $threads = $('<div class="threads"></div>')
-    $li.append($threads);
+    var $label = $('<div></div>')
 
-    var $name = $('<span class="scriptName">'+player.name+'</span>')
-    $li.append($name);
+    var $threads = $('<div class="threads cell player'+player.playerNumber+'">&nbsp;</div>')
+    $label.append($threads);
+
+    var $name = $('<div class="scriptName">'+player.name+'</div><div class="clearfix"></div>')
+    $label.append($name);
+
+    $li.append($label);
 
 
     this.$playerList.append($li); 
