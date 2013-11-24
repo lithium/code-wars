@@ -111,7 +111,7 @@ return Backbone.View.extend({
       return;
     }
     var pos = $cell.position();
-    if (!thread.$pc) {
+    if (!thread.$pc || !$.contains(document.body, thread.$pc[0])) {
       thread.$pc = $('<div class="pc player'+(thread.owner.playerNumber%8)+'"></div>');
       this.$container.append(thread.$pc);
     }
