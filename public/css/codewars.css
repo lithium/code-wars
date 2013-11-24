@@ -199,6 +199,36 @@ td.actions {
 
 
 
+.playerColumn {
+  padding-left: 8px;
+  padding-right: 8px;
+  overflow: auto;
+  height: 258px;
+  width: 12%;
+}
+.visualizerColumn {
+  width: 88%;
+  padding-left: 0;
+}
+
+.playerList {
+  width: 90px;
+  margin: auto;
+}
+ul.playerList li {
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 10px;
+}
+ul.playerList li:nth-child(even) {
+  padding-left: 8px;
+}
+.playerList p.scriptName {
+  margin: 0;
+  font-size: 8px;
+  text-align: center;
+}
+
 .visualizer {
   border: 1px solid black;
   width: 1026px;

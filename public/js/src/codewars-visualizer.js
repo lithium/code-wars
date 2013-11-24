@@ -154,9 +154,14 @@ return Backbone.View.extend({
     console.log("deployed", player);
 
     var $li = $("<li></li>");
-    var $avatar = $('<span class="identicon">'+md5(player.name)+'</span>');
-    $avatar.identicon5({size:32})
+
+    var $avatar = $('<div class="identicon">'+md5(player.name)+'</div>');
+    $avatar.identicon5({size:40})
     $li.append($avatar);
+
+    var $name = $('<p class="scriptName">'+player.name+'</p>')
+    $li.append($name);
+
     this.$playerList.append($li); 
 
   },
