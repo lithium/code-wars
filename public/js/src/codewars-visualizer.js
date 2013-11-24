@@ -87,10 +87,9 @@ return Backbone.View.extend({
     var value = this.mars.memory[address]
     var instr = RedAsm.parseInstruction(value);
     var mneu = RedAsm.mneumonicFromOpcode(instr.opcode);
+    $cell.removeClass().addClass("cell");
     if (mneu) {
       $cell.addClass(mneu.toLowerCase());
-    } else {
-      $cell.removeClass().addClass("cell");
     }
     if (player)
       $cell.addClass("player"+(player.playerNumber % 8));
@@ -128,9 +127,6 @@ return Backbone.View.extend({
       var player = this.players[i];
       var start = player.threads[0].PC;
       var end = start+player.compiledBytes.length;
-
-      player.threads[0].$pc = $('<div class="pc player'+(player.playerNumber%8)+'"></div>');
-      this.$container.append(player.threads[0].$pc);
 
       while (start<end) {
         this.touchMemoryLocation(start++, player);
