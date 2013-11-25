@@ -3,11 +3,11 @@
 
 Console
 -------
-- [ ] Reference and Help Routes
 - [ ] Rankings View
 - [ ] Browse View
 - [ ] PC inspector
 - [ ] Player inspector
+- [x] Reference and Help Routes
 - [x] player list
 - [x] mars reset 
 - [x] run/flash toggle button states

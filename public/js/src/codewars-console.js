@@ -93,8 +93,8 @@ return Backbone.View.extend({
 
     this.storageBrowser.on('codewars:editScript', this.openScriptInTab, this);
 
-    this.addEditorTab();
 
+    this.addEditorTab();
     this.clearMars();
   },
 

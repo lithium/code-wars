@@ -45,6 +45,7 @@ require.config({
 
     'redasm': 'src/redasm',
     'mars': 'src/mars',
+
     'codewars-console': 'src/codewars-console',
     'codewars-visualizer': 'src/codewars-visualizer',
     'codewars-editor': 'src/codewars-editor',
@@ -54,14 +55,21 @@ require.config({
 
     'redscript-collection': 'src/collection-redscript',
     'redscript-model': 'src/model-redscript',
+
+    'router-help': 'src/router-help'
+
   }
 });
 
 
-requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars-console'], 
-  function(text,   $,       ace,      bootstrap,  underscore,  backbone,   CodeWarsConsole) {
+requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars-console', 'router-help'], 
+  function(text,   $,       ace,      bootstrap,  underscore,  backbone,   CodeWarsConsole,    HelpRouter) {
 
     $(function() {
+      var router = new HelpRouter();
+      Backbone.history.start();
+
+
       window.application = new CodeWarsConsole();
       if (window.userProfile) {
         window.application.login(window.userProfile);
