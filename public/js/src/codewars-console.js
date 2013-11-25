@@ -73,9 +73,11 @@ return Backbone.View.extend({
     this.$('.visualizerContainer').html(this.visualizer.$el)
 
 
-    this.help = new CodeWarsHelp()
+    this.help = new CodeWarsHelp({'templateName': 'help'})
     this.$('.helpContainer').html(this.help.$el)
 
+    this.reference = new CodeWarsHelp({'templateName': 'reference'})
+    this.$('.referenceContainer').html(this.reference.$el)
 
     this.inspector = new CodeWarsInspector({
       'mars': this.mars,

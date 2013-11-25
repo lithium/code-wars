@@ -3,17 +3,16 @@
 
 Console
 -------
+- [ ] Reference and Help Routes
+- [ ] Rankings View
+- [ ] Browse View
 - [ ] PC inspector
 - [ ] Player inspector
 - [x] player list
 - [x] mars reset 
 - [x] run/flash toggle button states
 - [x] PC update on STEP
-
-- [ ] Reference View
-- [ ] Reference and Help Routes
-- [ ] Rankings View
-- [ ] Browse View
+- [x] Reference View
 - [x] player memory/pc colors
 - [x] Memory inspector
 - [x] cleanup pc handling
@@ -21,9 +20,9 @@ Console
 Server
 ------
 - [ ] Championship Hill
-- [ ] Battle Royale Hill
-- [ ] Leaderboard endpoints
 - [ ] browse users endpoint
+- [ ] Leaderboard endpoints
+- [ ] Battle Royale Hill
 
 Editing
 -------
@@ -42,10 +41,10 @@ Editing
 
 Mars
 ----
-- [x] Round Scoring
-- [x] Match Scoring
 - [ ] 52-bit packing
 - [ ] pre/post inc/dec adressing
+- [x] Round Scoring
+- [x] Match Scoring
 
 
 Content
