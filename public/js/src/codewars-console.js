@@ -135,10 +135,11 @@ return Backbone.View.extend({
       $h1.append(this.profile.username);
     }
 
-    if (this.profile.script) {
-      this.editor.setValue(this.profile.script.source);
-      this.scriptName.val(this.profile.script.scriptName);
-    }
+    console.log("profile script", this.profile.script)
+    // if (this.profile.script) {
+      // this.editor.setValue(this.profile.script.source);
+      // this.scriptName.val(this.profile.script.scriptName);
+    // }
   },
 
   login: function(profile) {
