@@ -238,6 +238,21 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
   advancePC: function(thread, offset) { 
+    if (this.postops) {
+      for (var i=0; i < this.postops.length; i++) {
+        var op = this.postops[i][0];
+        var addr = this.postops[i][1]
+        if (op == RedAsm.ADDR_MODE_INDIRECT_POSTDEC) {
+          this.memory[addr]--;
+        }
+        else
+        if (op == RedAsm.ADDR_MODE_INDIRECT_POSTINC) {
+          this.memory[addr]++;
+        }
+      }
+
+      this.postops = []
+    }
     var offset = offset != null ? offset : 1;
     this.loadPC(thread, thread.PC+offset);
   },
@@ -248,6 +263,9 @@ _.extend(Mars.MarsCore.prototype, {
 
 
   executeInstruction: function(thread, word) {
+
+    this.postops = [];
+
     var instruction = RedAsm.parseInstruction(word)
     switch (instruction.opcode) {
       case RedAsm.OPCODE_MOV:
@@ -405,14 +423,33 @@ _.extend(Mars.MarsCore.prototype, {
     if (mode == RedAsm.ADDR_MODE_RELATIVE) {
       return addr;
     }
+
+    //resolve indirect address
+
     if (mode == RedAsm.ADDR_MODE_INDIRECT) {
       addr = (PC+this.memory[addr]) % this.options.memorySize;
-      if (addr < 0)
-        addr += this.options.memorySize;
-      return addr
     } 
+    else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREDEC) {
+      addr = (PC+(--this.memory[addr])) % this.options.memorySize;
+    }
+    else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREINC) {
+      addr = (PC+(++this.memory[addr])) % this.options.memorySize;
+    }
+    else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTDEC) {
+      this.postops.push([RedAsm.ADDR_MODE_INDIRECT_POSTDEC, addr])
+      addr = (PC+(this.memory[addr])) % this.options.memorySize;
+    }
+    else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTINC) {
+      this.postops.push([RedAsm.ADDR_MODE_INDIRECT_POSTINC, addr])
+      addr = (PC+(this.memory[addr])) % this.options.memorySize;
+    }
+    else {
+      return null;
+    }
 
-    return null
+    if (addr < 0)
+      addr += this.options.memorySize;
+    return addr
   },
   resolveValue: function(PC, operand, mode) {
     if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {

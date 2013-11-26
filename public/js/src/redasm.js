@@ -22,6 +22,10 @@ _.extend(RedAsm, {
   ADDR_MODE_IMMEDIATE: 0,
   ADDR_MODE_RELATIVE: 1,
   ADDR_MODE_INDIRECT: 2,
+  ADDR_MODE_INDIRECT_PREDEC: 3,
+  ADDR_MODE_INDIRECT_PREINC: 4,
+  ADDR_MODE_INDIRECT_POSTDEC: 5,
+  ADDR_MODE_INDIRECT_POSTINC: 6,
 });
 
 _.extend(RedAsm, {
@@ -75,7 +79,29 @@ RedAsm.compile = function(assembly_string) {
     var rel;
 
     if (/^\*/.test(operand)) { // indirect addressing
-      return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
+      var operand = operand.slice(1)
+      var mode = RedAsm.ADDR_MODE_INDIRECT;
+      if (/^--/.test(operand)) {
+        mode = RedAsm.ADDR_MODE_INDIRECT_PREDEC
+      }
+      else
+      if (/^\+\+/.test(operand)) {
+        mode = RedAsm.ADDR_MODE_INDIRECT_PREINC
+      }
+      else
+      if (/--$/.test(operand)) {
+        mode = RedAsm.ADDR_MODE_INDIRECT_POSTDEC
+      }
+      else
+      if (/\+\+$/.test(operand)) {
+        mode = RedAsm.ADDR_MODE_INDIRECT_POSTINC
+      }
+      operand = operand.replace(/[-+]+/g,'').trim()
+      var rel = resolveRelative(operand)
+      if (rel == null)
+        return null;
+      return [mode, rel];
+      // return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
     } 
     else if (/^(0x|-)?\d+/.test(operand)) { // immediate
       return [RedAsm.ADDR_MODE_IMMEDIATE, parseInt(operand)];
@@ -409,6 +435,14 @@ RedAsm.decorateAddressing = function(mode, value) {
     return "("+value+")";
   else if (mode == RedAsm.ADDR_MODE_INDIRECT)
     return "*("+value+")";
+  else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREINC)
+    return "*++("+value+")";
+  else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREDEC)
+    return "*--("+value+")";
+  else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTINC)
+    return "*("+value+")++";
+  else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTDEC)
+    return "*("+value+")--";
   return value;
 }
 
