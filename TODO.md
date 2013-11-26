@@ -28,7 +28,7 @@ Server
 Editing
 -------
 - [ ] activate tab instead of re-open if existing
-- [ ] dont show empty tab if close current tab
+- [x] dont show empty tab if close current tab
 - [x] Script Submission
 - [x] dont compile/deploy empty script
 - [x] LocalStorage browser

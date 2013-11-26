@@ -189,10 +189,14 @@ return Backbone.View.extend({
     }, this);
 
     $nav.find('.close').on('click', _.bind(function() {
-      var done = function() {
+      var done = _.bind(function() {
+        var wasActive = $nav.hasClass("active");
         $nav.remove();
         $tab.remove();
-      }
+        if (wasActive) {
+          this.$navTabs.find('a:last').tab('show')
+        }
+      }, this);
 
       if (editor.isDirty) {
         this.compilerMessage('File is not saved', done)
