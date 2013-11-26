@@ -316,3 +316,9 @@ ul.playerList li:nth-child(even) {
 .cell.player7 {
   background-color: #909090;
 }
+
+
+.message h1 .avatar {
+  width: auto;
+  height: 40px;
+}

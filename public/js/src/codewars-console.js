@@ -139,11 +139,15 @@ return Backbone.View.extend({
       var $h1 = this.$('h1')
       $h1.empty();
       $h1.append("> Welcome ");
-      if (this.profile.avatar)
-        $h1.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
       $h1.append(this.profile.username);
 
-      console.log("profile script", this.profile.script)
+      var $login = this.$('login')
+      $login.empty()
+      if (this.profile.avatar) {
+        $login.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
+      }
+      $login.append(this.profile.username)
+
       if (this.profile.script && this.playerScriptEditor) {
         this.playerScriptEditor.setValue(this.profile.script.source);
         this.playerScriptEditor.setName(this.profile.script.scriptName);
