@@ -318,7 +318,7 @@ ul.playerList li:nth-child(even) {
 }
 
 
-.message h1 .avatar {
+.login .avatar {
   width: auto;
-  height: 40px;
+  height: 32px;
 }
