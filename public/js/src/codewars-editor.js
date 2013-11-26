@@ -6,7 +6,7 @@ return Backbone.View.extend({
   el: _.template(editorTemplate),
 
   events: {
-    "click .btn.save": "saveAndCompile",
+    "click .btn.save": "saveScript",
     "click .btn.compile": "compileScript",
     "click .btn.deploy": "deployScript",
     "click .pane.compiledBytes .close": "closeCompilePane",
@@ -21,6 +21,15 @@ return Backbone.View.extend({
     }, options || {})
 
     this.model = this.options.model || null;
+    if (this.model) {
+      this.model.on('change', this.render, this)
+      // this.model.on('destroy')
+    } else if (this.collection) {
+      this.model = this.collection.add({})
+    } else {
+      this.model = new RedScriptModel()
+    }
+
 
     this.$editorPane = this.$(".pane.fileEditor")
     this.$compiledPane = this.$(".pane.compiledBytes");
@@ -44,15 +53,12 @@ return Backbone.View.extend({
     this.editor.focus();
 
 
-    if (this.model) {
-      this.model.on('change', this.render, this)
-      // this.model.on('destroy')
-      this.render();
-    }
 
 
     this.setDirty(false);
     this.saved = false;
+
+    this.render();
   },
 
   generateHashName: function() {
@@ -163,19 +169,36 @@ return Backbone.View.extend({
       scriptName = this.generateHashName();
     }
 
-    // var form = {'name': name, 'source': playerScript}
-    // $.post('/script/', form, function(data) {
-    //   this.message(JSON.stringify(data));
-    // })
-    this.setDirty(false);
-    this.saved = true;
-    if (!this.model) {
-      this.model = this.collection.add({})
+    var form = {'name': scriptName, 'source': playerScript}
+
+    var done = _.bind(function() { 
+      this.saved = true;
+      this.setDirty(false);
+    }, this);
+
+
+    // HACK!
+    if (this.model.localStorage || (this.model.collection && this.model.collection.localStorage)) { 
+      this.model.save(form);
+      done();
+    } else {
+      $.ajax({
+        type: "POST",
+        url: '/script/',
+        data: form,
+        success: function(data) {
+          // this.message(JSON.stringify(data));
+          done();
+        },
+        error: _.bind(function(xhr) {
+          console.log("error", arguments)
+          this.message("Save Error: "+xhr.responseText)
+        }, this),
+      });
+
     }
-    this.model.save({
-      'scriptName': scriptName,
-      'contents': playerScript,
-    })
+
+
     // this.trigger("codewars:scriptSaved", scriptName, playerScript);
   },
 
@@ -230,6 +253,14 @@ return Backbone.View.extend({
       this.$editorPane.toggleClass("col-md-12 col-md-9")
       this.compiledShown = false;
     }
+  },
+
+  setValue: function(contents) {
+    this.model.set({'contents': contents})
+  },
+
+  setName: function(name) {
+    this.model.set({'scriptName': name})
   },
 
 

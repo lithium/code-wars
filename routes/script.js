@@ -21,7 +21,7 @@ app.post('/script',
     } else if (req.user && req.user.username) {
       username = req.user.username;
     } else {
-      res.send("Must authenticate via github first.");
+      res.status(403).send("Must authenticate via github first.");
       return;
     }  
 

@@ -27,9 +27,9 @@ Server
 
 Editing
 -------
-- [ ] always have one tab open
 - [ ] activate tab instead of re-open if existing
-- [ ] Script Submission
+- [ ] dont show empty tab if close current tab
+- [x] Script Submission
 - [x] dont compile/deploy empty script
 - [x] LocalStorage browser
 - [x] Editor Dirty Flag

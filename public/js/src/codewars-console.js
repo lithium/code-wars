@@ -94,7 +94,10 @@ return Backbone.View.extend({
     this.storageBrowser.on('codewars:editScript', this.openScriptInTab, this);
 
 
-    this.addEditorTab();
+    this.playerScript = new this.scriptCollection.model()
+    this.playerScript.set('scriptName', 'Player Script')
+    this.playerScriptEditor = this.addEditorTab(this.playerScript, true);
+    
     this.clearMars();
   },
 
@@ -125,37 +128,42 @@ return Backbone.View.extend({
   },
 
   render: function() {
-    var $h1 = this.$('h1')
+
+  },
+
+  login: function(profile) {
+    this.profile = profile;
+
 
     if (this.profile) {
+      var $h1 = this.$('h1')
       $h1.empty();
       $h1.append("> Welcome ");
       if (this.profile.avatar)
         $h1.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
       $h1.append(this.profile.username);
+
+      console.log("profile script", this.profile.script)
+      if (this.profile.script && this.playerScriptEditor) {
+        this.playerScriptEditor.setValue(this.profile.script.source);
+        this.playerScriptEditor.setName(this.profile.script.scriptName);
+      }
     }
 
-    console.log("profile script", this.profile.script)
-    // if (this.profile.script) {
-      // this.editor.setValue(this.profile.script.source);
-      // this.scriptName.val(this.profile.script.scriptName);
-    // }
-  },
 
-  login: function(profile) {
-    this.profile = profile;
-    this.render();
   },
 
 
-  addEditorTab: function(redScript) {
+  addEditorTab: function(redScript, hideCloseButton) {
     var name = redScript != null ? redScript.get("scriptName") : '(unnamed)';
+    var hideCloseButton = hideCloseButton != null ? hideCloseButton : false;
 
-    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><span class="tabName"><%= tabName %></span> <button type="button" class="close" aria-hidden="true">&times;</button> </a></li>');
+    var nav_template = _.template('<li><a href="#editor-tab<%= tabId %>" data-toggle="tab"><span class="tabName"><%= tabName %></span><% if (close) { %> <button type="button" class="close" aria-hidden="true">&times;</button> <% } %></a></li>');
     var tab_template = _.template('<div class="tab-pane " id="editor-tab<%= tabId %>"></div>');
     var context =  {
       tabId: this.editors.length,
       tabName: name,
+      close: !hideCloseButton,
     }
     var $nav = $(nav_template(context));
     var $tab = $(tab_template(context));
@@ -202,6 +210,7 @@ return Backbone.View.extend({
       this.compilerMessage('');
     }, this))
 
+    return editor;
   },
 
   compilerMessage: function(msg, type) {
