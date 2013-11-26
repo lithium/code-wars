@@ -27,6 +27,7 @@ Server
 
 Editing
 -------
+- [ ] submit script via localstorage model.
 - [x] activate tab instead of re-open if existing
 - [x] dont show empty tab if close current tab
 - [x] Script Submission
