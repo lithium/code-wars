@@ -253,6 +253,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_MOV:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (address == null || value == null)
+          return false
 
         this.loadMemory(address, value, thread);
         this.advancePC(thread);
@@ -261,6 +263,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_ADD:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (address == null || value == null)
+          return false
 
         this.loadMemory(address, this.memory[address] + value, thread);
         this.advancePC(thread);
@@ -269,6 +273,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_SUB:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (address == null || value == null)
+          return false
         
         this.loadMemory(address, this.memory[address] - value, thread);
         this.advancePC(thread);
@@ -277,6 +283,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_MUL:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (address == null || value == null)
+          return false
         
         this.loadMemory(address, this.memory[address] * value, thread);
         this.advancePC(thread);
@@ -285,6 +293,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_DIV:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (address == null || value == null)
+          return false
         
         this.loadMemory(address, this.memory[address] / value, thread);
         this.advancePC(thread);
@@ -293,6 +303,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_MOD:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
         var value = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (address == null || value == null)
+          return false
         
         this.loadMemory(address, this.memory[address] % value, thread);
         this.advancePC(thread);
@@ -301,6 +313,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_SEQ:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (op1 == null || op1 == null)
+          return false
 
         if (op1 == op2) {
           this.advancePC(thread, 2);
@@ -312,6 +326,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_SNE:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (op1 == null || op1 == null)
+          return false
 
         if (op1 != op2) {
           this.advancePC(thread, 2);
@@ -323,6 +339,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_SLT:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (op1 == null || op1 == null)
+          return false
 
         if (op1 < op2) {
           this.advancePC(thread, 2);
@@ -334,6 +352,8 @@ _.extend(Mars.MarsCore.prototype, {
       case RedAsm.OPCODE_SGE:
         var op1 = this.resolveValue(thread.PC, instruction.operand1, instruction.mode1)
         var op2 = this.resolveValue(thread.PC, instruction.operand2, instruction.mode2)
+        if (op1 == null || op1 == null)
+          return false
 
         if (op1 >= op2) {
           this.advancePC(thread, 2);
@@ -344,12 +364,16 @@ _.extend(Mars.MarsCore.prototype, {
 
       case RedAsm.OPCODE_JMP:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        if (address == null)
+          return false
 
         this.loadPC(thread, address);
         return true;
 
       case RedAsm.OPCODE_FORK:
         var address = this.resolveAddress(thread.PC, instruction.operand1, instruction.mode1)
+        if (address == null)
+          return false
 
         var threadCount = thread.owner.threads.length;
         if (threadCount < this.options.maxThreads) {
