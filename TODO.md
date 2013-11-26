@@ -43,7 +43,7 @@ Editing
 
 Mars
 ----
-- [ ] 52-bit packing
+- [x] 52-bit packing
 - [ ] pre/post inc/dec adressing
 - [x] Round Scoring
 - [x] Match Scoring

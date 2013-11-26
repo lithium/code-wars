@@ -332,12 +332,29 @@ RedAsm.disassemble = function(compiledBytes) {
   return rows;
 }
 
+
+
+/*
+
+  Instructions are 34-bit words packed into a Number.
+  Since bitwise operators are 32 bits only, we pack
+  a 30 bit and 22 bit word into a signed Number.
+
+  4-bits:  Instruction
+  3-bits:  Operand1 Mode
+  3-bits:  Operand2 Mode
+  12-bits: Operand1 Value
+  12-bits: Operand2 Value
+ */
+
 RedAsm.parseInstruction = function(instruction) {
-  var opcode = (instruction & 0xF0000000)>>>28;
-  var mode1 =  (instruction & 0x0C000000)>>>26;
-  var mode2 =  (instruction & 0x03000000)>>>24;
-  var operand1 = (instruction & 0x00FFF000)>>>12;
-  var operand2 = (instruction & 0x00000FFF);
+  var lo = RedAsm.int52_lo(instruction);
+  var hi = RedAsm.int52_hi(instruction);
+  var opcode = hi & 0xF;                    // 30..33
+  var mode1 = (lo & 0x38000000) >>> 27;     // 27..29
+  var mode2 = (lo & 0x07000000) >>> 24;     // 24..26
+  var operand1 = (lo & 0x00FFF000) >>> 12;  // 12..23
+  var operand2 = (lo & 0x00000FFF) >>> 0;   //  0..11 
 
   return {
     'opcode': opcode,
@@ -348,18 +365,22 @@ RedAsm.parseInstruction = function(instruction) {
   }
 }
 RedAsm.encodeInstruction = function(instruction) {
+  var hi = instruction.opcode & 0xF;
+  var lo = 0;
 
-  var outbyte = instruction.opcode<<28;
-  //addressing mode for first operand bits 27,26
-  outbyte |= (instruction.mode1&0x3)<<26;
-  //addressing mode for first operand bits 25,24
-  outbyte |= (instruction.mode2&0x3)<<24;
-  //first operand bits 12..23
-  outbyte |= (instruction.operand1&0x0fff)<<12;
-  //second operand bits 0..11
-  outbyte |= (instruction.operand2&0x0fff);
+  //bits 27..29 -- mode1
+  lo |= (instruction.mode1 & 0x7) << 27;
 
-  return outbyte;
+  //bits 24..26 -- mode2
+  lo |= (instruction.mode2 & 0x7) << 24;
+
+  //bits 12..23 -- value1
+  lo |= (instruction.operand1 & 0xFFF) << 12;
+
+  //bits 0..11 -- value2
+  lo |= (instruction.operand2 & 0xFFF) << 0;
+
+  return RedAsm.int52(lo, hi);
 }
 
 RedAsm.signedCast12 = function(number) {
@@ -398,4 +419,25 @@ RedAsm.mneumonicFromOpcode = function(opcode) {
     }
   }
   return null;
+}
+
+
+
+/*
+ * int52_lo(n)
+ *  Given a Number, return the low order 30 bits.
+ */
+RedAsm.int52_lo = function(n) {
+  return n & 0x3fffffff;
+}
+/*
+ * int52_hi(n)
+ *  Given a Number, return the high order 22 bits.
+ */
+RedAsm.int52_hi = function(n) {
+  return (n - (n & 0x3fffffff)) / 0x40000000;
+}
+
+RedAsm.int52 = function(lo, hi) {
+  return (hi & 0x3fffff) * 0x40000000 + (lo & 0x3fffffff);
 }
