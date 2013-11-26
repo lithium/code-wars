@@ -48,7 +48,8 @@ return Backbone.View.extend({
 
     this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
     this.editor.on("change", _.bind(function() {
-      this.setDirty(this.editor.getValue() != this.model.get('contents'))
+      var value = this.editor.getValue()
+      this.setDirty(value && (value != this.model.get('contents')))
     }, this));
     this.editor.focus();
 
