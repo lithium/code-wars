@@ -7,6 +7,7 @@ Console
 - [ ] Browse View
 - [ ] PC inspector
 - [ ] Player inspector
+- [ ] cycle/step count
 - [x] Reference and Help Routes
 - [x] player list
 - [x] mars reset 
@@ -26,10 +27,10 @@ Server
 
 Editing
 -------
-- [ ] dont compile/deploy empty script
 - [ ] always have one tab open
 - [ ] activate tab instead of re-open if existing
 - [ ] Script Submission
+- [x] dont compile/deploy empty script
 - [x] LocalStorage browser
 - [x] Editor Dirty Flag
 - [x] Editor Save

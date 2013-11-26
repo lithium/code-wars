@@ -156,6 +156,9 @@ return Backbone.View.extend({
     var playerScript = this.editor.getValue();
     var scriptName = this.$scriptName.val().trim();
 
+    if (playerScript.trim().length < 1) 
+      return false;
+
     if (!scriptName) {
       scriptName = this.generateHashName();
     }
@@ -178,8 +181,11 @@ return Backbone.View.extend({
 
   compileScript: function() {
     var script = this.editor.getValue();
-    var result = RedAsm.compile(script);
 
+    if (script.trim().length < 1) 
+      return false;
+
+    var result = RedAsm.compile(script);
     if (result.success) {
       this.compiledBytes = result.compiledBytes;
       var disasm = RedAsm.disassemble(result.compiledBytes);
