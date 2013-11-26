@@ -141,7 +141,7 @@ return Backbone.View.extend({
       $h1.append("> Welcome ");
       $h1.append(this.profile.username);
 
-      var $login = this.$('login')
+      var $login = this.$('.login')
       $login.empty()
       if (this.profile.avatar) {
         $login.append( $('<img class="avatar" src="'+this.profile.avatar+'">') );
