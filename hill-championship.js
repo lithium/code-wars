@@ -6,14 +6,16 @@ var redis = redis_url.connect(redistogo_url);
 Backbone = require('backbone')
 _ = require('underscore')
 
-RedAsm = require('./public/src/js/redasm')
-var Mars = require('./public/src/js/mars')
+RedAsm = require('./public/js/src/redasm')
+var Mars = require('./public/js/src/mars')
 
-var core = new Mars.MarsCore()
+var core = new Mars.MarsCore({
+  'maxCycles': 80000,
+})
 
 
-var NUM_ROUNDS = 10;
-var match_count = -1;
+var NUM_ROUNDS = 1;
+var match_count = 0;
 
 var done = function(results) {
 
@@ -23,7 +25,7 @@ var done = function(results) {
 
       for (var i=0; i < results[r].players.length; i++) {
         var player = results[r].players[i];
-        console.log("  place:"+i, "player #"+player.playerNumber, player.username, player.lastCycle );
+        console.log("  player #"+player.playerNumber, player.username, player.score );
       }
     }
   }
@@ -32,7 +34,13 @@ var done = function(results) {
     process.exit();
 }
 
+var already_run = {}
+
 redis.smembers("scripts", function(err,scripts) {
+  if (scripts.length == 0) {
+    console.log("no scripts.");
+    done()
+  }
 
   match_count = (scripts.length)*(scripts.length-1);
 
@@ -61,10 +69,15 @@ redis.smembers("scripts", function(err,scripts) {
           redis.get(iKey, function(err,iScript){
             redis.get(jKey, function(err,jScript){
               var results;
+
+              if (match_key in already_run) {
+                done();
+              }
+
               if (iScript && jScript) {
                 results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
               }
-              // console.log("results", iScript,jScript)
+              already_run[match_key] = true
               done(results);
 
             })

@@ -30,15 +30,14 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
 
-  runMatch: function(players, numRounds) {
+  runBattle: function(players, numRounds) {
     // run numRounds of Rounds between all players, 
     // randomizing order/starting position each Round.
     var results = []
     var matchRunning;
-    var roundResults;
-    this.on("mars:roundComplete", function(results) {
+    this.on("mars:roundComplete", function(roundResults) {
       matchRunning = false;
-      roundResults = results;
+      results.push(_.clone(roundResults));
     })
     for (var i=0; i < numRounds; i++) {
       this.startMatch(players);
@@ -46,25 +45,26 @@ _.extend(Mars.MarsCore.prototype, {
       while (matchRunning) {
         this.executeNextStep();
       }
-      results.push(_.clone(roundResults));
+      this.reset();
     }
 
-    return this.aggregateMatchResults(players, results);
+
+    // return results;
+    return this.aggregateMatchResults(results);
   },
 
 
-  aggregateMatchResults: function(players, results) {
+  aggregateMatchResults: function(results) {
     var scores = {
       'results': results,
       'numRounds': results.length,
-    }
-    for (var p=0; p < players.length; p++) {
-      scores[players[p].name] = 0;
     }
     for (var i=0; i < results.length; i++) {
       var roundResult = results[i];
       for (var p=0; p < roundResult.players; p++) {
         var player = roundResult.players[p]
+        if (!player.name in scores)
+          scores[player.name] = 0;
         scores[player.name] += player.score
       }
     }
@@ -126,7 +126,13 @@ _.extend(Mars.MarsCore.prototype, {
     this.trigger("mars:playerDeployed",  player);
   },
 
-  startMatch: function() {
+  startMatch: function(players) {
+
+    if (players) {
+      for (var p=0; p < players.length; p++) {
+        this.deployPlayer(players[p]);
+      }
+    }
 
     this.players = _.shuffle(this.players);
 
@@ -203,8 +209,8 @@ _.extend(Mars.MarsCore.prototype, {
 
     this.stepCount++;
 
-    if ((this.options.maxSteps && this.stepCount >= this.options.maxSteps) ||
-        (this.options.maxCycles && this.cycleCount >= this.options.maxCycles) || 
+    if ((this.options.maxSteps && (this.stepCount >= this.options.maxSteps)) ||
+        (this.options.maxCycles && (this.cycleCount >= this.options.maxCycles)) || 
         (this.remainingPlayerCount < this.options.minPlayers))
     {
       var score = (this.players.length*(this.players.length-1)) / this.remainingPlayerCount;
