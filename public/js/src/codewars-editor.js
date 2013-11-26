@@ -48,7 +48,7 @@ return Backbone.View.extend({
 
     this.editor.selection.on("changeCursor", _.bind(this.editorCursorChanged, this));
     this.editor.on("change", _.bind(function() {
-      this.setDirty(true);
+      this.setDirty(this.editor.getValue() != this.model.get('contents'))
     }, this));
     this.editor.focus();
 
@@ -169,8 +169,6 @@ return Backbone.View.extend({
       scriptName = this.generateHashName();
     }
 
-    var form = {'name': scriptName, 'source': playerScript}
-
     var done = _.bind(function() { 
       this.saved = true;
       this.setDirty(false);
@@ -179,13 +177,16 @@ return Backbone.View.extend({
 
     // HACK!
     if (this.model.localStorage || (this.model.collection && this.model.collection.localStorage)) { 
-      this.model.save(form);
+      this.model.save({
+        'scriptName': scriptName,
+        'contents': playerScript
+      });
       done();
     } else {
       $.ajax({
         type: "POST",
         url: '/script/',
-        data: form,
+        data: {'name': scriptName, 'source': playerScript},
         success: function(data) {
           // this.message(JSON.stringify(data));
           done();

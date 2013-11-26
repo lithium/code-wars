@@ -43,7 +43,7 @@ return Backbone.View.extend({
     }, this))
 
     redScript.on('change', function(model) {
-      $name.html(model.get("scriptName"))
+      $name.find('a').html(model.get("scriptName"))
     })
 
     this.$el.append($row);
