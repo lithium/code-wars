@@ -93,6 +93,7 @@ return Backbone.View.extend({
 
     this.storageBrowser.on('codewars:editScript', this.openScriptInTab, this);
 
+    this.openEditors = {}
 
     this.playerScript = new this.scriptCollection.model()
     this.playerScript.set('scriptName', 'Player Script')
@@ -119,7 +120,16 @@ return Backbone.View.extend({
   },
 
   openScriptInTab: function(redScript) {
-    this.addEditorTab(redScript);
+    if (redScript.cid in this.openEditors) {
+      var $editor = this.openEditors[redScript.cid];
+      if ($.contains(document.body, $editor.$nav)) {
+        $editor.$nav.find('a').tab("show");
+        return;
+      }
+    }
+    
+    var $editor = this.addEditorTab(redScript);
+    this.openEditors[redScript.cid] = $editor;
   },
 
   inspectAddress: function(mars, position, $cell) {
