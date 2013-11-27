@@ -4,7 +4,6 @@
 Console
 -------
 - [ ] Rankings View
-- [ ] Browse View
 - [ ] PC inspector
 - [ ] Player inspector
 - [ ] cycle/step count
@@ -21,9 +20,7 @@ Console
 Server
 ------
 - [ ] Championship Hill
-- [ ] browse users endpoint
 - [ ] Leaderboard endpoints
-- [ ] Battle Royale Hill
 
 Editing
 -------
@@ -43,8 +40,10 @@ Editing
 
 Mars
 ----
+- [ ] jz/jnz
+- [ ] relative pre/post/inc/dec
 - [x] 52-bit packing
-- [ ] pre/post inc/dec adressing
+- [x] pre/post inc/dec adressing
 - [x] Round Scoring
 - [x] Match Scoring
 
@@ -66,3 +65,10 @@ Content
   - [ ] Scissors
   - [ ] CoreWar
   - [ ] RedCode
+
+
+Cut for time
+------------
+- [ ] Battle Royale Hill
+- [ ] browse users endpoint
+- [ ] Browse users View
