@@ -16,8 +16,10 @@ _.extend(RedAsm, {
   OPCODE_SEQ: 8,
   OPCODE_SLT: 9,
   OPCODE_SGE: 0xA,
-  OPCODE_JMP:  0xB,
-  OPCODE_FORK: 0xC,
+  OPCODE_JZ:  0xB,
+  OPCODE_JNZ: 0xC,
+  OPCODE_JMP: 0xD,
+  OPCODE_FORK:0xE,
 
   ADDR_MODE_IMMEDIATE: 0,
   ADDR_MODE_RELATIVE: 1,
@@ -40,6 +42,8 @@ _.extend(RedAsm, {
     'SNE': RedAsm.OPCODE_SNE,
     'SLT': RedAsm.OPCODE_SLT,
     'SGE': RedAsm.OPCODE_SGE,
+    'JZ': RedAsm.OPCODE_JZ,
+    'JNZ': RedAsm.OPCODE_JNZ,
     'JMP': RedAsm.OPCODE_JMP,
     'FORK': RedAsm.OPCODE_FORK,
   }
@@ -166,9 +170,15 @@ RedAsm.compile = function(assembly_string) {
       lineNumber++;
       continue;
     }
-    else
-    if (token == "halt") {
-
+    else if (token == "jz") {
+      instruction.opcode = RedAsm.OPCODE_JZ;
+      firstOperand = tokens[1];
+      secondOperand = tokens[2];
+    }
+    else if (token == "jnz") {
+      instruction.opcode = RedAsm.OPCODE_JNZ;
+      firstOperand = tokens[1];
+      secondOperand = tokens[2];
     }
     else if (token == "jmp") {
       instruction.opcode = RedAsm.OPCODE_JMP;
@@ -277,7 +287,7 @@ RedAsm.decompileToRedcode = function(compiledBytes) {
       stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i]>>>0,8)
     } else {
       //the only ones without operand2 are: JMP(0xB), FORK(0xC)
-      if (instruction.opcode < 0xB)
+      if (instruction.opcode < RedAsm.OPCODE_JMP)
         stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2))+",";
       stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
     }
@@ -322,6 +332,12 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
         break;
       case RedAsm.OPCODE_SGE:
         rows.push("if "+op1+" >= "+op2+"\n  ")
+        break;
+      case RedAsm.OPCODE_JZ:
+        rows.push("jz "+op1+", "+op2+"\n");
+        break;
+      case RedAsm.OPCODE_JNZ:
+        rows.push("jnz "+op1+", "+op2+"\n");
         break;
       case RedAsm.OPCODE_JMP:
         rows.push("jmp "+op1+"\n");

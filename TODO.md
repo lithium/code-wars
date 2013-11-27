@@ -40,8 +40,8 @@ Editing
 
 Mars
 ----
-- [ ] jz/jnz
 - [ ] relative pre/post/inc/dec
+- [x] jz/jnz
 - [x] 52-bit packing
 - [x] pre/post inc/dec adressing
 - [x] Round Scoring

@@ -362,6 +362,34 @@ _.extend(Mars.MarsCore.prototype, {
         }
         return true;
 
+      case RedAsm.OPCODE_JZ:
+        var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2)
+        if (address == null)
+          return false
+
+        if (value == 0) {
+          this.loadPC(thread, address);
+        }
+        else {
+          this.advancePC(thread);
+        }
+        return true;
+
+      case RedAsm.OPCODE_JNZ:
+        var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2)
+        if (address == null)
+          return false
+
+        if (value != 0) {
+          this.loadPC(thread, address);
+        }
+        else {
+          this.advancePC(thread);
+        }
+        return true;
+
       case RedAsm.OPCODE_JMP:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1)
         if (address == null)
