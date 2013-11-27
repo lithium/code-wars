@@ -25,10 +25,11 @@ _.extend(RedAsm, {
   ADDR_MODE_RELATIVE:  1,
   ADDR_MODE_INDIRECT:  2,
 
-  ADDR_MODE_PRE_DEC:   0,
-  ADDR_MODE_PRE_INC:   1,
-  ADDR_MODE_POST_DEC:  2,
-  ADDR_MODE_POST_INC:  3,
+  ADDR_MODE_NO_INCDEC: 0,
+  ADDR_MODE_PRE_DEC:   1,
+  ADDR_MODE_PRE_INC:   2,
+  ADDR_MODE_POST_DEC:  3,
+  ADDR_MODE_POST_INC:  4,
 });
 
 _.extend(RedAsm, {
@@ -71,7 +72,7 @@ RedAsm.compile = function(assembly_string) {
 
   var resolveRelative = function(operand) {
     var ret = {
-      'incdec': null,
+      'incdec': 0,
       'value': null,
     }
 
@@ -110,7 +111,7 @@ RedAsm.compile = function(assembly_string) {
   var resolveOperand = function(operand) {
     var ret = {
       'mode': null,
-      'incdec': null,
+      'incdec': 0,
       'value': null,
     }
     var rel;
@@ -286,7 +287,7 @@ RedAsm.compile = function(assembly_string) {
       }
     }
 
-    console.log("instruction", instruction)
+    // console.log("instruction", instruction)
     output.push( RedAsm.encodeInstruction(instruction) );
     lineNumber++;
 
@@ -310,8 +311,8 @@ RedAsm.decompileToRedcode = function(compiledBytes) {
     } else {
       //the only ones without operand2 are: JMP(0xB), FORK(0xC)
       if (instruction.opcode < RedAsm.OPCODE_JMP)
-        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2))+",";
-      stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2), instruction.incdec2)+",";
+      stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1), instruction.incdec1);
     }
     rows.push(stmt);
   }
@@ -322,8 +323,8 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
-    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1));
-    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2));
+    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1), instruction.incdec1);
+    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2), instruction.incdec2);
     switch (instruction.opcode) {
       case RedAsm.OPCODE_MOV:
         rows.push(op1+" = "+op2+"\n")
@@ -400,22 +401,22 @@ RedAsm.disassemble = function(compiledBytes) {
 
 /*
 
-  Instructions are 42-bit words packed into a Number .
+  Instructions are 46-bit words packed into a Number .
   Since bitwise operators are 32 bits only, and Number has
   0..+2^52, we pack a 30 bit and 22 bit word into a Number
 
   4-bits:  Instruction
-  4-bits:  Operand1 Mode
-  4-bits:  Operand2 Mode
+  6-bits:  Operand1 Mode
+  6-bits:  Operand2 Mode
   15-bits: Operand1 Value
   15-bits: Operand2 Value
 
 |------ upper 22 bits ------| 
  00 0000 0000 0000 0000 0000   
-              1111                      opcode    0x000f00
-                   11                   incdec1   0x0000C0
-                     11                 mode1     0x000030
-                        11              incdec2   0x00000C
+         1111                           opcode    0x00f000
+               111                      incdec1   0x000700
+                    111                 incdec2   0x000070
+                        11              mode1     0x00000C
                           11            mode2     0x000003
 
 |----------- lower 30 bits -----------|
@@ -428,10 +429,10 @@ RedAsm.disassemble = function(compiledBytes) {
 RedAsm.parseInstruction = function(instruction) {
   var lo = RedAsm.int52_lo(instruction);
   var hi = RedAsm.int52_hi(instruction);
-  var opcode    = (hi & 0xF00) >>> 8;                    
-  var incdec1   = (hi & 0x0C0) >>> 6;
-  var mode1     = (hi & 0x030) >>> 4;
-  var incdec2   = (hi & 0x00C) >>> 2;
+  var opcode    = (hi & 0xF000) >>> 12;                    
+  var incdec1   = (hi & 0x0700) >>> 8;
+  var incdec2   = (hi & 0x0070) >>> 4;
+  var mode1     = (hi & 0x00C) >>> 2;
   var mode2     = (hi & 0x003) >>> 0;
   var operand1  = (lo & 0x3FFF8000) >>> 15;
   var operand2  = (lo & 0x00007FFF) >>> 0;
@@ -450,10 +451,10 @@ RedAsm.encodeInstruction = function(instruction) {
   var hi = 0;
   var lo = 0;
 
-  hi |= (instruction.opcode & 0xF) << 8;
-  hi |= (instruction.incdec1 & 0x3) << 6;
-  hi |= (instruction.mode1 & 0x3) << 4;
-  hi |= (instruction.incdec2 & 0x3) << 2;
+  hi |= (instruction.opcode & 0xF) << 12;
+  hi |= (instruction.incdec1 & 0x7) << 8;
+  hi |= (instruction.incdec2 & 0x7) << 4;
+  hi |= (instruction.mode1 & 0x3) << 2;
   hi |= (instruction.mode2 & 0x3);
 
   lo |= (instruction.operand1 & 0x7FFF) << 15;
@@ -481,22 +482,26 @@ RedAsm.hexdump = function(number, padding) {
   return out;
 }
 
-RedAsm.decorateAddressing = function(mode, value) {
+RedAsm.decorateAddressing = function(mode, value, incdec) {
   if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
     return "0x"+parseInt(value).toString(16);
-  else if (mode == RedAsm.ADDR_MODE_RELATIVE)
-    return "("+value+")";
-  else if (mode == RedAsm.ADDR_MODE_INDIRECT)
-    return "*("+value+")";
-  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREINC)
-  //   return "*++("+value+")";
-  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREDEC)
-  //   return "*--("+value+")";
-  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTINC)
-  //   return "*("+value+")++";
-  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTDEC)
-  //   return "*("+value+")--";
-  return value;
+
+  var ret = "("+value+")";
+  if (incdec == RedAsm.ADDR_MODE_PRE_DEC) {
+    ret = "--"+ret;
+  }
+  else if (incdec == RedAsm.ADDR_MODE_PRE_INC) {
+    ret = "++"+ret;
+  }
+  else if (incdec == RedAsm.ADDR_MODE_POST_DEC) {
+    ret = ret+"--";
+  }
+  else if (incdec == RedAsm.ADDR_MODE_POST_INC) {
+    ret = ret+"++";
+  }
+  if (mode == RedAsm.ADDR_MODE_INDIRECT)
+    ret = "*"+ret;
+  return ret;
 }
 
 RedAsm.mneumonicFromOpcode = function(opcode) {
