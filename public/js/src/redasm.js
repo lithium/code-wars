@@ -378,25 +378,36 @@ RedAsm.disassemble = function(compiledBytes) {
 
 /*
 
-  Instructions are 34-bit words packed into a Number.
-  Since bitwise operators are 32 bits only, we pack
-  a 30 bit and 22 bit word into a signed Number.
+  Instructions are 42-bit words packed into a Number .
+  Since bitwise operators are 32 bits only, and Number has
+  0..+2^52, we pack a 30 bit and 22 bit word into a Number
 
   4-bits:  Instruction
-  3-bits:  Operand1 Mode
-  3-bits:  Operand2 Mode
-  12-bits: Operand1 Value
-  12-bits: Operand2 Value
+  4-bits:  Operand1 Mode
+  4-bits:  Operand2 Mode
+  15-bits: Operand1 Value
+  15-bits: Operand2 Value
+
+|------ upper 22 bits ------| 
+ 00 0000 0000 0000 0000 0000   
+              1111                      opcode    0x000f00
+                   1111                 mode1     0x0000f0
+                        1111            mode2     0x00000f
+
+|----------- lower 30 bits -----------|
+ 00 0000 0000 0000 0000 0000 0000 0000  
+ 11 1111 1111 1111 1                    operand1  0x3fff8000
+                    111 1111 1111 1111  operand2  0x00007fff
  */
 
 RedAsm.parseInstruction = function(instruction) {
   var lo = RedAsm.int52_lo(instruction);
   var hi = RedAsm.int52_hi(instruction);
-  var opcode = hi & 0xF;                    // 30..33
-  var mode1 = (lo & 0x38000000) >>> 27;     // 27..29
-  var mode2 = (lo & 0x07000000) >>> 24;     // 24..26
-  var operand1 = (lo & 0x00FFF000) >>> 12;  // 12..23
-  var operand2 = (lo & 0x00000FFF) >>> 0;   //  0..11 
+  var opcode = (hi & 0xF00) >>> 8;                    
+  var mode1 = (hi & 0x0F0) >>> 4;
+  var mode2 = (hi & 0x00F) >>> 0;
+  var operand1 = (lo & 0x3FFF8000) >>> 15;
+  var operand2 = (lo & 0x00007FFF) >>> 0;
 
   return {
     'opcode': opcode,
@@ -407,20 +418,15 @@ RedAsm.parseInstruction = function(instruction) {
   }
 }
 RedAsm.encodeInstruction = function(instruction) {
-  var hi = instruction.opcode & 0xF;
+  var hi = 0;
   var lo = 0;
 
-  //bits 27..29 -- mode1
-  lo |= (instruction.mode1 & 0x7) << 27;
+  hi |= (instruction.opcode & 0xF) << 8;
+  hi |= (instruction.mode1 & 0xF) << 4;
+  hi |= (instruction.mode2 & 0xF);
 
-  //bits 24..26 -- mode2
-  lo |= (instruction.mode2 & 0x7) << 24;
-
-  //bits 12..23 -- value1
-  lo |= (instruction.operand1 & 0xFFF) << 12;
-
-  //bits 0..11 -- value2
-  lo |= (instruction.operand2 & 0xFFF) << 0;
+  lo |= (instruction.operand1 & 0x7FFF) << 15;
+  lo |= (instruction.operand2 & 0x7FFF) << 0;
 
   return RedAsm.int52(lo, hi);
 }
