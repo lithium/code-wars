@@ -22,12 +22,13 @@ _.extend(RedAsm, {
   OPCODE_FORK:0xE,
 
   ADDR_MODE_IMMEDIATE: 0,
-  ADDR_MODE_RELATIVE: 1,
-  ADDR_MODE_INDIRECT: 2,
-  ADDR_MODE_INDIRECT_PREDEC: 3,
-  ADDR_MODE_INDIRECT_PREINC: 4,
-  ADDR_MODE_INDIRECT_POSTDEC: 5,
-  ADDR_MODE_INDIRECT_POSTINC: 6,
+  ADDR_MODE_RELATIVE:  1,
+  ADDR_MODE_INDIRECT:  2,
+
+  ADDR_MODE_PRE_DEC:   0,
+  ADDR_MODE_PRE_INC:   1,
+  ADDR_MODE_POST_DEC:  2,
+  ADDR_MODE_POST_INC:  3,
 });
 
 _.extend(RedAsm, {
@@ -69,48 +70,66 @@ RedAsm.compile = function(assembly_string) {
 
 
   var resolveRelative = function(operand) {
+    var ret = {
+      'incdec': null,
+      'value': null,
+    }
+
+    if (/^--/.test(operand)) {
+      ret.incdec = RedAsm.ADDR_MODE_PRE_DEC
+    }
+    else
+    if (/^\+\+/.test(operand)) {
+      ret.incdec = RedAsm.ADDR_MODE_PRE_INC;
+    }
+    else
+    if (/--$/.test(operand)) {
+      ret.incdec = RedAsm.ADDR_MODE_POST_DEC;
+    }
+    else
+    if (/\+\+$/.test(operand)) {
+      ret.incdec = RedAsm.ADDR_MODE_POST_INC;
+    }
+    operand = operand.replace(/[-+]+/g,'').trim()
+
+
     if (/\(/.test(operand)) {
       operand = operand.replace(/[()]/g,'')
-      return parseInt(operand);
+      ret.value = parseInt(operand);
+      return ret;
     } else if (operand in symbolTable) {  // relative via label
       var address = symbolTable[operand];
-      return address - lineNumber;
+      ret.value = address - lineNumber;
+      return ret;
     }
+
+    //invalid
     return null;
   }
 
   var resolveOperand = function(operand) {
+    var ret = {
+      'mode': null,
+      'incdec': null,
+      'value': null,
+    }
     var rel;
 
     if (/^\*/.test(operand)) { // indirect addressing
       var operand = operand.slice(1)
-      var mode = RedAsm.ADDR_MODE_INDIRECT;
-      if (/^--/.test(operand)) {
-        mode = RedAsm.ADDR_MODE_INDIRECT_PREDEC
-      }
-      else
-      if (/^\+\+/.test(operand)) {
-        mode = RedAsm.ADDR_MODE_INDIRECT_PREINC
-      }
-      else
-      if (/--$/.test(operand)) {
-        mode = RedAsm.ADDR_MODE_INDIRECT_POSTDEC
-      }
-      else
-      if (/\+\+$/.test(operand)) {
-        mode = RedAsm.ADDR_MODE_INDIRECT_POSTINC
-      }
-      operand = operand.replace(/[-+]+/g,'').trim()
-      var rel = resolveRelative(operand)
-      if (rel == null)
+      ret = resolveRelative(operand);
+      if (ret == null)
         return null;
-      return [mode, rel];
-      // return [RedAsm.ADDR_MODE_INDIRECT, resolveRelative(operand.slice(1))];
+      ret.mode = RedAsm.ADDR_MODE_INDIRECT;
+      return ret;
     } 
     else if (/^(0x|-)?\d+/.test(operand)) { // immediate
-      return [RedAsm.ADDR_MODE_IMMEDIATE, parseInt(operand)];
-    } else if ((rel = resolveRelative(operand)) != null) { // relative address
-      return [RedAsm.ADDR_MODE_RELATIVE, rel];
+      ret.mode = RedAsm.ADDR_MODE_IMMEDIATE
+      ret.value = parseInt(operand)
+      return ret;
+    } else if ((ret = resolveRelative(operand)) != null) { // relative address
+      ret.mode = RedAsm.ADDR_MODE_RELATIVE;
+      return ret;
     }
     return null;
   };
@@ -247,8 +266,9 @@ RedAsm.compile = function(assembly_string) {
 
       var a = resolveOperand(firstOperand)
       if (a) {
-        instruction.mode1 = a[0];
-        instruction.operand1 = a[1];
+        instruction.mode1 = a.mode;
+        instruction.operand1 = a.value;
+        instruction.incdec1 = a.incdec;
       } else {
         return {
           'success': false,
@@ -260,11 +280,13 @@ RedAsm.compile = function(assembly_string) {
     if (secondOperand) {
       var b = resolveOperand(secondOperand)
       if (b) {
-        instruction.mode2 = b[0];
-        instruction.operand2 = b[1];
+        instruction.mode2 = b.mode;
+        instruction.operand2 = b.value;
+        instruction.incdec2 = b.incdec;
       }
     }
 
+    console.log("instruction", instruction)
     output.push( RedAsm.encodeInstruction(instruction) );
     lineNumber++;
 
@@ -391,23 +413,28 @@ RedAsm.disassemble = function(compiledBytes) {
 |------ upper 22 bits ------| 
  00 0000 0000 0000 0000 0000   
               1111                      opcode    0x000f00
-                   1111                 mode1     0x0000f0
-                        1111            mode2     0x00000f
+                   11                   incdec1   0x0000C0
+                     11                 mode1     0x000030
+                        11              incdec2   0x00000C
+                          11            mode2     0x000003
 
 |----------- lower 30 bits -----------|
  00 0000 0000 0000 0000 0000 0000 0000  
  11 1111 1111 1111 1                    operand1  0x3fff8000
                     111 1111 1111 1111  operand2  0x00007fff
+
  */
 
 RedAsm.parseInstruction = function(instruction) {
   var lo = RedAsm.int52_lo(instruction);
   var hi = RedAsm.int52_hi(instruction);
-  var opcode = (hi & 0xF00) >>> 8;                    
-  var mode1 = (hi & 0x0F0) >>> 4;
-  var mode2 = (hi & 0x00F) >>> 0;
-  var operand1 = (lo & 0x3FFF8000) >>> 15;
-  var operand2 = (lo & 0x00007FFF) >>> 0;
+  var opcode    = (hi & 0xF00) >>> 8;                    
+  var incdec1   = (hi & 0x0C0) >>> 6;
+  var mode1     = (hi & 0x030) >>> 4;
+  var incdec2   = (hi & 0x00C) >>> 2;
+  var mode2     = (hi & 0x003) >>> 0;
+  var operand1  = (lo & 0x3FFF8000) >>> 15;
+  var operand2  = (lo & 0x00007FFF) >>> 0;
 
   return {
     'opcode': opcode,
@@ -415,6 +442,8 @@ RedAsm.parseInstruction = function(instruction) {
     'mode2': mode2,
     'operand1': operand1,
     'operand2': operand2,
+    'incdec1': incdec1,
+    'incdec2': incdec2,
   }
 }
 RedAsm.encodeInstruction = function(instruction) {
@@ -422,11 +451,13 @@ RedAsm.encodeInstruction = function(instruction) {
   var lo = 0;
 
   hi |= (instruction.opcode & 0xF) << 8;
-  hi |= (instruction.mode1 & 0xF) << 4;
-  hi |= (instruction.mode2 & 0xF);
+  hi |= (instruction.incdec1 & 0x3) << 6;
+  hi |= (instruction.mode1 & 0x3) << 4;
+  hi |= (instruction.incdec2 & 0x3) << 2;
+  hi |= (instruction.mode2 & 0x3);
 
   lo |= (instruction.operand1 & 0x7FFF) << 15;
-  lo |= (instruction.operand2 & 0x7FFF) << 0;
+  lo |= (instruction.operand2 & 0x7FFF);
 
   return RedAsm.int52(lo, hi);
 }
@@ -457,14 +488,14 @@ RedAsm.decorateAddressing = function(mode, value) {
     return "("+value+")";
   else if (mode == RedAsm.ADDR_MODE_INDIRECT)
     return "*("+value+")";
-  else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREINC)
-    return "*++("+value+")";
-  else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREDEC)
-    return "*--("+value+")";
-  else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTINC)
-    return "*("+value+")++";
-  else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTDEC)
-    return "*("+value+")--";
+  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREINC)
+  //   return "*++("+value+")";
+  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_PREDEC)
+  //   return "*--("+value+")";
+  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTINC)
+  //   return "*("+value+")++";
+  // else if (mode == RedAsm.ADDR_MODE_INDIRECT_POSTDEC)
+  //   return "*("+value+")--";
   return value;
 }
 
