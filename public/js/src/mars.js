@@ -191,13 +191,16 @@ _.extend(Mars.MarsCore.prototype, {
     }
     this.cycleCount++;
 
+
+    var failsafe = player.threads.length;
     do {
       player.currentThread = ++player.currentThread % player.threads.length;
-    } while (player.runningThreadCount > 0 && !player.threads[player.currentThread].running);
+    } while (--failsafe && player.runningThreadCount > 0 && !player.threads[player.currentThread].running);
 
+    var failsafe = player.threads.length;
     do {
       this.currentPlayer = ++this.currentPlayer % this.players.length;
-    } while (this.remainingPlayerCount > 0 && this.players[this.currentPlayer].runningThreadCount < 1);
+    } while (--failsafe && this.remainingPlayerCount > 0 && this.players[this.currentPlayer].runningThreadCount < 1);
   },
   executeNextStep: function() {
     if (this.remainingPlayerCount < 1)
