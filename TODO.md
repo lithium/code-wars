@@ -1,30 +1,7 @@
 
-
-
-Console
--------
-- [ ] Rankings View
-- [ ] PC inspector
-- [ ] Player inspector
-- [ ] cycle/step count
-- [x] Reference and Help Routes
-- [x] player list
-- [x] mars reset 
-- [x] run/flash toggle button states
-- [x] PC update on STEP
-- [x] Reference View
-- [x] player memory/pc colors
-- [x] Memory inspector
-- [x] cleanup pc handling
-
-Server
-------
-- [ ] Championship Hill
-- [ ] Leaderboard endpoints
-
 Editing
 -------
-- [ ] submit script via localstorage model.
+- [ ] explicit submit script via localstorage model.
 - [x] activate tab instead of re-open if existing
 - [x] dont show empty tab if close current tab
 - [x] Script Submission
@@ -37,7 +14,6 @@ Editing
 - [x] Script Name updates Tab name
 - [x] Add new Editor
 
-
 Mars
 ----
 - [ ] relative pre/post/inc/dec
@@ -46,6 +22,29 @@ Mars
 - [x] pre/post inc/dec adressing
 - [x] Round Scoring
 - [x] Match Scoring
+
+Server
+------
+- [ ] Championship Hill
+- [ ] Leaderboard endpoints
+
+
+Console
+-------
+- [ ] cycle/step count
+- [ ] Rankings View
+- [ ] PC inspector
+- [ ] Player inspector
+- [x] Reference and Help Routes
+- [x] player list
+- [x] mars reset 
+- [x] run/flash toggle button states
+- [x] PC update on STEP
+- [x] Reference View
+- [x] player memory/pc colors
+- [x] Memory inspector
+- [x] cleanup pc handling
+
 
 
 Content
