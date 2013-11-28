@@ -1,7 +1,7 @@
 
 Editing
 -------
-- [ ] explicit submit script via localstorage model.
+- [ ] explicit submit script.
 - [x] activate tab instead of re-open if existing
 - [x] dont show empty tab if close current tab
 - [x] Script Submission
@@ -16,7 +16,7 @@ Editing
 
 Mars
 ----
-- [ ] relative pre/post/inc/dec
+- [x] relative pre/post/inc/dec
 - [x] jz/jnz
 - [x] 52-bit packing
 - [x] pre/post inc/dec adressing
@@ -31,6 +31,7 @@ Server
 
 Console
 -------
+- [ ] final insrtuction icons: fork, jz,jnz, sge
 - [ ] cycle/step count
 - [ ] Rankings View
 - [ ] PC inspector
