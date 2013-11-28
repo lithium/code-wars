@@ -51,6 +51,9 @@ return Backbone.View.extend({
 
     this.$compilerMessages = this.$(".compilerMessages")
 
+    this.$stepCount = this.$(".stepCount")
+    this.$cycleCount = this.$(".cycleCount")
+
 
     this.scriptCollection = new RedScriptCollection();
 
@@ -267,6 +270,8 @@ return Backbone.View.extend({
     this.stopRunning();
     this.mars.reset();
     this.visualizer.reset();
+    this.$stepCount.html(0)
+    this.$cycleCount.html(0)
   },
 
   stepMars: function() {
@@ -275,12 +280,18 @@ return Backbone.View.extend({
       this.roundStarted = true;
     }
     this.mars.executeNextStep();
+
+
+    this.$stepCount.html(this.mars.stepCount)
+    this.$cycleCount.html(this.mars.cycleCount)
   },
   resetMars: function() {
     this.stopRunning();
     this.visualizer.reset();
     this.mars.resetMatch();
     this.roundStarted = false;
+    this.$stepCount.html(0)
+    this.$cycleCount.html(0)
   },
 
 

@@ -1,4 +1,27 @@
 
+Server
+------
+- [ ] Championship Hill
+- [ ] Leaderboard endpoints
+
+
+Console
+-------
+- [ ] Rankings View
+- [ ] PC inspector
+- [ ] round results
+- [x] cycle/step count
+- [x] final insrtuction icons: fork, jz,jnz, sge
+- [x] Reference and Help Routes
+- [x] player list
+- [x] mars reset 
+- [x] run/flash toggle button states
+- [x] PC update on STEP
+- [x] Reference View
+- [x] player memory/pc colors
+- [x] Memory inspector
+- [x] cleanup pc handling
+
 Editing
 -------
 - [x] explicit submit script.
@@ -22,29 +45,6 @@ Mars
 - [x] pre/post inc/dec adressing
 - [x] Round Scoring
 - [x] Match Scoring
-
-Server
-------
-- [ ] Championship Hill
-- [ ] Leaderboard endpoints
-
-
-Console
--------
-- [ ] cycle/step count
-- [ ] Rankings View
-- [ ] PC inspector
-- [ ] Player inspector
-- [x] final insrtuction icons: fork, jz,jnz, sge
-- [x] Reference and Help Routes
-- [x] player list
-- [x] mars reset 
-- [x] run/flash toggle button states
-- [x] PC update on STEP
-- [x] Reference View
-- [x] player memory/pc colors
-- [x] Memory inspector
-- [x] cleanup pc handling
 
 
 

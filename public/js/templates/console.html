@@ -43,6 +43,7 @@
             <li class=""><a href="#contextUsers" data-toggle="tab"><span class="glyphicon glyphicon-user"></span></a></li>
             <li class=""><a href="#contextStorage" data-toggle="tab"><span class="glyphicon glyphicon-briefcase"></span></a></li>
           </ul>
+
         </div>
         <div class="panel-body">
           <div class="tab-content">
@@ -69,14 +70,24 @@
   <div class="row pane debug obscured">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <ul class="nav nav-pills">
-          <li><a href="#" class="toggleDebug"><span class="glyphicon glyphicon-resize-vertical"></span></a></li>
-          <li><a href="#" class="resetMars"><span class="glyphicon glyphicon-refresh" title="Reset"></span></a></li>
-          <li><a href="#" class="clearMars"><span class="glyphicon glyphicon-ban-circle" title="Clear"></span></a></li>
-          <li><a href="#" class="toggleFlash"><span class="glyphicon glyphicon-flash" title="Flash"></span></a></li>
-          <li><a href="#" class="runMars"><span class="glyphicon glyphicon-play" title="Run"></span></a></li>
-          <li><a href="#" class="stepMars"><span class="glyphicon glyphicon-fast-forward" title="Step Once"></span></a></li>
-        </ul>
+        <div class="row">
+          <div class="col-md-3">
+            <ul class="nav nav-pills">
+              <li><a href="#" class="toggleDebug"><span class="glyphicon glyphicon-resize-vertical"></span></a></li>
+              <li><a href="#" class="resetMars"><span class="glyphicon glyphicon-refresh" title="Reset"></span></a></li>
+              <li><a href="#" class="clearMars"><span class="glyphicon glyphicon-ban-circle" title="Clear"></span></a></li>
+              <li><a href="#" class="toggleFlash"><span class="glyphicon glyphicon-flash" title="Flash"></span></a></li>
+              <li><a href="#" class="runMars"><span class="glyphicon glyphicon-play" title="Run"></span></a></li>
+              <li><a href="#" class="stepMars"><span class="glyphicon glyphicon-fast-forward" title="Step Once"></span></a></li>
+            </ul>
+          </div>
+          <div class="col-md-2 counters">
+            <p>Step: <span class="stepCount">0</span></p>
+          </div>
+          <div class="col-md-2 counters">
+            <p>Cycle: <span class="cycleCount">0</span></p>
+          </div>
+        </div>
       </div>
       <div class="panel-body">
         <div class="visualizerContainer"> </div>
