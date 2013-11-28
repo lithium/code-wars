@@ -95,9 +95,8 @@ return Backbone.View.extend({
 
     this.openEditors = {}
 
-    this.playerScript = new this.scriptCollection.model()
-    this.playerScript.set('scriptName', 'Player Script')
-    this.playerScriptEditor = this.addEditorTab(this.playerScript, true);
+    this.playerScript = this.scriptCollection.add()
+    this.playerScriptEditor = this.addEditorTab(this.playerScript);
     
     this.clearMars();
   },

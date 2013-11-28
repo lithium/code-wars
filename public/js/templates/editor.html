@@ -1,17 +1,20 @@
 
 <div class="row">
 
-  <div class="col-md-8">
+  <div class="col-md-6">
     <input class="form-control input-sm scriptName" type="text" placeholder="script name...">
   </div>
-  <div class="col-md-4 button-bar ">
+  <div class="col-md-6 button-bar ">
+      <button type="button" class="btn btn-xs btn-default submit" disabled="disabled"> 
+        <span class="glyphicon glyphicon-open"></span> <span class="btn-label">Submit</span>
+      </button>
 
       <button type="button" class="btn btn-xs btn-default save" disabled="disabled"> 
         <span class="glyphicon glyphicon-floppy-remove"></span> <span class="btn-label">unsaved</span>
       </button>
 
       <button type="button" class="btn btn-xs btn-default compile"> 
-        <span class="glyphicon glyphicon-import"></span> Compile 
+        <span class="glyphicon glyphicon-save"></span> Compile 
       </button>
 
       <button type="button" class="btn btn-xs btn-default deploy"> 

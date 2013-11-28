@@ -24,7 +24,7 @@ return Backbone.View.extend({
   addOne: function(redScript) {
     var $row = $("<tr></tr>");
 
-    var $name = $('<td><a href="#">'+redScript.get("scriptName")+"</a></td>");
+    var $name = $('<td><a href="#">'+(redScript.get("scriptName") || '(unnamed)')+"</a></td>");
     $name.find('a').on('click', _.bind(function() {
       this.trigger("codewars:editScript", redScript);
       return false;

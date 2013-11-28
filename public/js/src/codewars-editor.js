@@ -6,6 +6,7 @@ return Backbone.View.extend({
   el: _.template(editorTemplate),
 
   events: {
+    "click .btn.submit": "submitScript",
     "click .btn.save": "saveScript",
     "click .btn.compile": "compileScript",
     "click .btn.deploy": "deployScript",
@@ -36,6 +37,7 @@ return Backbone.View.extend({
     this.$compiledContents = this.$(".pane.compiledBytes .contents");
 
     this.$saveButton = this.$("button.save");
+    this.$submitButton = this.$("button.submit");
 
     this.$messages = this.$(".compileMessages");
     this.$scriptName = this.$("input.scriptName");
@@ -170,38 +172,35 @@ return Backbone.View.extend({
       scriptName = this.generateHashName();
     }
 
-    var done = _.bind(function() { 
-      this.saved = true;
-      this.setDirty(false);
-    }, this);
+    this.model.save({
+      'scriptName': scriptName,
+      'contents': playerScript
+    });
+    this.saved = true;
+    this.setDirty(false);
+  },
 
+  submitScript: function() {
+    var playerScript = this.editor.getValue();
+    var scriptName = this.$scriptName.val().trim();
+    if (playerScript.trim().length < 1) 
+      return false;
+ 
+    $.ajax({
+      type: "POST",
+      url: '/script/',
+      data: {'name': scriptName, 'source': playerScript},
+      success: _.bind(function(data) {
+        this.$submitButton.attr("disabled","disabled")
+        this.$submitButton.find('.btn-label').html('Submitted')
+        this.message("Script submitted for battle!")
+      }, this),
+      error: _.bind(function(xhr) {
+        console.log("error", arguments)
+        this.message("Submission Error: "+xhr.responseText)
+      }, this),
+    });
 
-    // HACK!
-    if (this.model.localStorage || (this.model.collection && this.model.collection.localStorage)) { 
-      this.model.save({
-        'scriptName': scriptName,
-        'contents': playerScript
-      });
-      done();
-    } else {
-      $.ajax({
-        type: "POST",
-        url: '/script/',
-        data: {'name': scriptName, 'source': playerScript},
-        success: function(data) {
-          // this.message(JSON.stringify(data));
-          done();
-        },
-        error: _.bind(function(xhr) {
-          console.log("error", arguments)
-          this.message("Save Error: "+xhr.responseText)
-        }, this),
-      });
-
-    }
-
-
-    // this.trigger("codewars:scriptSaved", scriptName, playerScript);
   },
 
   compileScript: function() {
@@ -223,6 +222,7 @@ return Backbone.View.extend({
       this.showCompilePane();
 
 
+      this.enableSubmitButton();
       this.message('Compiled successfully.','success');
       return true;
     }
@@ -255,6 +255,11 @@ return Backbone.View.extend({
       this.$editorPane.toggleClass("col-md-12 col-md-9")
       this.compiledShown = false;
     }
+  },
+
+  enableSubmitButton: function() {
+    this.$submitButton.removeAttr("disabled");
+    this.$submitButton.find('.btn-label').html('Submit')
   },
 
   setValue: function(contents) {
