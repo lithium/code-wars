@@ -249,16 +249,20 @@ ul.playerList li:nth-child(even) {
   float: left;
 }
 
+.visualizer .cell.mov { background-image: url('opcodes/mov.png'); }
 .visualizer .cell.add { background-image: url('opcodes/add.png'); }
-.visualizer .cell.div { background-image: url('opcodes/div.png'); }
-.visualizer .cell.jmp { background-image: url('opcodes/jmp.png'); }
-.visualizer .cell.mov { background-image: url('opcodes/ld.png'); }
-.visualizer .cell.mod { background-image: url('opcodes/mod.png'); }
-.visualizer .cell.mul { background-image: url('opcodes/mul.png'); }
 .visualizer .cell.sub { background-image: url('opcodes/sub.png'); }
+.visualizer .cell.mul { background-image: url('opcodes/mul.png'); }
+.visualizer .cell.div { background-image: url('opcodes/div.png'); }
+.visualizer .cell.mod { background-image: url('opcodes/mod.png'); }
 .visualizer .cell.sne { background-image: url('opcodes/sne.png'); }
 .visualizer .cell.seq { background-image: url('opcodes/seq.png'); }
 .visualizer .cell.slt { background-image: url('opcodes/slt.png'); }
+.visualizer .cell.sge { background-image: url('opcodes/sge.png'); }
+.visualizer .cell.jz  { background-image: url('opcodes/jz.png'); }
+.visualizer .cell.jnz { background-image: url('opcodes/jnz.png'); }
+.visualizer .cell.fork{ background-image: url('opcodes/fork.png'); }
+.visualizer .cell.jmp { background-image: url('opcodes/jmp.png'); }
  
 .visualizer .pc {
   width: 11px;

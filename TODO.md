@@ -31,11 +31,11 @@ Server
 
 Console
 -------
-- [ ] final insrtuction icons: fork, jz,jnz, sge
 - [ ] cycle/step count
 - [ ] Rankings View
 - [ ] PC inspector
 - [ ] Player inspector
+- [x] final insrtuction icons: fork, jz,jnz, sge
 - [x] Reference and Help Routes
 - [x] player list
 - [x] mars reset 
