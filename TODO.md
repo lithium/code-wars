@@ -28,7 +28,7 @@ Console
 
 Editing
 -------
-- [ ] editor not scrolling right
+- [ ] editor not scrolling right on production
 - [ ] catch cmd-s event?
 - [ ] cant close tab if file was deleted
 - [ ] activate tab instead of re-open if existing
