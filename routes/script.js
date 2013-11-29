@@ -11,7 +11,7 @@ app.post('/script',
     var source = req.body.source;
 
     if (!source) {
-      res.send("Argument Error: Argument 'source' required.")
+      res.status(400).send("Argument Error: Argument 'source' required.")
       return;
     }
 
@@ -32,7 +32,7 @@ app.post('/script',
 
     redis.get("script:"+sha1, function(err,existing) {
       if (existing) {
-        res.send({
+        res.status(400).send({
           success: false,
           error: "Script is a duplicate!",
           'existing': JSON.parse(existing),
@@ -53,12 +53,12 @@ app.post('/script',
       redis.set("script:"+sha1, json);
       redis.sadd("scripts", "script:"+username);
 
+      redis.sadd("queuedScripts", "script:"+username)
 
       res.send({
         success: true,
         'script': script
       });
-
 
     });
 

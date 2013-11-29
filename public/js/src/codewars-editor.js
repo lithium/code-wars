@@ -196,8 +196,8 @@ return Backbone.View.extend({
         this.message("Script submitted for battle!")
       }, this),
       error: _.bind(function(xhr) {
-        console.log("error", arguments)
-        this.message("Submission Error: "+xhr.responseText)
+        var data = JSON.parse(xhr.responseText)
+        this.message("Submission Error: "+data.error)
       }, this),
     });
 
