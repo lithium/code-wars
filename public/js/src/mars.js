@@ -151,8 +151,9 @@ _.extend(Mars.MarsCore.prototype, {
     this.remainingPlayerCount = this.players.length;
     this.trigger("mars:matchStarted", this.players);
   },
-  resetMatch: function() {
+  resetMatch: function(randomizePositions) {
     var players = _.map(this.players, _.clone)
+    var randomizePositions = randomizePositions != null ? randomizePositions : true;
 
     this.stepCount = 0;
     this.cycleCount = 0;
@@ -162,7 +163,7 @@ _.extend(Mars.MarsCore.prototype, {
     this.trigger("mars:memoryChanged", 0, this.options.memorySize, null);
     for (var i=0; i < players.length; i++) {
       var player = players[i];
-      this.deployPlayer(player, player.startingLocation)
+      this.deployPlayer(player, randomizePositions ? null : player.startingLocation)
     }
   },
 

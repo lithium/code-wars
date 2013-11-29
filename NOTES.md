@@ -186,11 +186,11 @@ scan:   start += 21             // scan every 21 spaces in memory,
 snip:   if start == 0xfff       // if we wrapped around and found 
             jmp clear           // ourself proceed to core clear
 
-erase:  *--end = bomb           // fill our scan range with 
-        if end != start         // fork bombs
+erase:  *--end = bomb           // erase with fork bombs
+        if end != start         // until we filled scan range
             jmp erase
         end += 12               // reset end pointer
-        jmp scan                // return to scanning
+        jmp scan                // resume scanning
 
 clr:    *start++ = 0            // do a core clear, but skip ourself
         start %= 4096
