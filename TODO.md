@@ -12,7 +12,7 @@ Console
 - [ ] PC inspector
 - [ ] round results
 - [ ] run with one program only
-- [ ] sometimes thread counts arent right unless reset?
+- [x] sometimes thread counts arent right unless reset?
 - [x] reset should re-place
 - [x] cycle/step count
 - [x] final insrtuction icons: fork, jz,jnz, sge

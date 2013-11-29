@@ -60,7 +60,7 @@ return Backbone.View.extend({
 
     this.mars = new Mars.MarsCore()
     this.mars.on("mars:roundComplete", this.roundComplete, this);
-
+    this.roundStarted = false
 
     this.$flash = this.$(".toggleFlash");
     this.$runButton = this.$(".runMars");
@@ -311,19 +311,6 @@ return Backbone.View.extend({
     if (this.running) 
       setTimeout(_.bind(this._runcycle, this), this.clockTimeout);
   },
-
-
-  playerDied: function(player) {
-    console.log("player died", player);
-
-  },
-
-  roundComplete: function(results) {
-    this.roundStarted = false;
-    this.stopRunning();
-    console.log("roundComplete", results)
-  },
-
   stopRunning: function() {
     this.running = false;
     this.$runButton.parent().removeClass("active");
@@ -334,6 +321,17 @@ return Backbone.View.extend({
       this.$runButton.parent().addClass("active");
     }
 
+  },
+
+  playerDied: function(player) {
+    console.log("player died", player);
+
+  },
+
+  roundComplete: function(results) {
+    this.roundStarted = false;
+    this.stopRunning();
+    console.log("roundComplete", results)
   },
 
   newEditorTab: function() {
