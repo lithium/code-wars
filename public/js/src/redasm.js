@@ -186,7 +186,7 @@ RedAsm.compile = function(assembly_string) {
 
     if (token == '.dat' || token == '.data') {
       var firstOperand = tokens[1].trim().replace(/,$/,'')
-      output.push( parseInt(firstOperand.replace(/^\$/,'')) );
+      output.push( parseInt(firstOperand.replace(/^\$/,'')) & 0x7FFF );
       lineNumber++;
       continue;
     }
@@ -284,6 +284,11 @@ RedAsm.compile = function(assembly_string) {
         instruction.mode2 = b.mode;
         instruction.operand2 = b.value;
         instruction.incdec2 = b.incdec;
+      } else {
+        return {
+          'success': false,
+          'error': "Syntax error on line "+i+": Invalid Operand: '"+secondOperand+"'",
+        }
       }
     }
 
@@ -311,8 +316,8 @@ RedAsm.decompileToRedcode = function(compiledBytes) {
     } else {
       //the only ones without operand2 are: JMP(0xB), FORK(0xC)
       if (instruction.opcode < RedAsm.OPCODE_JMP)
-        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2), instruction.incdec2)+",";
-      stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1), instruction.incdec1);
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2)+",";
+      stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
     }
     rows.push(stmt);
   }
@@ -323,8 +328,8 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
-    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast12(instruction.operand1), instruction.incdec1);
-    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast12(instruction.operand2), instruction.incdec2);
+    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
+    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2);
     switch (instruction.opcode) {
       case RedAsm.OPCODE_MOV:
         rows.push(op1+" = "+op2+"\n")
@@ -463,11 +468,11 @@ RedAsm.encodeInstruction = function(instruction) {
   return RedAsm.int52(lo, hi);
 }
 
-RedAsm.signedCast12 = function(number) {
-  // cast to 12 bit signed integer
-  if ((number & 0xF00) == 0xF00) {
-    var n = (number & 0xFFF)-1;
-    return -(0xFFF - n);
+RedAsm.signedCast = function(number) {
+  // cast to 15 bit signed integer
+  if ((number & 0x4000) == 0x4000) {
+    var n = (number & 0x7FFF)-1;
+    return -(0x7FFF - n);
   } 
   return number;
 }

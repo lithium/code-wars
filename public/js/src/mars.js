@@ -431,7 +431,7 @@ _.extend(Mars.MarsCore.prototype, {
       return null;
     }
 
-    var offset = RedAsm.signedCast12(operand);
+    var offset = operand;
     var relative = (thread.PC+offset) % this.options.memorySize;
 
 
@@ -473,7 +473,7 @@ _.extend(Mars.MarsCore.prototype, {
   },
   resolveValue: function(thread, operand, mode, incdec) {
     if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {
-      return RedAsm.signedCast12(operand);
+      return (operand);
     }
 
     var addr = this.resolveAddress(thread, operand, mode, incdec);
