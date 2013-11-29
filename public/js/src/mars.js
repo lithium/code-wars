@@ -49,29 +49,9 @@ _.extend(Mars.MarsCore.prototype, {
     }
 
 
-    // return results;
-    return this.aggregateMatchResults(results);
+    return results;
   },
 
-
-  aggregateMatchResults: function(results) {
-    var scores = {
-      'results': results,
-      'numRounds': results.length,
-    }
-    for (var i=0; i < results.length; i++) {
-      var roundResult = results[i];
-      for (var p=0; p < roundResult.players; p++) {
-        var player = roundResult.players[p]
-        if (!player.name in scores)
-          scores[player.name] = 0;
-        scores[player.name] += player.score
-      }
-    }
-
-    return scores;
-  },
-   
 
   reset: function() {
     this._memset(0,0,this.options.memorySize);
