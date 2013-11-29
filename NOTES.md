@@ -155,47 +155,52 @@ Players are ranked by their average match score.
 ```
 // Rock
 loop:   *loc = bomb
-        loc += 4         // bomb every 4 locations
+        loc += 8         // bomb every 4 locations
         jmp loop
-bomb:   .DAT 0           // this is the bomb to drop
-loc:    .DAT -1          // start bombing at loop-1
+bomb:   .dat 42          // this is the bomb to drop
+loc:    .DAT 7           // start bombing at loop+7
 ```
 
 
 
 ```
 // Paper
-paper:  src = 10         // copy from (10)..(-2)
-copy:   *dest = *src     // copy the instruction
-        src -= 1         // decrement pointers
-        dest -= 1
-        if src != -2      
-          jmp copy       // loop until we've copied ourself entirely
-        dest -= 5        // adjust dest to point at start of new copy
-        fork *dest       // spawn new copy
-        dest -= 23       // move to a new spot
-        jmp paper        // and start over
-src:    .DAT 0           // our loop pointer, initialized at paper:
-dest:   .DAT 1222        // our arbitrary starting location
+paper:  *--dest = *--src        // copy ourself to new location
+        jnz paper, src          
+        fork *++dest            // fork to new copy at next line
+        src = 8                 // reset src pointer to our size
+        dest -= 100             // pick a new destination
+        jmp paper               // start over again
+src:    .dat 8                  // our size
+dest:   .dat 1234
 ```
 
 ```
 // Scissors
-scan:   start += skip       // search skip offsets through memory
-        end += skip
-        if *start != *end   // break if we find changed locations
-          jmp clear
-        *start = 42         // otherwise drop color while we scan
-        jmp scan
+scan:   start += 21             // scan every 21 spaces in memory, 
+        end += 21
+        if *start != *end       // if 2 locations are different 
+            jmp snip            // we found something to snip
+        jmp scan                // else keep scanning
 
-clear:  *end = 0            // core clear
-        end -= 1
-        jmp clear
+snip:   if start == 0xfff       // if we wrapped around and found 
+            jmp clear           // ourself proceed to core clear
 
-start:  .DAT 0
-end:    .DAT 12             // gap between start and end is 12
-skip:   .DAT -28            // our skip offset when scanning
+erase:  *--end = bomb           // fill our scan range with 
+        if end != start         // fork bombs
+            jmp erase
+        end += 12               // reset end pointer
+        jmp scan                // return to scanning
 
+clr:    *start++ = 0            // do a core clear, but skip ourself
+        start %= 4096
+        jnz clr, start
+clear:  start = 6 
+        jmp clr
+
+start:  .dat 0                  // start of scan pointer
+end:    .dat 12                 // end of scan pointer
+bomb:   fork bomb               // fork bomb constant
 ```
 
 
@@ -223,21 +228,29 @@ GET /board/:board_name
 
 ## Redis Model
 
+###### Github users
 ```
-"user:username" -> {username, avatar}
+"user:username" -> {username, avatar, token}
+
+```
+
+###### Scripts
+```
 "script:username" -> {sha1, username, scriptName, source, compiledBytes}
 "script:sha1" -> {}
-
 "scripts" -> ["script:username",...]
+```
 
-"match:script:username:script:username" -> [
-  {order, script_sha1, username, score, record:{wins,losses,ties}}
-]
+###### Matches
+```
+"queuedScripts" -> ["script:username",...]
 
 "board:name" -> [
-  {username, script_sha1, score, record}
+  {username, script_sha1, score:{total,wins,losses,ties}, record:{
+    username: {script_sha1, record:{}},
+    ...
+  }
 ]
-
 ```
 
 

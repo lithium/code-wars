@@ -17,7 +17,7 @@ _.extend(Mars.MarsCore.prototype, {
       'memorySize': 4096,
       'maxSteps': 0,
       'maxCycles': 0,
-      'maxThreads': 128,
+      'maxThreads': 0,
       'minPlayers': 2,
     }
     this.options = _.extend(_.clone(defaults), options)
@@ -407,7 +407,7 @@ _.extend(Mars.MarsCore.prototype, {
           return false
 
         var threadCount = thread.owner.threads.length;
-        if (threadCount < this.options.maxThreads) {
+        if (this.options.maxThreads == 0 || threadCount < this.options.maxThreads) {
           var newThread = {
             PC: address,
             running: true,

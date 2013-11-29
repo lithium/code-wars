@@ -7,9 +7,13 @@ Server
 
 Console
 -------
+- [ ] 46-bit hexdumps
 - [ ] Rankings View
 - [ ] PC inspector
 - [ ] round results
+- [ ] run with one program only
+- [ ] reset should re-place
+- [ ] sometimes thread counts arent right unless reset?
 - [x] cycle/step count
 - [x] final insrtuction icons: fork, jz,jnz, sge
 - [x] Reference and Help Routes
@@ -24,6 +28,9 @@ Console
 
 Editing
 -------
+- [ ] editor not scrolling right
+- [ ] catch cmd-s event?
+- [ ] cant close tab if file was deleted
 - [ ] activate tab instead of re-open if existing
 - [x] explicit submit script.
 - [x] dont show empty tab if close current tab
@@ -39,6 +46,7 @@ Editing
 
 Mars
 ----
+- [ ] allow trailing : on if statements
 - [x] relative pre/post/inc/dec
 - [x] jz/jnz
 - [x] 52-bit packing
