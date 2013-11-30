@@ -31,7 +31,7 @@ Editing
 - [ ] editor not scrolling right on production
 - [ ] catch cmd-s event?
 - [ ] cant close tab if file was deleted
-- [ ] activate tab instead of re-open if existing
+- [x] activate tab instead of re-open if existing
 - [x] explicit submit script.
 - [x] dont show empty tab if close current tab
 - [x] Script Submission

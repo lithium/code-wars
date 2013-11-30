@@ -143,7 +143,7 @@ return Backbone.View.extend({
   openScriptInTab: function(redScript) {
     if (redScript.cid in this.openEditors) {
       var $editor = this.openEditors[redScript.cid];
-      if ($.contains(document.body, $editor.$nav)) {
+      if ($.contains(document.body, $editor.$nav[0])) {
         $editor.$nav.find('a').tab("show");
         return;
       }
