@@ -22,6 +22,15 @@ var already_run = {}
 
 
 
+var exit = function() {
+     lockfile.unlock(LOCKFILE_PATH, function(err) {
+      if (err)
+        console.log("Failed to unlock!", LOCKFILE_PATH);
+      process.exit();
+    })
+ 
+}
+
 var done = function(results, elapsedTime) {
 
   if (results) {
@@ -63,11 +72,7 @@ var done = function(results, elapsedTime) {
 
 
   if (--match_count <= 0) {
-    lockfile.unlock(LOCKFILE_PATH, function(err) {
-      if (err)
-        console.log("Failed to unlock!", LOCKFILE_PATH);
-      process.exit();
-    })
+    exit();
   }
 
 }
@@ -76,73 +81,78 @@ var done = function(results, elapsedTime) {
 
 var main = function() {
 
-  redis.smembers("queuedScripts", function(err,scripts) {
-    if (scripts.length == 0) {
+  redis.smembers("queuedScripts", function(err,queuedScripts) {
+    if (queuedScripts.length == 0) {
       console.log("no queued scripts.");
       done()
     }
 
-    match_count = (scripts.length)*(scripts.length-1);
+    redis.smembers("scripts", function(err,scripts) {
 
-    console.log("queued", scripts)
-    console.log(match_count+" matches, "+NUM_ROUNDS+" rounds each.")
+      match_count = (queuedScripts.length)*(scripts.length-1);
 
-    var i,j;
-    for (i = 0; i < scripts.length; i++) {
-      for (j = 0; j < scripts.length; j++) {
-          if (i == j) 
-            continue;
+      console.log("queued", queuedScripts)
+      console.log(match_count+" matches, "+NUM_ROUNDS+" rounds each.")
 
-          /* this inner loop needs to be in a closure for proper scoping */
-          (function() {
+      var i,j;
+      for (i = 0; i < queuedScripts.length; i++) {
+        for (j = 0; j < scripts.length; j++) {
+
+            /* this inner loop needs to be in a closure for proper scoping */
+            (function() {
 
 
-            var iKey = scripts[i];
-            var jKey = scripts[j];
+              var iKey = queuedScripts[i];
+              var jKey = scripts[j];
 
-            //alphabetize 
-            if (jKey < iKey) {
-              var tmp = jKey;
-              jKey = iKey;
-              iKey = tmp;
-            }
+              if (iKey == jKey) 
+                return;
 
-            var match_key = "match:"+iKey+":"+jKey;
+              //alphabetize 
+              if (jKey < iKey) {
+                var tmp = jKey;
+                jKey = iKey;
+                iKey = tmp;
+              }
 
-            redis.get(match_key, function(err,match){
-              if (match)
-                done();
+              var match_key = "match:"+iKey+":"+jKey;
 
-              redis.get(iKey, function(err,iScript){
-                redis.get(jKey, function(err,jScript){
-                  var results;
+              redis.get(match_key, function(err,match){
+                if (match)
+                  done();
 
-                  if (already_run[match_key]) {
-                    done();
-                    return;
-                  }
+                redis.get(iKey, function(err,iScript){
+                  redis.get(jKey, function(err,jScript){
+                    var results;
 
-                  console.log(iKey+" vs. "+jKey);
-                  var startTime = Date.now();
+                    if (already_run[match_key]) {
+                      done();
+                      return;
+                    }
 
-                  if (iScript && jScript) {
-                    results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
-                  }
-                  var endTime = Date.now();
-                  already_run[match_key] = true
+                    console.log(iKey+" vs. "+jKey);
+                    var startTime = Date.now();
 
-                  done(results, endTime - startTime);
+                    if (iScript && jScript) {
+                      results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
+                    }
+                    var endTime = Date.now();
+                    already_run[match_key] = true
 
-                })
+                    done(results, endTime - startTime);
+
+                  })
+                });
+
               });
 
-            });
+            })();
 
-          })();
-
+        }
       }
-    }
-    done();
+      done();
+
+    })
 
   })
 
