@@ -245,12 +245,38 @@ GET /board/:board_name
 ```
 "queuedScripts" -> ["script:username",...]
 
-"board:name" -> [
-  {username, script_sha1, score:{total,wins,losses,ties}, record:{
-    username: {script_sha1, record:{}},
-    ...
-  }
-]
+
+"board:boardName" -> {
+  username: {
+    username, 
+    script_sha1, 
+    score:{total,wins,losses,ties}, 
+    record:{
+      username: {script_sha1, score:{total,wins,losses,ties}},
+      ...
+    }
+  },
+  ...
+}
+```
+
+###### Hill Scoring
+```
+challenger is ready to play the hill.  
+if "board:boardName:challenger" exists:  
+  remove it.   
+"board:boardName:challenger" is created.  
+for every opponent:  
+  play the match.  
+  if "board:boardName:opponent:record:challenger" exists:  
+    opponent.score.losses -= opponent.record[challenger].wins  
+    opponent.score.wins -= opponent.record[challenger].losses  
+    opponent.score.ties -= opponent.record[challenger].ties  
+  challenger.record[opponent] = results  
+  opponent.record[challenger] = results  
+
+  recalculate challenger.score  
+  recalculate opponent.score  
 ```
 
 
