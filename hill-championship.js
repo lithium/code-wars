@@ -15,11 +15,14 @@ var core = new Mars.MarsCore({
 
 
 var LOCKFILE_PATH = "/tmp/hill.championship.lock"
-var NUM_ROUNDS = 100;
+var NUM_ROUNDS = 10;
 var match_count = 0;
 
 var already_run = {}
 
+
+
+var board = {}
 
 
 var exit = function() {
@@ -77,35 +80,40 @@ var done = function() {
 
 var rescoreHill = function(challengerName, opponentName, scores, elapsedTime) {
 
+  var challengerName = challengerName.replace(/^script:/,'')
+  var opponentName = opponentName.replace(/^script:/,'')
+
   challengerEntry = {
-    'script': challengerName,
-    'score': {'wins':0,'losses':0,'ties':0,'total':0},
+    'username': challengerName,
     'record': {}
+    // 'score': {'wins':0,'losses':0,'ties':0,'total':0},
   }
+
+  // console.log(scores)
 
 
   redis.hget("board:championship", opponentName, function(err,opponentStr) {
     var opponentEntry = {
-      'script': opponentName,
-      'score': {'wins':0,'losses':0,'ties':0,'total':0},
+      'username': opponentName,
       'record': {}
+      // 'score': {'wins':0,'losses':0,'ties':0,'total':0},
     }
     if (opponentStr) {
       var opponentEntry = JSON.parse(opponentStr);
-      var oldRecord = opponentEntry.record[challengerName];
-
-      // this is a rematch, so undo old scores from opponent's history.
-      if (oldRecord) {
-        opponentEntry.score.wins -= oldRecord.score.losses
-        opponentEntry.score.losses -= oldRecord.score.wins
-        opponentEntry.score.ties -= oldRecord.score.ties
-      }
+      // var oldRecord = opponentEntry.record[challengerName];
+      // // this is a rematch, so undo old scores from opponent's history.
+      // if (oldRecord) {
+      //   opponentEntry.score.wins -= oldRecord.score.losses
+      //   opponentEntry.score.losses -= oldRecord.score.wins
+      //   opponentEntry.score.ties -= oldRecord.score.ties
+      // }
     }
 
-    opponentEntry.record[challengerName] = scores
-    challengerEntry.record[opponentName] = scores
+    opponentEntry.record[challengerName] = scores[opponentName]
+    challengerEntry.record[opponentName] = scores[challengerName]
 
-    console.log()
+    console.log("challenger", challengerEntry)
+    console.log("opponentEntry", opponentEntry)
     // aggregate_score(challengerEntry);
     // aggregate_score(opponentEntry);
 
@@ -152,12 +160,14 @@ var main = function() {
 
 
               //alphabetize the match key for deduping
-              if (jKey < iKey) {
-                var tmp = jKey;
-                jKey = iKey;
-                iKey = tmp;
+              var aKey = iKey;
+              var bKey = jKey;
+              if (bKey < aKey) {
+                var tmp = bKey;
+                bKey = aKey;
+                aKey = tmp;
               }
-              var match_key = "match:"+iKey+":"+jKey;
+              var match_key = "match:"+aKey+":"+bKey;
 
               // dont run this match if we already ran it during this hill run
               if (already_run[match_key]) {
@@ -179,7 +189,7 @@ var main = function() {
                     var elapsedTime = Date.now() - startTime;
 
                     var scores = scoresFromResults(results);
-                    rescoreHill(queuedScripts[i], scripts[i], scores, elapsedTime);
+                    rescoreHill(iKey, jKey, scores, elapsedTime);
                   } else {
                     done();
                   }
