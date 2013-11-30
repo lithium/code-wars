@@ -15,7 +15,7 @@ var core = new Mars.MarsCore({
 
 
 var LOCKFILE_PATH = "/tmp/hill.championship.lock"
-var NUM_ROUNDS = 10;
+var NUM_ROUNDS = 100;
 var match_count = 0;
 
 var already_run = {}
@@ -68,14 +68,67 @@ var scoresFromResults = function(results) {
 
 }
 
-var done = function() {
+var matchDone = function() {
 
   if (--match_count <= 0) {
-    exit();
+
+    updateBoard(exit);
   }
 
 }
 
+var updateBoard = function(done) {
+
+  redis.hgetall('board:championship', function(err, redisBoard) {
+    var championshipBoard = {};
+    //build existing championshipBoard from redis
+    if (redisBoard) {
+      for (var key in redisBoard) {
+        championshipBoard[key] = JSON.parse(redisBoard[key]);
+      }
+    }
+
+    // console.log("board\n", board, "\n")
+    // console.log("championshipBoard\n", championshipBoard, "\n")
+
+    //update championshipBoard with our new records
+    for (var key in board) {
+      var boardEntry = board[key]
+      var championEntry = championshipBoard[key] || {record:{}};
+
+      championEntry.username = key;
+      for (var recordKey in boardEntry.record) {
+        championEntry.record[recordKey] = boardEntry.record[recordKey];
+      }
+      championshipBoard[key] = championEntry;
+    }
+    // console.log("updatedBoard\n", championshipBoard, "\n")
+
+
+
+    //re-build scores
+    for (var key in championshipBoard) {
+      var boardEntry = championshipBoard[key];
+      boardEntry.score = 0;
+      for (var oppo in boardEntry.record) {
+        boardEntry.score += boardEntry.record[oppo].wins * 3;
+        boardEntry.score += boardEntry.record[oppo].ties * 1;
+        boardEntry.score += boardEntry.record[oppo].losses * 0;
+      }
+
+      //save to redis 
+      redis.hset('board:championship', key, JSON.stringify(boardEntry));
+    }
+
+    // console.log("matches complete\n", championshipBoard)
+    redis.del("queuedScripts");
+    console.log("Hill run complete.")
+
+
+    done();
+  })
+
+}
 
 
 var rescoreHill = function(challengerName, opponentName, scores, elapsedTime) {
@@ -83,23 +136,31 @@ var rescoreHill = function(challengerName, opponentName, scores, elapsedTime) {
   var challengerName = challengerName.replace(/^script:/,'')
   var opponentName = opponentName.replace(/^script:/,'')
 
-  challengerEntry = {
-    'username': challengerName,
-    'record': {}
-    // 'score': {'wins':0,'losses':0,'ties':0,'total':0},
+  var challengerEntry = board[challengerName];
+  if (!challengerEntry) {
+    challengerEntry = board[challengerName] = {
+      'username': challengerName,
+      'record': {}
+    }
   }
 
-  // console.log(scores)
 
 
-  redis.hget("board:championship", opponentName, function(err,opponentStr) {
-    var opponentEntry = {
+  var opponentEntry = board[opponentName];
+  if (!opponentEntry) {
+    opponentEntry = board[opponentName] = {
       'username': opponentName,
       'record': {}
-      // 'score': {'wins':0,'losses':0,'ties':0,'total':0},
-    }
-    if (opponentStr) {
-      var opponentEntry = JSON.parse(opponentStr);
+    };
+  }
+  opponentEntry.record[challengerName] = scores[opponentName]
+  challengerEntry.record[opponentName] = scores[challengerName]
+  matchDone();
+
+
+  // redis.hget("board:championship", opponentName, function(err,opponentStr) {
+    // if (opponentStr) {
+      // var opponentEntry = JSON.parse(opponentStr);
       // var oldRecord = opponentEntry.record[challengerName];
       // // this is a rematch, so undo old scores from opponent's history.
       // if (oldRecord) {
@@ -107,20 +168,17 @@ var rescoreHill = function(challengerName, opponentName, scores, elapsedTime) {
       //   opponentEntry.score.losses -= oldRecord.score.wins
       //   opponentEntry.score.ties -= oldRecord.score.ties
       // }
-    }
+    // }
 
-    opponentEntry.record[challengerName] = scores[opponentName]
-    challengerEntry.record[opponentName] = scores[challengerName]
 
-    console.log("challenger", challengerEntry)
-    console.log("opponentEntry", opponentEntry)
+    // console.log("challenger", challengerEntry)
+    // console.log("opponentEntry", opponentEntry)
     // aggregate_score(challengerEntry);
     // aggregate_score(opponentEntry);
 
     // done(results, elapsedTime);
-    done();
 
-  });
+  // });
 
 }
 
@@ -129,7 +187,8 @@ var main = function() {
   redis.smembers("queuedScripts", function(err,queuedScripts) {
     if (queuedScripts.length == 0) {
       console.log("no queued scripts.");
-      done()
+      exit();
+      return
     }
 
     redis.smembers("scripts", function(err,scripts) {
@@ -140,7 +199,7 @@ var main = function() {
       console.log(queuedScripts.length+" queued:", queuedScripts)
       console.log(scripts.length+" warriors on the hill:", match_count+" matches, "+NUM_ROUNDS+" rounds each.")
       if (match_count < 1) {
-        done();
+        exit();
         return
       }
 
@@ -171,7 +230,7 @@ var main = function() {
 
               // dont run this match if we already ran it during this hill run
               if (already_run[match_key]) {
-                done();
+                matchDone();
                 return;
               }
               already_run[match_key] = true
@@ -191,7 +250,7 @@ var main = function() {
                     var scores = scoresFromResults(results);
                     rescoreHill(iKey, jKey, scores, elapsedTime);
                   } else {
-                    done();
+                    matchDone();
                   }
 
                 });
