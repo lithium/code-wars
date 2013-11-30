@@ -332,3 +332,28 @@ ul.playerList li:nth-child(even) {
   width: auto;
   height: 32px;
 }
+
+
+.monospace {
+  font-family: monospace;
+}
+
+
+.helpTopics h5 {
+  margin-top: 1em;
+}
+
+.helpTopics .syntax {
+  padding: 1em;
+}
+
+.helpTopics .description {
+  margin-bottom: 2em;
+}
+
+.helpTopics .examples .row {
+  margin-bottom: 0.5em;
+}
+.helpTopics {
+
+}

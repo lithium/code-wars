@@ -6,7 +6,7 @@
   <div class="syntax">
     address = value
   </div>
-  <h6>RedCode Equivalent</h6>
+  <h5>RedCode Equivalent</h5>
   <div class="syntax redcode">
     MOV <code>value</code>, <code>address</code>
   </div>
@@ -60,7 +60,7 @@
     if <code>a</code> == <code>b</code>:<br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
   </div>
-  <h6>RedCode Equivalent</h6>
+  <h5>RedCode Equivalent</h5>
   <div class="syntax redcode">
     SNE <code>value</code>, <code>value</code><br>
     CMP <code>value</code>, <code>value</code>
@@ -86,7 +86,7 @@
     if <code>a</code> != <code>b</code>:<br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
   </div>
-  <h6>RedCode Equivalent</h6>
+  <h5>RedCode Equivalent</h5>
   <div class="syntax redcode">
     SEQ <code>value</code>, <code>value</code><br>
   </div>
@@ -126,9 +126,9 @@
 </section>
 
 
-<section id="sgt">
+<section id="sge">
   <h2 class="title">if &lt;</h2>
-  <h4 class="subtitle">If Less Than, run next instruction</h4>
+  <h4 class="subtitle">If Greater than or equal to, run next instruction</h4>
   <div class="syntax">
     if <code>a</code> < <code>b</code>:<br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
@@ -144,6 +144,33 @@
       <div class="col-md-5 monospace">loop:<br>if *label != 42:<br>&nbsp;&nbsp;label += 1<br>goto loop</div>
     </div>
     <div class="row">
+    </div>
+  </div>
+</section>
+
+<section id="add">
+  <h2 class="title">ADD</h2>
+  <h4 class="subtitle">Change a memory location by adding a value.</h4>
+  <div class="syntax">
+    <code>dest</code> += <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    ADD <code>value</code>, <code>dest</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>The 15-bit <code>value</code> will be added to the value at location <code>dest</code> <p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">(5) += 23</div>
+      <div class="col-md-7"><em class="small">add 23 to the memory location at +5</em></div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 monospace">total += subtotal</div>
+      <div class="col-md-7"><em class="small">add the value in memory at the label subtotal to the memory location at referenced by the label total</em></div>
     </div>
   </div>
 </section>

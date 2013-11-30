@@ -270,6 +270,7 @@ return Backbone.View.extend({
   },
   helpContext: function(mneumonic) {
     this.help.showHelpFor(mneumonic);
+    this.$('a[href="#contextHelp"]').tab("show");
   },
   scriptDeployed: function(scriptName, compiledBytes) {
     this.openDebug();
