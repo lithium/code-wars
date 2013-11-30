@@ -54,9 +54,10 @@ return Backbone.View.extend({
 
     mars.on('mars:instructionPointerChanged', _.bind(function(PC, changedThread) {
       if (this.inspecting.thread &&
-          this.inspecting.thread.owner.name == changedThread.owner.name &&
-          this.inspecting.thread.threadNumber == changedThread.threadNumber)
+          (this.inspecting.thread.owner.playerNumber == changedThread.owner.playerNumber) &&
+          (this.inspecting.thread.threadNumber == changedThread.threadNumber))
       {
+        // console.log("inspecting",this.inspecting.thread, changedThread)
         this.inspecting.addr = PC;
         this.inspecting.start = PC-2;
         this.inspecting.end = this.inspecting.start+this.options.numberMonitorLines;
@@ -87,19 +88,19 @@ return Backbone.View.extend({
     for (var i=0; i < slice.length; i++) {
       var $row = $('<div class="monitor-row"></div>');
       var $addr = $('<span class="address"></span>');
-      var $hex = $('<span class="hexdump"></span>');
+      // var $hex = $('<span class="hexdump"></span>');
       var $assembly = $('<span class="assembly"></span>');
 
       $addr.html(RedAsm.hexdump(start+i, 3).toUpperCase()+":");
-      $hex.html(RedAsm.hexdump(slice[i]>>>0, 12));
-      $assembly.html("// "+source[i]);
+      // $hex.html(RedAsm.hexdump(slice[i]>>>0, 12));
+      $assembly.html(source[i]);
 
       if (start+i == current) {
         $row.addClass("active");
       }
 
       $row.append($addr);
-      $row.append($hex);
+      // $row.append($hex);
       $row.append($assembly);
       this.$monitor.append($row);
     }

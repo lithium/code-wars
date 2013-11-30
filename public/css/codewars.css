@@ -64,7 +64,7 @@ img#loading {
 
 
 .pane.inspector {
-  width: 360px;
+  width: 260px;
   height: 300px;
   position: absolute;
   right: 0;
@@ -196,8 +196,8 @@ td.actions {
   font-family: monospace;
   white-space: nowrap;
 }
-.monitor .monitor-row .hexdump {
-  margin: 0 1em;
+.monitor .monitor-row .assembly {
+  margin-left: 1em;
 }
 .monitor .monitor-row.active {
   background: #eee;
