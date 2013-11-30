@@ -10,6 +10,8 @@ return Backbone.Router.extend({
 
     'ref': 'reference',
     'ref/:topic': 'reference',
+
+    '': 'reference',
   },
 
 

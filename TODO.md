@@ -1,17 +1,11 @@
 
-Server
-------
-- [x] Championship Hill
-- [x] Leaderboard endpoints
-
-
 Console
 -------
-- [x] Rankings View
 - [ ] round results
 - [ ] run with one program only
 - [ ] 46-bit hexdumps
 - [ ] PC inspector
+- [x] Rankings View
 - [x] sometimes thread counts arent right unless reset?
 - [x] reset should re-place
 - [x] cycle/step count
@@ -29,7 +23,7 @@ Console
 Editing
 -------
 - [ ] editor not scrolling right on production
-- [ ] catch cmd-s event?
+- [ ] catch cmd-s/cmd-w event?
 - [ ] cant close tab if file was deleted
 - [x] activate tab instead of re-open if existing
 - [x] explicit submit script.
@@ -53,6 +47,12 @@ Mars
 - [x] pre/post inc/dec adressing
 - [x] Round Scoring
 - [x] Match Scoring
+
+
+Server
+------
+- [x] Championship Hill
+- [x] Leaderboard endpoints
 
 
 
