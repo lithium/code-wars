@@ -139,7 +139,38 @@ var main = function() {
                     var endTime = Date.now();
                     already_run[match_key] = true
 
-                    done(results, endTime - startTime);
+
+                    var challengerName = queuedScripts[i];
+                    redis.hget("board:championship", queuedScripts[i], function(err,challengerStr) {
+                      var challengerEntry;
+                      if (err) {
+                        challengerEntry = {
+                          'script': queuedScripts[i]; 
+                          'score': {'wins':0,'losses':0,'ties':0}
+                          'record': {}
+                        }
+                      } else {
+                        challengerEntry = JSON.parse(challengerStr)
+                      }
+
+
+
+                      redis.hget("board:championship", scripts[j], function(err,opponentStr) {
+                        var record = {}
+                        if (opponentStr) {
+                          // this is a rematch
+                          var opponentEntry = JSON.parse(opponentStr);
+                          var oldRecord = opponentEntry.record[challengerName];
+                          opponentEntry.score.wins -= oldRecord.score.losses
+                          opponentEntry.score.losses -= oldRecord.score.wins
+                          opponentEntry.score.ties -= oldRecord.score.ties
+                        } 
+
+                        done(results, endTime - startTime);
+
+                      });
+                    });
+
 
                   })
                 });
