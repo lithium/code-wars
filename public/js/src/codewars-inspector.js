@@ -31,7 +31,7 @@ return Backbone.View.extend({
   inspectAddress: function(mars, position, $cell)
   {
     this.$heading.html( "Location: "+RedAsm.hexdump(position.memory, 3).toUpperCase() )
-    var start = position.memory - parseInt(this.options.numberMonitorLines / 2);
+    var start = position.memory - 2; //parseInt(this.options.numberMonitorLines / 2);
     this.inspecting = {
       'addr': position.memory, 
       'start':start, 
@@ -61,8 +61,8 @@ return Backbone.View.extend({
       var $assembly = $('<span class="assembly"></span>');
 
       $addr.html(RedAsm.hexdump(start+i, 3).toUpperCase()+":");
-      $hex.html(RedAsm.hexdump(slice[i]>>>0, 8));
-      $assembly.html("; "+source[i]);
+      $hex.html(RedAsm.hexdump(slice[i]>>>0, 12));
+      $assembly.html("// "+source[i]);
 
       if (start+i == current) {
         $row.addClass("active");
