@@ -1,17 +1,17 @@
 
 Server
 ------
-- [ ] Championship Hill
-- [ ] Leaderboard endpoints
+- [x] Championship Hill
+- [x] Leaderboard endpoints
 
 
 Console
 -------
-- [ ] 46-bit hexdumps
 - [ ] Rankings View
-- [ ] PC inspector
 - [ ] round results
 - [ ] run with one program only
+- [ ] 46-bit hexdumps
+- [ ] PC inspector
 - [x] sometimes thread counts arent right unless reset?
 - [x] reset should re-place
 - [x] cycle/step count
