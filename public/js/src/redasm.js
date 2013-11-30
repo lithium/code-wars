@@ -91,7 +91,7 @@ RedAsm.compile = function(assembly_string) {
     if (/\+\+$/.test(operand)) {
       ret.incdec = RedAsm.ADDR_MODE_POST_INC;
     }
-    operand = operand.replace(/[-+]+/g,'').trim()
+    operand = operand.replace(/[-+]{2}/,'').trim()
 
 
     if (/\(/.test(operand)) {
