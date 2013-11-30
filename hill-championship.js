@@ -22,6 +22,9 @@ var already_run = {}
 
 
 
+var board = {}
+
+
 var exit = function() {
      lockfile.unlock(LOCKFILE_PATH, function(err) {
       if (err)
@@ -31,68 +34,174 @@ var exit = function() {
  
 }
 
-var done = function(results, elapsedTime) {
 
-  if (results) {
-    var scores = {}
+var scoresFromResults = function(results) {
+  var scores = {}
 
-    for (var r=0; r < results.length; r++) {
-      // console.log("round #", r+1);
+  for (var r=0; r < results.length; r++) {
+    var roundResult = results[r];
+    for (var i=0; i < roundResult.players.length; i++) {
+      var player = roundResult.players[i];
 
-      for (var i=0; i < results[r].players.length; i++) {
-        var player = results[r].players[i];
-        // console.log("  ",player.username, player.score );
-
-        if (!(player.username in scores)) {
-          scores[player.username] = {
-            'wins': 0,
-            'losses': 0,
-            'ties': 0,
-            'score': 0,
-          };
-        }
-        scores[player.username].score += player.score;
-        if (player.score == 2) {
-          scores[player.username].wins++
-        }
-        else if (player.score == 1) {
-          scores[player.username].ties++
-        }
-        else if (player.score == 0) {
-          scores[player.username].losses++
-        }
+      if (!(player.username in scores)) {
+        scores[player.username] = {
+          'score': 0,
+          'wins': 0,
+          'losses': 0,
+          'ties': 0,
+        };
+      }
+      scores[player.username].score += player.score;
+      if (player.score == 2) {
+        scores[player.username].wins++
+      }
+      else if (player.score == 1) {
+        scores[player.username].ties++
+      }
+      else if (player.score == 0) {
+        scores[player.username].losses++
       }
     }
-
-    if (elapsedTime)
-      console.log("  Duration: "+elapsedTime/1000+"s")
-    console.log(scores);
-    console.log("\n")
   }
 
+  return scores;
+
+}
+
+var matchDone = function() {
 
   if (--match_count <= 0) {
-    exit();
+
+    updateBoard(exit);
   }
 
 }
 
+var updateBoard = function(done) {
 
+  redis.hgetall('board:championship', function(err, redisBoard) {
+    var championshipBoard = {};
+    //build existing championshipBoard from redis
+    if (redisBoard) {
+      for (var key in redisBoard) {
+        championshipBoard[key] = JSON.parse(redisBoard[key]);
+      }
+    }
+
+    // console.log("board\n", board, "\n")
+    // console.log("championshipBoard\n", championshipBoard, "\n")
+
+    //update championshipBoard with our new records
+    for (var key in board) {
+      var boardEntry = board[key]
+      var championEntry = championshipBoard[key] || {record:{}};
+
+      championEntry.username = key;
+      for (var recordKey in boardEntry.record) {
+        championEntry.record[recordKey] = boardEntry.record[recordKey];
+      }
+      championshipBoard[key] = championEntry;
+    }
+    // console.log("updatedBoard\n", championshipBoard, "\n")
+
+
+
+    //re-build scores
+    for (var key in championshipBoard) {
+      var boardEntry = championshipBoard[key];
+      boardEntry.score = 0;
+      for (var oppo in boardEntry.record) {
+        boardEntry.score += boardEntry.record[oppo].wins * 3;
+        boardEntry.score += boardEntry.record[oppo].ties * 1;
+        boardEntry.score += boardEntry.record[oppo].losses * 0;
+      }
+
+      //save to redis 
+      redis.hset('board:championship', key, JSON.stringify(boardEntry));
+    }
+
+    // console.log("matches complete\n", championshipBoard)
+    redis.del("queuedScripts");
+    console.log("Hill run complete.")
+
+
+    done();
+  })
+
+}
+
+
+var rescoreHill = function(challengerName, opponentName, scores, elapsedTime) {
+
+  var challengerName = challengerName.replace(/^script:/,'')
+  var opponentName = opponentName.replace(/^script:/,'')
+
+  var challengerEntry = board[challengerName];
+  if (!challengerEntry) {
+    challengerEntry = board[challengerName] = {
+      'username': challengerName,
+      'record': {}
+    }
+  }
+
+
+
+  var opponentEntry = board[opponentName];
+  if (!opponentEntry) {
+    opponentEntry = board[opponentName] = {
+      'username': opponentName,
+      'record': {}
+    };
+  }
+  opponentEntry.record[challengerName] = scores[opponentName]
+  challengerEntry.record[opponentName] = scores[challengerName]
+  matchDone();
+
+
+  // redis.hget("board:championship", opponentName, function(err,opponentStr) {
+    // if (opponentStr) {
+      // var opponentEntry = JSON.parse(opponentStr);
+      // var oldRecord = opponentEntry.record[challengerName];
+      // // this is a rematch, so undo old scores from opponent's history.
+      // if (oldRecord) {
+      //   opponentEntry.score.wins -= oldRecord.score.losses
+      //   opponentEntry.score.losses -= oldRecord.score.wins
+      //   opponentEntry.score.ties -= oldRecord.score.ties
+      // }
+    // }
+
+
+    // console.log("challenger", challengerEntry)
+    // console.log("opponentEntry", opponentEntry)
+    // aggregate_score(challengerEntry);
+    // aggregate_score(opponentEntry);
+
+    // done(results, elapsedTime);
+
+  // });
+
+}
 
 var main = function() {
 
   redis.smembers("queuedScripts", function(err,queuedScripts) {
     if (queuedScripts.length == 0) {
       console.log("no queued scripts.");
-      done()
+      exit();
+      return
     }
 
     redis.smembers("scripts", function(err,scripts) {
 
       match_count = (queuedScripts.length)*(scripts.length-1);
 
-      console.log("queued", queuedScripts)
-      console.log(match_count+" matches, "+NUM_ROUNDS+" rounds each.")
+
+      console.log(queuedScripts.length+" queued:", queuedScripts)
+      console.log(scripts.length+" warriors on the hill:", match_count+" matches, "+NUM_ROUNDS+" rounds each.")
+      if (match_count < 1) {
+        exit();
+        return
+      }
 
       var i,j;
       for (i = 0; i < queuedScripts.length; i++) {
@@ -105,52 +214,54 @@ var main = function() {
               var iKey = queuedScripts[i];
               var jKey = scripts[j];
 
-              if (iKey == jKey) 
+              if (iKey == jKey)  // dont play against yourself
                 return;
 
-              //alphabetize 
-              if (jKey < iKey) {
-                var tmp = jKey;
-                jKey = iKey;
-                iKey = tmp;
+
+              //alphabetize the match key for deduping
+              var aKey = iKey;
+              var bKey = jKey;
+              if (bKey < aKey) {
+                var tmp = bKey;
+                bKey = aKey;
+                aKey = tmp;
               }
+              var match_key = "match:"+aKey+":"+bKey;
 
-              var match_key = "match:"+iKey+":"+jKey;
+              // dont run this match if we already ran it during this hill run
+              if (already_run[match_key]) {
+                matchDone();
+                return;
+              }
+              already_run[match_key] = true
 
-              redis.get(match_key, function(err,match){
-                if (match)
-                  done();
+              // get the two scripts and battle them  
+              redis.get(iKey, function(err,iScript){
+                redis.get(jKey, function(err,jScript){
+                  var results;
 
-                redis.get(iKey, function(err,iScript){
-                  redis.get(jKey, function(err,jScript){
-                    var results;
-
-                    if (already_run[match_key]) {
-                      done();
-                      return;
-                    }
-
+                  if (iScript && jScript) {
                     console.log(iKey+" vs. "+jKey);
+
                     var startTime = Date.now();
+                    results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
+                    var elapsedTime = Date.now() - startTime;
 
-                    if (iScript && jScript) {
-                      results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
-                    }
-                    var endTime = Date.now();
-                    already_run[match_key] = true
+                    var scores = scoresFromResults(results);
+                    rescoreHill(iKey, jKey, scores, elapsedTime);
+                  } else {
+                    matchDone();
+                  }
 
-                    done(results, endTime - startTime);
-
-                  })
                 });
-
               });
 
-            })();
+
+            })(); 
+            /* end of inner loop closure */
 
         }
       }
-      done();
 
     })
 
