@@ -38,6 +38,9 @@ return Backbone.View.extend({
     "click .resetMars": "resetMars",
     "click .toggleFlash": "toggleFlash",
     "click .toggleDebug": "toggleDebug",
+
+    "click .contextForward": "contextForward",
+    "click .contextBack": "contextBack",
   },
 
 
@@ -109,6 +112,10 @@ return Backbone.View.extend({
     this.playerScriptEditor = this.addEditorTab(this.playerScript);
     
     this.clearMars();
+
+
+    this.startingHistory = history.length;
+    console.log("starting history", this.startingHistory)
   },
 
   openDebug: function() {
@@ -355,7 +362,16 @@ return Backbone.View.extend({
 
   newEditorTab: function() {
     this.addEditorTab();
-  }
+  },
+
+  contextForward: function() {
+    history.forward();
+    return false
+  },
+  contextBack: function() {
+    history.back();
+    return false
+  },
 });
 
 
