@@ -8,6 +8,7 @@ define(['backbone',
         'codewars-visualizer', 
         'codewars-inspector', 
         'codewars-storage', 
+        'codewars-rankings', 
         'redscript-collection', 
         'text!templates/console.html'], 
 function(backbone,  
@@ -18,6 +19,7 @@ function(backbone,
          CodeWarsVisualizer,    
          CodeWarsInspector,    
          CodeWarsStorage,    
+         CodeWarsRankings,    
          RedScriptCollection,
          consoleTemplate) 
 {
@@ -96,6 +98,11 @@ return Backbone.View.extend({
 
     this.storageBrowser.on('codewars:editScript', this.openScriptInTab, this);
 
+    this.rankings = new CodeWarsRankings({
+    })
+    this.$('.rankingsContainer').html(this.rankings.$el);
+    this.rankings.on('codewars:openScript', this.openRankingScript, this);
+
     this.openEditors = {}
 
     this.playerScript = this.scriptCollection.add()
@@ -119,6 +126,18 @@ return Backbone.View.extend({
   },
   closeInspector: function() {
     this.$inspectorPane.addClass('obscured')
+  },
+
+  openRankingScript: function(script) {
+    var redScript = this.scriptCollection.add({});
+    console.log("redscript",redScript)
+    redScript.set({
+      'scriptName': script.username+"'s "+script.scriptName,
+      'contents': script.source,
+    })
+    this.openScriptInTab(redScript);
+
+
   },
 
   openScriptInTab: function(redScript) {

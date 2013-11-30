@@ -7,7 +7,7 @@ Server
 
 Console
 -------
-- [ ] Rankings View
+- [x] Rankings View
 - [ ] round results
 - [ ] run with one program only
 - [ ] 46-bit hexdumps

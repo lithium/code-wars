@@ -52,6 +52,7 @@ require.config({
     'codewars-help': 'src/codewars-help',
     'codewars-inspector': 'src/codewars-inspector',
     'codewars-storage': 'src/codewars-storage',
+    'codewars-rankings': 'src/codewars-rankings',
 
     'redscript-collection': 'src/collection-redscript',
     'redscript-model': 'src/model-redscript',
