@@ -304,6 +304,7 @@ return Backbone.View.extend({
     this.visualizer.reset();
     this.$stepCount.html(0)
     this.$cycleCount.html(0)
+    this.closeInspector();
   },
 
   stepMars: function() {
