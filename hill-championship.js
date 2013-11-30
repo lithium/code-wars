@@ -2,20 +2,25 @@
 var redis_url = require('redis-url');
 var redistogo_url = process.env.REDISTOGO_URL || null;
 var redis = redis_url.connect(redistogo_url);
+var lockfile = require('lockfile')
 
 Backbone = require('backbone')
 _ = require('underscore')
-
 RedAsm = require('./public/js/src/redasm')
-var Mars = require('./public/js/src/mars')
+Mars = require('./public/js/src/mars')
 
 var core = new Mars.MarsCore({
   'maxCycles': 50000,
 })
 
 
+var LOCKFILE_PATH = "/tmp/hill.championship.lock"
 var NUM_ROUNDS = 100;
 var match_count = 0;
+
+var already_run = {}
+
+
 
 var done = function(results, elapsedTime) {
 
@@ -57,82 +62,98 @@ var done = function(results, elapsedTime) {
   }
 
 
-  if (--match_count <= 0)
-    process.exit();
+  if (--match_count <= 0) {
+    lockfile.unlock(LOCKFILE_PATH, function(err) {
+      if (err)
+        console.log("Failed to unlock!", LOCKFILE_PATH);
+      process.exit();
+    })
+  }
+
 }
 
 
 
-var already_run = {}
+var main = function() {
 
-redis.smembers("queuedScripts", function(err,scripts) {
-  if (scripts.length == 0) {
-    console.log("no queued scripts.");
-    done()
-  }
+  redis.smembers("queuedScripts", function(err,scripts) {
+    if (scripts.length == 0) {
+      console.log("no queued scripts.");
+      done()
+    }
+
+    match_count = (scripts.length)*(scripts.length-1);
+
+    console.log("queued", scripts)
+    console.log(match_count+" matches, "+NUM_ROUNDS+" rounds each.")
+
+    var i,j;
+    for (i = 0; i < scripts.length; i++) {
+      for (j = 0; j < scripts.length; j++) {
+          if (i == j) 
+            continue;
+
+          /* this inner loop needs to be in a closure for proper scoping */
+          (function() {
 
 
-  match_count = (scripts.length)*(scripts.length-1);
+            var iKey = scripts[i];
+            var jKey = scripts[j];
 
-  console.log("queued", scripts)
-  console.log(match_count+" matches, "+NUM_ROUNDS+" rounds each.")
+            //alphabetize 
+            if (jKey < iKey) {
+              var tmp = jKey;
+              jKey = iKey;
+              iKey = tmp;
+            }
 
-  var i,j;
-  for (i = 0; i < scripts.length; i++) {
-    for (j = 0; j < scripts.length; j++) {
-        if (i == j) 
-          continue;
+            var match_key = "match:"+iKey+":"+jKey;
 
-        /* this inner loop needs to be in a closure for proper scoping */
-        (function() {
+            redis.get(match_key, function(err,match){
+              if (match)
+                done();
 
+              redis.get(iKey, function(err,iScript){
+                redis.get(jKey, function(err,jScript){
+                  var results;
 
-          var iKey = scripts[i];
-          var jKey = scripts[j];
+                  if (already_run[match_key]) {
+                    done();
+                    return;
+                  }
 
-          //alphabetize 
-          if (jKey < iKey) {
-            var tmp = jKey;
-            jKey = iKey;
-            iKey = tmp;
-          }
+                  console.log(iKey+" vs. "+jKey);
+                  var startTime = Date.now();
 
-          var match_key = "match:"+iKey+":"+jKey;
+                  if (iScript && jScript) {
+                    results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
+                  }
+                  var endTime = Date.now();
+                  already_run[match_key] = true
 
-          redis.get(match_key, function(err,match){
-            if (match)
-              done();
+                  done(results, endTime - startTime);
 
-            redis.get(iKey, function(err,iScript){
-              redis.get(jKey, function(err,jScript){
-                var results;
+                })
+              });
 
-                if (already_run[match_key]) {
-                  done();
-                  return;
-                }
-
-                console.log(iKey+" vs. "+jKey);
-                var startTime = Date.now();
-
-                if (iScript && jScript) {
-                  results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
-                }
-                var endTime = Date.now();
-                already_run[match_key] = true
-
-                done(results, endTime - startTime);
-
-              })
             });
 
-          });
+          })();
 
-        })();
-
+      }
     }
+    done();
+
+  })
+
+}
+
+lockfile.lock(LOCKFILE_PATH, function(err) {
+  if (err) {
+    console.log("Failed to lock!", LOCKFILE_PATH);
+    process.exit();
   }
 
+  main();
+
 })
-
-

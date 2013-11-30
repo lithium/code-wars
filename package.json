@@ -9,6 +9,7 @@
     "underscore": "1.5.2",
     "backbone": "1.1.0",
     "consolidate": "0.9.1",
+    "lockfile": "0.4.2",
     "passport": "0.1.17",
     "passport-github": "0.1.5"
   },
