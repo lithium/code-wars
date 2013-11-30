@@ -109,6 +109,8 @@ return Backbone.View.extend({
     var pos = $cell.position();
     if (!thread.$pc || !$.contains(document.body, thread.$pc[0])) {
       thread.$pc = $('<div class="pc player'+(thread.owner.playerNumber%8)+'"></div>');
+      thread.$pc.click(_.bind(this.clickPC, this))
+      thread.$pc.data("thread", thread);
       this.$container.append(thread.$pc);
     }
 
@@ -136,8 +138,11 @@ return Backbone.View.extend({
 
   threadSpawned: function(thread) {
     thread.$pc = $('<div class="pc player'+(thread.owner.playerNumber%8)+'"></div>');
+    thread.$pc.click(_.bind(this.clickPC, this))
+    thread.$pc.data("thread", thread);
     this.$container.append(thread.$pc);
     this.setInstructionCursor(thread)
+
 
     thread.owner.$li.find('.threads').html(thread.owner.runningThreadCount)
   },
@@ -148,6 +153,12 @@ return Backbone.View.extend({
       thread.$pc = null;
     }
     thread.owner.$li.find('.threads').html(thread.owner.runningThreadCount)
+  },
+
+  clickPC: function(e) {
+    var $pc = $(e.target)
+    var thread = $pc.data("thread")
+    this.trigger("mars:inspectPC", this.mars, thread, $pc);
   },
 
   clickCell: function(e) {

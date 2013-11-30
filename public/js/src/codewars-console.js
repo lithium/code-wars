@@ -92,6 +92,7 @@ return Backbone.View.extend({
     })
     this.$('.inspectorContainer').html(this.inspector.$el)
     this.visualizer.on('mars:inspectAddress', this.inspectAddress, this);
+    this.visualizer.on('mars:inspectPC', this.inspectPC, this);
     this.inspector.on('mars:closeInspector', this.closeInspector, this);
 
     this.storageBrowser = new CodeWarsStorage({
@@ -162,6 +163,11 @@ return Backbone.View.extend({
 
   inspectAddress: function(mars, position, $cell) {
     this.inspector.inspectAddress(mars, position, $cell);
+    this.openInspector();
+  },
+
+  inspectPC: function(mars, thread, $pc) {
+    this.inspector.inspectPC(mars, thread, $pc);
     this.openInspector();
   },
 

@@ -39,16 +39,46 @@ return Backbone.View.extend({
     };
     this.updateDissassembly(this.inspecting.start, this.options.numberMonitorLines, this.inspecting.addr);
   },
+
+  inspectPC: function(mars, thread, $pc)
+  {
+    this.$heading.html(thread.owner.name+"'s thread #"+thread.threadNumber);
+
+    var start = thread.PC - 2;
+    this.inspecting = {
+      'addr': thread.PC, 
+      'start': start, 
+      'end': start+this.options.numberMonitorLines,
+      'thread': thread,
+    };
+
+    mars.on('mars:instructionPointerChanged', _.bind(function(PC, changedThread) {
+      if (this.inspecting.thread &&
+          this.inspecting.thread.owner.name == changedThread.owner.name &&
+          this.inspecting.thread.threadNumber == changedThread.threadNumber)
+      {
+        this.inspecting.addr = PC;
+        this.inspecting.start = PC-2;
+        this.inspecting.end = this.inspecting.start+this.options.numberMonitorLines;
+        this.updateDissassembly();
+      }
+
+    },this))
+    this.updateDissassembly();
+  },
   
   memoryChanged: function(address, count, thread) {
     if (this.inspecting && 
         address >= this.inspecting.start &&
         address <= this.inspecting.end) {
-      this.updateDissassembly(this.inspecting.start, this.options.numberMonitorLines, this.inspecting.addr);
+      this.updateDissassembly();
     }
   },
 
   updateDissassembly: function(start, numLines, current) {
+    var start = start || this.inspecting.start;
+    var numLines = numLines || this.options.numberMonitorLines;
+    var current = current || this.inspecting.addr;
 
     var slice = this.options.mars.memorySlice(start, numLines);
     var source = RedAsm.decompileToRedscript(slice);

@@ -3,7 +3,7 @@ Console
 -------
 - [ ] round results
 - [ ] run with one program only
-- [ ] PC inspector
+- [x] PC inspector
 - [x] 46-bit hexdumps
 - [x] Rankings View
 - [x] sometimes thread counts arent right unless reset?
