@@ -465,15 +465,19 @@ _.extend(Mars.MarsCore.prototype, {
       var value = this.memory[addr];
       if (incdec == RedAsm.ADDR_MODE_PRE_DEC) {
         value = --this.memory[addr];
+        this.trigger("mars:memoryChanged", addr, 1, thread);
       }
       else if (incdec == RedAsm.ADDR_MODE_PRE_INC) {
         value = ++this.memory[addr];
+        this.trigger("mars:memoryChanged", addr, 1, thread);
       }
       else if (incdec == RedAsm.ADDR_MODE_POST_DEC) {
         value = this.memory[addr]--;
+        this.trigger("mars:memoryChanged", addr, 1, thread);
       }
       else if (incdec == RedAsm.ADDR_MODE_POST_INC) {
         value = this.memory[addr]++;
+        this.trigger("mars:memoryChanged", addr, 1, thread);
       }
       return value;
     } else if (mode == RedAsm.ADDR_MODE_INDIRECT) {

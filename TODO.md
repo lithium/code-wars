@@ -1,7 +1,7 @@
 
 Console
 -------
-- [ ] relative predec doesnt trigger changeMemory 
+- [x] relative predec doesnt trigger changeMemory 
 - [x] round results
 - [x] scroll right pane (help/reference)
 - [x] PC inspector
