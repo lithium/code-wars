@@ -33,7 +33,7 @@ return Backbone.View.extend({
     "click .btn.newEditorTab": "newEditorTab",
 
     "click .clearMars": "clearMars",
-    "click .stepMars": "stepMars",
+    "click .stepMars": "clickStepMars",
     "click .runMars": "runMars",
     "click .resetMars": "resetMars",
     "click .toggleFlash": "toggleFlash",
@@ -298,6 +298,7 @@ return Backbone.View.extend({
     };
 
     this.mars.deployPlayer(player);
+    this.message("> "+scriptName+" deployed.");
   },
 
 
@@ -314,6 +315,7 @@ return Backbone.View.extend({
       this.$flash.parent().removeClass('active')
     }
 
+    return false;
   },
 
   clearMars: function() {
@@ -323,6 +325,18 @@ return Backbone.View.extend({
     this.$stepCount.html(0)
     this.$cycleCount.html(0)
     this.closeInspector();
+    this.message("> M.A.R.S. cleared.");
+    return false;
+  },
+
+  clickStepMars: function() {
+    if (this.mars.players.length < 2) {
+      this.message("> Deploy at least 2 scripts first.");
+      return;
+    }
+
+    this.stepMars();
+    this.message("> Step");
   },
 
   stepMars: function() {
@@ -335,24 +349,39 @@ return Backbone.View.extend({
 
     this.$stepCount.html(this.mars.stepCount)
     this.$cycleCount.html(this.mars.cycleCount)
+    return false;
   },
   resetMars: function() {
+    if (this.mars.players.length < 2) {
+      this.message("> Deploy at least 2 scripts first.");
+      return;
+    }
     this.stopRunning();
     this.visualizer.reset();
     this.mars.resetMatch();
     this.roundStarted = false;
     this.$stepCount.html(0)
     this.$cycleCount.html(0)
+    this.message("> New round.");
+    return false;
   },
 
 
   runMars: function() {
+    if (this.mars.players.length < 2) {
+      this.message("> Deploy at least 2 scripts first.");
+      return;
+    }
+
     if (!this.running) {
       this.startRunning();
       this._runcycle();
+      this.message("> Round started");
     } else {
       this.stopRunning();
+      this.message("> Round paused");
     }
+    return false;
   },
 
   _runcycle: function() {
@@ -382,11 +411,18 @@ return Backbone.View.extend({
   roundComplete: function(results) {
     this.roundStarted = false;
     this.stopRunning();
-    console.log("roundComplete", results)
+    this.message("> Round complete.");
+  },
+
+  message: function(msg) {
+    var $h1 = this.$('h1')
+    $h1.empty();
+    $h1.append(msg);
   },
 
   newEditorTab: function() {
     this.addEditorTab();
+    return false;
   },
 
   contextForward: function() {

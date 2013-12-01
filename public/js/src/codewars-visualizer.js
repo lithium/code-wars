@@ -48,6 +48,7 @@ return Backbone.View.extend({
     this.mars.on("mars:threadSpawned", _.bind(this.threadSpawned, this));
     this.mars.on("mars:threadDied", _.bind(this.threadDied, this));
     this.mars.on("mars:playerDeployed", _.bind(this.playerDeployed, this));
+    this.mars.on("mars:roundComplete", _.bind(this.roundComplete, this));
   },
 
   reset: function() {
@@ -182,12 +183,27 @@ return Backbone.View.extend({
     var $name = $('<div class="scriptName">'+player.name+'</div><div class="clearfix"></div>')
     $label.append($name);
 
+    var $score = $('<div>score: <strong class="score player'+player.playerNumber+'"></strong></div>')
+    $score.hide()
+    $label.append($score);
+
     $li.append($label);
 
 
     this.$playerList.append($li); 
 
     player.$li = $li;
+  },
+
+  roundComplete: function(results) {
+    for (var i=0; i < results.players.length; i++) {
+      var player = results.players[i];
+
+      var $score = $(".score.player"+i);
+      $score.html(player.score)
+      $score.parent().show();
+    }
+
   },
 
 });

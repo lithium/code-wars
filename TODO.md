@@ -1,9 +1,8 @@
 
 Console
 -------
-- [ ] round results
-- [ ] run with one program only
 - [ ] relative predec doesnt trigger changeMemory 
+- [x] round results
 - [x] scroll right pane (help/reference)
 - [x] PC inspector
 - [x] 46-bit hexdumps
@@ -24,9 +23,6 @@ Console
 
 Editing
 -------
-- [ ] editor not scrolling right on production
-- [ ] catch cmd-s/cmd-w event?
-- [ ] cant close tab if file was deleted
 - [x] activate tab instead of re-open if existing
 - [x] explicit submit script.
 - [x] dont show empty tab if close current tab
@@ -42,7 +38,6 @@ Editing
 
 Mars
 ----
-- [ ] allow trailing : on if statements
 - [x] relative pre/post/inc/dec
 - [x] jz/jnz
 - [x] 52-bit packing
@@ -79,3 +74,8 @@ Cut for time
 - [ ] Battle Royale Hill
 - [ ] browse users endpoint
 - [ ] Browse users View
+- [ ] run with one program only
+- [ ] catch cmd-s/cmd-w event?
+- [ ] cant close tab if file was deleted
+- [ ] allow trailing : on if statements
+- [ ] editor not scrolling right on production
