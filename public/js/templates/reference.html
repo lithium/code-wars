@@ -8,12 +8,19 @@
     <li><a href="#ref/mars">MARS</a></li>
     <li><a href="#ref/redscript">RedScript</a></li>
     <li><a href="#ref/addressing">Addressing Modes</a></li>
-    <li><a href="#ref/conditionals">Conditionals</a></li>
-    <li><a href="#ref/loops">Loops</a></li>
-    <li><a href="#ref/forking">Forking</a></li>
+    <li><a href="#help/slt-sge">Conditionals</a></li>
+    <li><a href="#help/fork">Forking</a></li>
+  </ul>
+  <h4>Using Code Wars</h4>
+  <ul class="list-unstyled">
+    <li><a href="#ref/debugger">Code Wars Debugger</a></li>
+    <li><a href="#ref/storage">Script Storage</a></li>
+    <li><a href="#ref/rankings">Hill Rankings</a></li>
+    <li><a href="#ref/submit">Battle Submission</a></li>
   </ul>
   <h4>Archetypes</h4>
   <ul class="list-unstyled">
+    <li><a href="#ref/metagame">Metagame</a></li>
     <li><a href="#ref/rock">Rock</a></li>
     <li><a href="#ref/paper">Paper</a></li>
     <li><a href="#ref/scissors">Scissors</a></li>
@@ -28,31 +35,92 @@
 
 <section id="welcome">
   <h2>Welcome to Code Wars!</h2>
+
+  <h3>What is Code Wars?</h3>
+  <p>Code Wars is a programming game where scripts (or Warriors) try to destroy each other in the memory of a virtual computer. The scripts are written in a custom language called <a href="#ref/redscript">Red Script</a>, and run by the vm called <a href="#ref/mars">MARS</a> (Memory Array Redscript Simulator). 
+  </p>
+
+  <h3>How to Play</h3>
+  <p>Using the references provided program your own Warrior in the Code Wars Editor.  Some familiarity with programming and assembly languages is assumed.  You can load your compiled Script into the <a href="#ref/debugger">Code Wars Debugger</a> to test it it out.  Battle your script against the provided  <a href="#ref/metagame">Rock, Paper and Scissors examples</a> until you are confident it can hold its' own against the field.  Then <a href="#ref/submit">submit</a> it to the server to see how it fares against other users' scripts.</p>
+
+  <h3>About Code Wars</h3>
+  <p>Code Wars is a modern version of an older game: <a href="#ref/corewar">Core War</a>.  Red script has been designed to be more approachable for a modern audience vs the 80's style assembler syntax of <a href="#ref/redcode">Red Code</a>. 
 </section>
 
 <section id="mars">
   <h2>M.A.R.S.</h2>
   <h3>Memory Array RedScript Simulator</h3>
+
+  <p>The MARS vm is quite simple.  It is completely memory based (this means there are no registers).  It's memory is an array of 4,096 locations.  Each instruction is exactly one location.  Each instruction takes exactly one cycle.</p>
+
+  <h4>Memory Addressing</h4>
+  <p>All memory addressing is relative, and modulus 4096.  This means that there is no way for a program to know where in memory it is located.  Memory location 0 is not the first instruction memory, but the instruction that contains the address. Memory location 1 is the next instruction, and -1 obviously the previous.  Since all address are modulus the Memory Size, all values are valid addresses.</p>
+
+  <h4>Execution</h4>
+  <p>Each script is placed into a random memory location, and a thread is spawned and starts executing the first byte in the compiled script. All programs are executed in round robin order determined randomly at the start of the match. If a thread in a script executes an illegal instruction it dies.  If a player has no remaining threads, they lose.</p>
+
+  <h4>Threads</h4>
+  <p>Each script starts out with 1 thread but by <a href="#ref/forking">forking</a> new threads can be spawned.  Each player only gets one instruction per turn though, so each of a players spawned thread will execute in turn, one thread per turn.  Thus if ScriptA has 2 threads and ScriptB has 1 thread the order of execution will look like:
+    <ol>
+    <li>ScriptA.thread1</li>
+    <li>ScriptB.thread1</li>
+    <li>ScriptA.thread2</li>
+    <li>ScriptB.thread1</li>
+    <li>ScriptA.thread1</li>
+    <li>...</li>
+    </ol>
+    with each of ScriptA's threads executing half as often as ScriptB's 1 thread.</p>
 </section>
 
 <section id="redscript">
   <h2>Red Script</h2>
+
+  <p>Red Script is an assembler language.  It's syntax is designed to be similar to modern scripting languages, but it is still an assembler language.  This means a few things:
+    <ol>
+      <li>One instruction per line.<br>No complex expressions, you have to do it one instruction at a time.</li>
+      <li>Line numbers matter.<br>Use labels to mark lines of interest so you can reference them easily</li>
+      <li>Addressing modes.<br>Instructions take either 1 or 2 values as arguments, but the <a href="#ref/addressing">Addressing Mode</a> determines how that number is interpreted.</li>
+    </ol>
+  </p>
+
+  <h3>Basic Syntax</h3>
+  <p>
+  There basic syntax is:
+  <pre>
+  [label:]   &lt;operand1> &lt;operator> [operand2]</pre>
+  <p><strong>label:</strong> is optional, and defines a label to reference the line number.  Labels can be reference before they are defined.</p>
+
+  <p><strong>operand1</strong> is given on the left hand side of the operator, and designates the destination argument, usually this is an address.</p>
+
+  <p><strong>operator</strong> indicates the instruction, see <a href="#help">Help</a> for a list of instructions.</p>
+
+  <h4>Conditionals</h4> 
+  <pre>
+  if &lt;value> &lt;operation> &lt;value>
+    <em>next instruction</em></pre>
+
+  </p>
+
+  <h3>Basic Script</h3>
+  <p>Let's look at a basic Red Script.  This script is 2 instructions long and will run an infinite loop, incrementing the memory location directly following all of its instructions forever:
+<pre>
+1:  loop:     
+2:     counter += 1
+3:     jmp loop
+4:
+5:counter:  .data 0
+</pre>
+  It might be easier to start at the bottom here, <strong>Line 5</strong>, where we define a label called <code>counter</code> and initialize the memory location with 0.  <a href="#help/data">.data</a> is a directive that tells the Red Script compiler to initialze that line in the compiled program with the raw data given as the argument.  We will use this location in memory as our variable <code>counter</code>.</p>
+
+  <p><strong>Line 1</strong> defines a label <code>loop</code>, for the following line.  Blank lines are are skipped when counting labels for address purposes.</p>
+
+  <p><strong>Line 2</strong> is our first instruction.  Add <code>1</code> to the memory location referenced by <code>counter</code>. In this case, the label <code>counter</code> is 2 instructions away from the line it is referenced on, so this line is equivalent to: <code>(2) += 1</code>.</p>
+
+  <p><strong>Line 3</strong> will return execution to the label <code>loop</code>. In this case, <code>JMP (-1)</code>.</p>
 </section>
 
 <section id="addressing">
   <h2>Addressing Modes</h2>
-</section>
-
-<section id="conditionals">
-  <h2>Conditionals</h2>
-</section>
-
-<section id="loops">
-  <h2>Loops</h2>
-</section>
-
-<section id="forking">
-  <h2>Forking and Threads</h2>
 </section>
 
 <section id="rock">
