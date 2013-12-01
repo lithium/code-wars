@@ -1,7 +1,7 @@
 <div class="helpTopics">
 
 <section id="mov">
-  <h2 class="title">Assignment</h2>
+  <h2 class="title">Assign to memory</h2>
   <h4 class="subtitle">Change a memory location by moving data to it.</h4>
   <div class="syntax">
     <code>address</code> = <code>value</code>
@@ -136,11 +136,10 @@
     <div class="row">
       <div class="col-md-5 monospace">
         self:<br>
-        &nbsp;&nbsp;jnz self, *--ptr<br>
-        ptr: .data -10
+        &nbsp;&nbsp;jnz self, --(-10)<br>
       </div>
       <div class="col-md-7"><em class="small">
-        use <a href="#ref/addressing">pre-decrement addressing</a> to decrement the value at <strong>gatePtr</strong>. Then jump to <strong>self</strong> if not 0.<br>  This loop will run for 2^15 cycles before the value at <strong>gatePtr</strong> becomes 0 again.
+        use <a href="#ref/addressing">pre-decrement addressing</a> to decrement the value at <strong>-10</strong>. Then jump to <strong>self</strong> if not 0.<br>  This loop will run for 2^15 cycles before the value at <strong>-10</strong> becomes 0 again.
       </em></div>
     </div>
   </div>
