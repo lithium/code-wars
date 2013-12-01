@@ -53,14 +53,17 @@
 
   <p>The MARS vm is quite simple.  It is completely memory based (this means there are no registers).  It's memory is an array of 4,096 locations.  Each instruction is exactly one location.  Each instruction takes exactly one cycle.</p>
 
+  <h4>Scripts</h4>
+  <p>Scripts are written in <a href="#ref/redscript">Red Script</a> and are compiled into <a href="#ref/redcode">Red Code</a>.</p>
+
   <h4>Memory Addressing</h4>
-  <p>All memory addressing is relative, and modulus 4096.  This means that there is no way for a program to know where in memory it is located.  Memory location 0 is not the first instruction memory, but the instruction that contains the address. Memory location 1 is the next instruction, and -1 obviously the previous.  Since all address are modulus the Memory Size, all values are valid addresses.</p>
+  <p>All <a href="#ref/addressing">memory addressing</a> is relative, and modulus 4,096 the size of memory.  This means that there is no way for a program to know where in memory it is located.  Memory location 0 is not the first instruction memory, but the instruction that contains the address. Memory location 1 is the next instruction, and -1 obviously the previous.  Since all address are modulus the Memory Size, all values are valid addresses.</p>
 
   <h4>Execution</h4>
   <p>Each script is placed into a random memory location, and a thread is spawned and starts executing the first byte in the compiled script. All programs are executed in round robin order determined randomly at the start of the match. If a thread in a script executes an illegal instruction it dies.  If a player has no remaining threads, they lose.</p>
 
   <h4>Threads</h4>
-  <p>Each script starts out with 1 thread but by <a href="#ref/forking">forking</a> new threads can be spawned.  Each player only gets one instruction per turn though, so each of a players spawned thread will execute in turn, one thread per turn.  Thus if ScriptA has 2 threads and ScriptB has 1 thread the order of execution will look like:
+  <p>Each script starts out with 1 thread but by <a href="#help/fork">forking</a> new threads can be spawned.  Each player only gets one instruction per turn though, so each of a players spawned thread will execute in turn, one thread per turn.  Thus if ScriptA has 2 threads and ScriptB has 1 thread the order of execution will look like:
     <ol>
     <li>ScriptA.thread1</li>
     <li>ScriptB.thread1</li>
@@ -121,6 +124,39 @@
 
 <section id="addressing">
   <h2>Addressing Modes</h2>
+
+  <p>The addressing mode determines how the argument value is interpreted. Given the argument value, <code>42</code>, it can be interpreted in 3 different ways:
+    <ul>
+      <li><strong>Immediate</strong><br> The value is interpreted as a constant.<br>The value 42.</li>
+      <li><strong>Relative</strong><br>The value is an offset in memory.<br>The memory location 42 spaces ahead.</li>
+      <li><strong>Indirect</strong><br>The value is an offset in memory, but use the value at the offset to do another indirection.<br>The memory location pointed to by the memory location 42 spaces ahead.</li>
+    </ul>
+  </p>
+
+  <h3>Pre/Post Increment/Decrement</h3>
+  <p>Both Relative and Indirect addressing can also utilize pre and post operators.
+  </p> 
+  <table class="table">
+    <tbody>
+      <tr>
+        <td class="monospace">--(42)<br>++label</td>
+        <td><strong>Relative Pre-Increment/Decrement</strong><br>return the value at location <code>42</code>/<code>label</code> but increment/decrement it first</td>
+      </tr>
+      <tr>
+        <td class="monospace">(42)--<br>label++</td>
+        <td><strong>Relative Post-Increment/Decrement</strong><br>return the value at location <code>42</code>/<code>label</code> and increment/decrement it afterwards</td>
+      </tr>
+      <tr>
+        <td class="monospace">*--(42)<br>*++label</td>
+        <td><strong>Indirect Pre-Increment/Decrement</strong><br>increment/decrement the value at location pointed to by <code>42</code>/<code>label</code> and then use that value as a relative memory location.</td>
+      </tr>      
+      <tr>
+        <td class="monospace">*(42)--<br>*label++</td>
+        <td><strong>Indirect Post-Increment/Decrement</strong><br>get the value at the memory location pointed to by <code>42</code>/<code>label</code> and then use that value as a relative memory location. Afterwards increment/decrement the value pointed to by <code>42</code>/<code>label</code></td>
+      </tr>
+
+    </tbody>
+  </table>
 </section>
 
 <section id="rock">
