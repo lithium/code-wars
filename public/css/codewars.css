@@ -5,6 +5,11 @@ img#loading {
 }
 
 
+.col-md-4.login {
+  padding-top: 20px;
+  text-align: right;
+}
+
 
 .pane.editors {
   height: 100%;
