@@ -16,7 +16,7 @@ MARS has no registers, only primary memory (RAM).
 A Thread that executes an invalid operation dies.
 
 
-For more details see [NOTES](NOTES.md).
+For more details see [Getting Starting](http://code-wars.herokuapp.com/#ref/welcome).
 
 ## Gameplay
 
