@@ -60,8 +60,8 @@ Server
 
 Content
 -------
-- [ ] Help Content
-  - [ ] Index
+- [x] Help Content
+  - [x] Index
 - [ ] Reference Content
   - [ ] Welcome
   - [ ] Mars

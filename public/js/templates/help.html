@@ -1,5 +1,40 @@
 <div class="helpTopics">
 
+<section id="index">
+  <h2 class="title">Red Script Reference</h2>
+  <h4 class="subtitle"></h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Red Script</th>
+        <th>Red Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><th colspan="3">Change Memory</th></tr>
+      <tr> <td><a href="#help/data">Data Constants</a></td> <td>.data</td> <td>.DAT</td> </tr>
+      <tr> <td><a href="#help/mov">Assignment</a></td> <td>=</td> <td>MOV</td> </tr>
+      <tr><th colspan="3">Arithmetic</th></tr>
+      <tr> <td><a href="#help/add">Addition</a></td> <td>+=</td> <td>ADD</td> </tr>
+      <tr> <td><a href="#help/sub">Subtraction</a></td> <td>-=</td> <td>SUB</td> </tr>
+      <tr> <td><a href="#help/mul">Multiplication</a></td> <td>*=</td> <td>MUL</td> </tr>
+      <tr> <td><a href="#help/div">Division</a></td> <td>/=</td> <td>DIV</td> </tr>
+      <tr> <td><a href="#help/mod">Modulus</a></td> <td>%=</td> <td>MOD</td> </tr>
+      <tr><th colspan="3">Branching</th></tr>
+      <tr> <td><a href="#help/jmp">Jump</a></td> <td>jmp</td> <td>JMP</td> </tr>
+      <tr> <td><a href="#help/jz">Jump if Zero</a></td> <td>jz</td> <td>JMZ</td> </tr>
+      <tr> <td><a href="#help/jnz">Jump if not Zero</a></td> <td>jnz</td> <td>JMN</td> </tr>
+      <tr> <td><a href="#help/fork">Fork</a></td> <td>fork</td> <td>SPL</td> </tr>
+      <tr><th colspan="3">Skip Instructions</th></tr>
+      <tr> <td><a href="#help/sne">If Equal</a></td> <td>if a == b</td> <td>sne</td> </tr>
+      <tr> <td><a href="#help/seq">If Not Equal</a></td> <td>if a != b</td> <td>seq</td> </tr>
+      <tr> <td><a href="#help/slt-sge">If Less Than</a></td> <td>if a &lt; b</td> <td>slt</td> </tr>
+      <tr> <td><a href="#help/slt-sge">If Greater Than or Equal</a></td> <td>if a >= b</td> <td>sge</td> </tr>
+    </tbody>
+  </table>
+</section>
+
 <section id="mov">
   <h2 class="title">Assign to memory</h2>
   <h4 class="subtitle">Change a memory location by moving data to it.</h4>
@@ -282,7 +317,7 @@
 
 
 <section id="add">
-  <h2 class="title">Add to memory</h2>
+  <h2 class="title">Addition</h2>
   <h4 class="subtitle">Change a memory location by adding a value.</h4>
   <div class="syntax">
     <code>address</code> += <code>value</code>
@@ -309,7 +344,7 @@
 </section>
 
 <section id="sub">
-  <h2 class="title">Subtract from memory</h2>
+  <h2 class="title">Subtraction</h2>
   <h4 class="subtitle">Change a memory location by subtracting a value.</h4>
   <div class="syntax">
     <code>address</code> -= <code>value</code>
@@ -335,4 +370,72 @@
   </div>
 </section>
 
+<section id="mul">
+  <h2 class="title">Multiplication</h2>
+  <h4 class="subtitle">Change a memory location by multiplying it by a value.</h4>
+  <div class="syntax">
+    <code>address</code> *= <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    MUL <code>value</code>, <code>address</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>The 15-bit <code>value</code> will be multiplied with the current value at location <code>address</code>. The result will be stored at <code>address</code>. <p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">(5) *= 23</div>
+      <div class="col-md-7"><em class="small">multiply <strong>23</strong> to the memory location <strong>5</strong> locations ahead.</em></div>
+    </div>
+  </div>
+</section>
+
+<section id="div">
+  <h2 class="title">Division</h2>
+  <h4 class="subtitle">Change a memory location by dividing it by a value.</h4>
+  <div class="syntax">
+    <code>address</code> /= <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    DIV <code>value</code>, <code>address</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>The current value at location <code>address</code> will be divided by the 15-bit value <code>value</code>. The result will be stored at <code>address</code>. <p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">(5) /= 2</div>
+      <div class="col-md-7"><em class="small">divide the value at the memory location <strong>5</strong> by <strong>2</strong>.</em></div>
+    </div>
+  </div>
+</section>
+
+<section id="mod">
+  <h2 class="title">Modulus</h2>
+  <h4 class="subtitle">Change a memory location with modular arithmetic.</h4>
+  <div class="syntax">
+    <code>address</code> %= <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    MOD <code>value</code>, <code>address</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>The current value at location <code>address</code> will be divided by the 15-bit value <code>value</code>. Any non-integer remainder is discarded. The result will be stored at <code>address</code>. <p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">(5) %= 30</div>
+      <div class="col-md-7"><em class="small"></em></div>
+    </div>
+  </div>
+</section>
 </div>

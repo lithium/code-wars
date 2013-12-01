@@ -28,6 +28,11 @@ img#loading {
 .pane .panel {
   height: 100%;
 }
+.pane.context .panel-body {
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 5em;
+}
 
 .pane.editors .panel-body {
   padding: 0;

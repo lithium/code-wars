@@ -27,9 +27,10 @@ return Backbone.View.extend({
   },
 
   onRoute: function(router, name, args) {
-    console.log("onRoute", arguments)
+    // console.log("onRoute", arguments)
     var section = args[0] || 'index'
     if (name == this.options.templateName) {
+      this.trigger("codewars:route", name, section)
       this.showHelpFor(section)
     }
   },

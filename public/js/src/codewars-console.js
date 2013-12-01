@@ -114,9 +114,17 @@ return Backbone.View.extend({
     
     this.clearMars();
 
+    this.$('a[href="#contextHelp"]').click(_.bind(function() {
+      this.help.showHelpFor('index');
+    }, this));
+    this.$('a[href="#contextReference"]').click(_.bind(function() {
+      this.reference.showHelpFor('index');
+    }, this));
+
+    this.reference.on('codewars:route', this.showReference, this);
+    this.help.on('codewars:route', this.showHelp, this);
 
     this.startingHistory = history.length;
-    console.log("starting history", this.startingHistory)
   },
 
   openDebug: function() {
@@ -134,6 +142,15 @@ return Backbone.View.extend({
   },
   closeInspector: function() {
     this.$inspectorPane.addClass('obscured')
+  },
+
+  showReference: function() {
+    this.$('a[href="#contextReference"]').tab("show");
+    this.closeInspector();
+  },
+  showHelp: function() {
+    this.$('a[href="#contextHelp"]').tab("show");
+    this.closeInspector();
   },
 
   openRankingScript: function(script) {
@@ -270,8 +287,7 @@ return Backbone.View.extend({
   },
   helpContext: function(mneumonic) {
     this.help.showHelpFor(mneumonic);
-    this.closeInspector();
-    this.$('a[href="#contextHelp"]').tab("show");
+    this.showHelp();
   },
   scriptDeployed: function(scriptName, compiledBytes) {
     this.openDebug();
