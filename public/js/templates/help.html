@@ -1,30 +1,35 @@
 <div class="helpTopics">
 
 <section id="mov">
-  <h2 class="title">MOV</h2>
-  <h4 class="subtitle">Change memory by MOVing data into it.</h4>
+  <h2 class="title">Assignment</h2>
+  <h4 class="subtitle">Change a memory location by moving data to it.</h4>
   <div class="syntax">
-    address = value
+    <code>address</code> = <code>value</code>
   </div>
   <h5>RedCode Equivalent</h5>
   <div class="syntax redcode">
     MOV <code>value</code>, <code>address</code>
   </div>
+  <h5>Description</h5>
   <div class="description">
     <p>The memory location referenced by <code>address</code> will be changed to <code>value</code>.</p>
   </div>
   <h5>Examples</h5>
   <div class="examples">
     <div class="row">
-      <div class="col-md-5 monospace">mov 0, (-1)</div>
-      <div class="col-md-7"><em class="small">change previous memory location to 0</em></div>
+      <div class="col-md-5 monospace">(-1) = 0</div>
+      <div class="col-md-7"><em class="small">change the previous memory location to 0</em></div>
     </div>
     <div class="row">
-      <div class="col-md-5 monospace">mov (-5), @label</div>
+      <div class="col-md-5 monospace">label = (-5)</div>
       <div class="col-md-7"><em class="small">change the memory location at <strong>label</strong> to be the data stored at memory location <strong>-5</strong></em></div>
     </div>
+    <div class="row">
+      <div class="col-md-5 monospace">*ptr = 42</div>
+      <div class="col-md-7"><em class="small">find the value at the memory location <strong>ptr</strong> and set that memory location to 42.</em></div>
+    </div>
     <div class="row incorrect">
-      <div class="col-md-5 monospace"> <strike>ld 0x42, 5</strike> </div>
+      <div class="col-md-5 monospace"> <strike>5 = 0x42</strike> </div>
       <div class="col-md-7"><em class="small">You cannot reference absolute memory locations.</em></div>
     </div>
   </div>
@@ -52,12 +57,126 @@
   </div>
 </section>
 
+<section id="jmp">
+  <h2 class="title">Jump to location</h2>
+  <h4 class="subtitle">Jump to a new memory location.</h4>
+  <div class="syntax">
+    jmp <code>address</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    JMP <code>address</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>On the next cycle, start execution at the memory location <code>address</code>.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">
+        coreclear:<br>
+        &nbsp;&nbsp;*--ptr = 0<br>
+        &nbsp;&nbsp;jmp coreclear<br>
+        ptr: .data -1
+      </div>
+      <div class="col-md-7"><em class="small">
+        <br>
+        set location pointed at by <strong>ptr</strong> to <strong>0</strong><br>
+        Jump back to <strong>coreclear</strong><br>
+        start clearing at <strong>coreclear-1</strong>
+      </em></div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 monospace">jmp (0)</div>
+      <div class="col-md-7"><em class="small">Jump to ourself, an infinite loop.</em></div>
+    </div>
+  </div>
+</section>
+
+<section id="jz">
+  <h2 class="title">Jump If Zero</h2>
+  <h4 class="subtitle">Jump to a new location if value is 0.</h4>
+  <div class="syntax">
+    jz <code>address</code>, <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    JMZ <code>address</code>, <code>value</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>If the 15-bit value <code>value</code> is 0, <a href="#help/jmp">jmp</a> to the location <code>address</code>. Otherwise continue execution at the next instruction.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">jz (-3), *ptr</div>
+      <div class="col-md-7"><em class="small">Jump back <strong>-3</strong> locations if the value at location pointer to by <strong>ptr</strong> is 0.</em></div>
+    </div>
+  </div>
+</section>
+
+<section id="jnz">
+  <h2 class="title">Jump If Not Zero</h2>
+  <h4 class="subtitle">Jump to a new location if value is not 0.</h4>
+  <div class="syntax">
+    jnz <code>address</code>, <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    JMN <code>address</code>, <code>value</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>If the 15-bit value <code>value</code> is not 0, <a href="#help/jmp">jmp</a> to the location <code>address</code>. Otherwise continue execution at the next instruction.</p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">
+        self:<br>
+        &nbsp;&nbsp;jnz self, *--ptr<br>
+        ptr: .data -10
+      </div>
+      <div class="col-md-7"><em class="small">
+        use <a href="#ref/addressing">pre-decrement addressing</a> to decrement the value at <strong>gatePtr</strong>. Then jump to <strong>self</strong> if not 0.<br>  This loop will run for 2^15 cycles before the value at <strong>gatePtr</strong> becomes 0 again.
+      </em></div>
+    </div>
+  </div>
+</section>
+
+<section id="fork">
+  <h2 class="title">Fork a new thread</h2>
+  <h4 class="subtitle">Spawn a new thread at a location.</h4>
+  <div class="syntax">
+    fork <code>address</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    SPL <code>address</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>Spawn a new thread that will start execution at the location <code>address</code>.  The thread will be added to the end of the player's process queue.  Each <a href="#ref/step">Step</a> only one of the player's active threads will execute, in the order they were created.
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">
+      </div>
+      <div class="col-md-7"><em class="small">
+      </em></div>
+    </div>
+  </div>
+</section>
+
 
 <section id="sne">
   <h2 class="title">if ==</h2>
   <h4 class="subtitle">Compare and If Equal run next instruction</h4>
   <div class="syntax">
-    if <code>a</code> == <code>b</code>:<br>
+    if <code>aValue</code> == <code>bValue</code><br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
   </div>
   <h5>RedCode Equivalent</h5>
@@ -66,101 +185,116 @@
     CMP <code>value</code>, <code>value</code>
   </div>
   <div class="description">
-    <p>Compare the 12-bit value <code>a</code> and the 12-bit value <code>b</code>. If they are equal, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+    <p>Compare the 15-bit value <code>aValue</code> and the 15-bit value <code>bValue</code>. If they are equal, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
   </div>
-  <h5>Examples</h5>
+  <h5>Example</h5>
   <div class="examples">
     <div class="row">
-      <div class="col-md-5 monospace">loop: counter -= 1<br>if counter == 0:<br>&nbsp;&nbsp;goto loop</div>
-    </div>
-    <div class="row">
-      <div class="col-md-5 monospace">if *foo == 42:</div>
+      <div class="col-md-5 monospace">
+        scan:<br>
+        &nbsp;&nbsp;if *ptr == 42<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;*ptr = 0<br>
+        &nbsp;&nbsp;ptr += 5<br>
+        &nbsp;&nbsp;jmp scan<br>
+        ptr: .dat 100
+      </div>
+      <div class="col-md-7"><em class="small"><br>
+        is the value at location <strong>ptr</strong> <strong>42</strong>?<br>
+        if so, set it to <strong>0</strong>.<br>
+        skip ahead 5 locations<br>
+        and keep scanning<br>
+        start looking at location <strong>100</strong><br>
+      </em>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="seq">
-  <h2 class="title">if !=</h2>
-  <h4 class="subtitle">Compare and Not If Equal run next instruction</h4>
+  <h2 class="title">if != </h2>
+  <h4 class="subtitle">Compare and If Not Equal run next instruction</h4>
   <div class="syntax">
-    if <code>a</code> != <code>b</code>:<br>
+    if <code>aValue</code> != <code>bValue</code><br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
   </div>
   <h5>RedCode Equivalent</h5>
   <div class="syntax redcode">
-    SEQ <code>value</code>, <code>value</code><br>
+    SEQ <code>aValue</code>, <code>bValue</code><br>
   </div>
   <div class="description">
-    <p>Compare the 12-bit value <code>a</code> and the 12-bit value <code>b</code>. If they are not equal, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+    <p>Compare the 15-bit value <code>aValue</code> and the 15-bit value <code>bValue</code>. If they are not equal, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
   </div>
-  <h5>Examples</h5>
+  <h5>Example</h5>
   <div class="examples">
     <div class="row">
-      <div class="col-md-5 monospace">loop:<br>if *label != 42:<br>&nbsp;&nbsp;label += 1<br>goto loop</div>
+      <div class="col-md-5 monospace">
+        scan:<br>
+        &nbsp;&nbsp;if *ptr != 0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;jmp exit<br>
+        &nbsp;&nbsp;ptr += 5<br>
+        &nbsp;&nbsp;jmp scan<br>
+        exit:<br>
+        ptr: .dat 100
+      </div>
+      <div class="col-md-7"><em class="small"><br>
+        is the location at <strong>ptr</strong> something other than <strong>0</strong>?<br>
+        if so, jump to the label <strong>exit</strong>.<br>
+        otherwise, skip ahead 5 locations<br>
+        and keep looking<br>
+        <br>
+        start looking at location <strong>100</strong><br>
+      </em>
+      </div>
     </div>
     <div class="row">
     </div>
   </div>
 </section>
 
-<section id="slt">
-  <h2 class="title">if &gt;</h2>
-  <h4 class="subtitle">If Greater Than, run next instruction</h4>
+<section id="slt-sge">
+  <h2 class="title">Conditionals</h2>
+  <h4 class="subtitle">If conditional is true, run next instruction</h4>
   <div class="syntax">
     if <code>a</code> > <code>b</code>:<br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
-    if <code>b</code> &lt;= <code>a</code>:<br>
-    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
-  </div>
-  <div class="description">
-    <p>If the 12-bit value <code>a</code> is greater than the 12-bit value <code>b</code>, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
-  </div>
-  <h5>Examples</h5>
-  <div class="examples">
-    <div class="row">
-      <div class="col-md-5 monospace">if counter > 100:<br>&nbsp;&nbsp;counter = 100</div>
-    </div>
-    <div class="row">
-    </div>
-  </div>
-</section>
-
-
-<section id="sge">
-  <h2 class="title">if &lt;</h2>
-  <h4 class="subtitle">If Greater than or equal to, run next instruction</h4>
-  <div class="syntax">
-    if <code>a</code> < <code>b</code>:<br>
+    if <code>a</code> >= <code>b</code>:<br>
     &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
-    if <code>b</code> >= <code>a</code>:<br>
-    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em>
+    if <code>a</code> &lt; <code>b</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
+    if <code>a</code> &lt;= <code>b</code>:<br>
+    &nbsp;&nbsp;<em>&lt;next instruction&gt;</em><br>
   </div>
   <div class="description">
-    <p>If the 12-bit value <code>a</code> is less than the 12-bit value <code>b</code>, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
+    <p>If the 15-bit value <code>a</code> is greater than the 15-bit value <code>b</code>, run <em>&lt;next instruction&gt;</em>.  Otherwise, skip it.</p>
   </div>
   <h5>Examples</h5>
   <div class="examples">
     <div class="row">
-      <div class="col-md-5 monospace">loop:<br>if *label != 42:<br>&nbsp;&nbsp;label += 1<br>goto loop</div>
+      <div class="col-md-5 monospace">if counter > 100<br>&nbsp;&nbsp;counter = 100</div>
+      <div class="col-md-7"><em class="small">is the value at <strong>counter</strong> greater than <strong>100</strong>?<br>if so, set it to <strong>100</strong></em></div>
     </div>
     <div class="row">
+      <div class="col-md-5 monospace">if *ptr <= 20<br>&nbsp;&nbsp;jmp halt</div>
+      <div class="col-md-7"><em class="small">is the value at location <strong>ptr</strong> less than or equal to <strong>20</strong>?<br>if so, halt</em></div>
     </div>
   </div>
 </section>
+
+
 
 <section id="add">
-  <h2 class="title">ADD</h2>
+  <h2 class="title">Add to memory</h2>
   <h4 class="subtitle">Change a memory location by adding a value.</h4>
   <div class="syntax">
-    <code>dest</code> += <code>value</code>
+    <code>address</code> += <code>value</code>
   </div>
   <h5>RedCode Equivalent</h5>
   <div class="syntax redcode">
-    ADD <code>value</code>, <code>dest</code>
+    ADD <code>value</code>, <code>address</code>
   </div>
   <h5>Description</h5>
   <div class="description">
-    <p>The 15-bit <code>value</code> will be added to the value at location <code>dest</code> <p>
+    <p>The 15-bit <code>value</code> will be added to the current value at location <code>address</code>. The result will be stored at <code>address</code>. <p>
   </div>
   <h5>Examples</h5>
   <div class="examples">
@@ -171,6 +305,33 @@
     <div class="row">
       <div class="col-md-5 monospace">total += subtotal</div>
       <div class="col-md-7"><em class="small">add the value in memory at the label subtotal to the memory location at referenced by the label total</em></div>
+    </div>
+  </div>
+</section>
+
+<section id="sub">
+  <h2 class="title">Subtract from memory</h2>
+  <h4 class="subtitle">Change a memory location by subtracting a value.</h4>
+  <div class="syntax">
+    <code>address</code> -= <code>value</code>
+  </div>
+  <h5>RedCode Equivalent</h5>
+  <div class="syntax redcode">
+    SUB <code>value</code>, <code>address</code>
+  </div>
+  <h5>Description</h5>
+  <div class="description">
+    <p>The 15-bit <code>value</code> will be subtracted from the current value at location <code>address</code>. The result will be stored at <code>address</code>. <p>
+  </div>
+  <h5>Examples</h5>
+  <div class="examples">
+    <div class="row">
+      <div class="col-md-5 monospace">(5) -= 23</div>
+      <div class="col-md-7"><em class="small">add <strong>23</strong> to the memory location <strong>5</strong> locations ahead.</em></div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 monospace">count -= 2</div>
+      <div class="col-md-7"><em class="small">subtract <strong>2</strong> from the value at the memory location <strong>count</strong></em></div>
     </div>
   </div>
 </section>

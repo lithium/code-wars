@@ -122,25 +122,26 @@ return Backbone.View.extend({
       if (line.indexOf(':') != -1)
         line = line.replace(/.+:/,'')
 
-      jumpTable = {
-        'data': /\.dat/,
-        'add': /\+=/,
-        'sub': /-=/,
-        'mul': /\*=/,
-        'div': /\/=/,
-        'mod': /%=/,
-        'mov': /[^=!<>+\-*\/%]=/,
-        'seq': /!=/,
-        'sne': /==/,
-        'sge.1': /<[^=]/,
-        'sge.2': />[^=]/,
-        'slt.1': />=/,
-        'slt.2': /<=/,
-        'jmp': /jmp/,
-        'fork': /fork/,
-      }
-      for (var mneumonic in jumpTable) {
-        if (jumpTable[mneumonic].test(line)) {
+      var jumpTable = [
+        ['data', /\.dat/],
+        ['add', /\+=/],
+        ['sub', /-=/],
+        ['mul', /\*=/],
+        ['div', /\/=/],
+        ['mod', /%=/],
+        ['seq', /!=/],
+        ['sne', /==/],
+        ['slt-sge', /[><]=?/],
+        ['jmp', /jmp/],
+        ['jz', /jz/],
+        ['jnz', /jnz/],
+        ['fork', /fork/],
+        ['mov', /[^=!<>+\-*\/%]=/],
+      ]
+      for (var i=0; i < jumpTable.length; i++)  {
+        var mneumonic = jumpTable[i][0];
+        var regex = jumpTable[i][1];
+        if (regex.test(line)) {
           this.trigger("codewars:helpContext", mneumonic)
           break;
         }

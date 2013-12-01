@@ -3,6 +3,7 @@ Console
 -------
 - [ ] round results
 - [ ] run with one program only
+- [ ] scroll right pane (help/reference)
 - [x] PC inspector
 - [x] 46-bit hexdumps
 - [x] Rankings View
