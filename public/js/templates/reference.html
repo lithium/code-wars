@@ -159,28 +159,117 @@
   </table>
 </section>
 
+<section id="metagame">
+  <h2>Metagame</h2>
+
+  <p>Warrior scripts fall into 3 basic categories, traditionally typified as <a href="#ref/rock">Rock</a>, <a href="#ref/paper">Paper</a> and <a href="#ref/scissors">Scissors</a>.</p>
+
+  <p><a href="#ref/rock">Rock</a> or Bombers "bomb" regular locations in memory with illegal instructions, hoping to catch opponents programs and cause them to crash.  They are rather simplistic but quite effective.  They easily defeat larger complicated scripts like Scissors, but are vulnerable to fast spreading programs like Paper.</p>
+
+  <p><a href="#ref/paper">Paper</a> or Replicators make copies of themself and then fork to the new copy.  Replicating until they fill memory and overwriting other programs.  They quickly spread and defeat simpler programs like Rock but are easy to find by scanners like Scissor.</p>
+
+  <p><a href="#ref/scissors">Scissors</a> or Scanners search through memory trying to find opponents and attacking directly.  Dropping targetted <code>fork (0)</code> bombs is an effective way to stun an opponent and then typically followed by a <a href="#help/jmp">Core Clear</a> to eliminate opponents.  But its complexity makes it vulnerable to simple Rock bombers.</p>
+</section>
+
 <section id="rock">
   <h2>Rock</h2>
+
+  <p><a href="#ref/rock">Rock</a> or Bombers "bomb" regular locations in memory with illegal instructions, hoping to catch opponents programs and cause them to crash.  They are rather simplistic but quite effective.  They easily defeat larger complicated scripts like Scissors, but are vulnerable to fast spreading programs like Paper.</p>
+
+<pre>
+   // Rock
+1. loop:   *loc = bomb  // copy our bomb to loc
+2.         loc += 4     // skip ahead 4
+3.         jmp loop     // loop forever
+
+4. bomb:   .dat 42      // the bomb to drop
+5. loc:    .DAT 7       // start bombing at loop+7
+</pre>
+
+<h3>Strategy</h3>
+<p>Drop a .DAT bomb every 4 locations.  Any invalid instruction would do but in this case we drop the arbitrary value "42" to confuse Scissors.  4 locations is important because its 4,096 is divisible by it. This way, when we wrap around memory we will not bomb ourself.  We start bombing at our starting location+7, when we wrap back around in memory, we will bomb location -1, we will bomb our original bomb at location 4, and then proceed to bomba ll the same locations again at +7 and so on until we win, hopfully.</p>
 </section>
 
 <section id="paper">
   <h2>Paper</h2>
+  <p><a href="#ref/paper">Paper</a> or Replicators make copies of themself and then fork to the new copy.  Replicating until they fill memory and overwriting other programs.  They quickly spread and defeat simpler programs like Rock but are easy to find by scanners like Scissor.</p>
+
+<pre>
+// Paper
+paper:  *--dest = *--src  // copy ourself to dest
+        jnz paper, src    // when src=0 we're done
+        fork *++dest      // so fork to new copy
+        src = 8           // reset src to our size
+        dest -= 100       // pick a new destination
+        jmp paper         // and start over again
+
+src:    .dat 8            // initialized to our size
+dest:   .dat 1234         // arbitrary location
+</pre>
+
+  <h3>Strategy</h3>
+  <p>We define two variables: <code>src</code> that starts out at 8, pointing to the end of our code; and <code>dest</code> initialized to an arbitary value.  We copy the bytes from <code>src</code> to <code>dest</code> with the jnz loop at <code>paper:</code>.  Once we've made an entire copy of ourself, fork to the new copy.  We pre-increment dest when we fork on <strong>line 3</strong> to ensure that our new thread starts on <strong>line 4</strong> to re-initialize <code>src</code> so it can start over.  The new thread will start the same process over at the same time the old one does, growing until ultimately we fill memory completely.
+  </p>
 </section>
 
 <section id="scissors">
   <h2>Scissors</h2>
+
+  <p><a href="#ref/scissors">Scissors</a> or Scanners search through memory trying to find opponents and attacking directly.  Dropping targetted <code>fork (0)</code> bombs is an effective way to stun an opponent and then typically followed by a <a href="#help/jmp">Core Clear</a> to eliminate opponents.  But its complexity makes it vulnerable to simple Rock bombers.</p>
+ 
+<pre>
+// Scissors
+scan:  start += 21       // scan every 21 locations 
+       end += 21
+       if *start != *end // if locations differ 
+           jmp snip      // we found something
+       jmp scan          // else keep scanning
+
+snip:  if start == 0xfff // we wrapped around once 
+           jmp clear     // start the core clear
+
+erase: *--end = bomb     // erase with fork bombs
+       if end != start   // until scan range filled
+           jmp erase
+       end += 12         // reset end pointer
+       jmp scan          // resume scanning
+
+clr:   *start++ = 0      // do a core clear
+       start %= 4096
+       jnz clr, start    // but skip ourself
+clear: start = 6 
+       jmp clr
+
+start: .dat 0            // start of scan pointer
+end:   .dat 12           // end of scan pointer
+bomb:  fork bomb         // fork bomb constant
+</pre>
+
+  <h3>Strategy</h3>
+  <p>Since memory locations all start initialized as 0, we can assume that if we find two different values in a memory location that one of them has been changed. So we scan through memory, looking at two memory locations 12 locations apart, every other 21 locations.  If we find some changed memory, we fill our scan range with fork bombs <code>fork (0)</code> which will cause any thread to execute it to just endlessly create new threads essentially deadlocking all of their threads.</p>
+  <p>Once we have scanned through memory once and wrapped around to ourself (<strong>line 6</strong>), we convert to a core clear (<strong>line 13</strong>) and fill the memory with <code>.DATA 0</code>.  Adding an extra instruction to our coreclear at <strong>line 14</strong> allows us to skip ourself, the relevant 6 bytes at least. constantly running a core clear until all other threads have finally died.</p>
 </section>
 
 <section id="redcode">
   <h2>Red Code</h2>
+
+  <p>TODO: see <a href="#ref/corewar">core war</a></p>
 </section>
 
 <section id="corewar">
   <h2>Core War</h2>
-</section>
 
-<section id="reading">
-  <h2>Other Reading</h2>
+  <p>Core War was originally conceived by A. K. Dewdney and published in a Scientific American article in 1984. 
+  </p>
+
+  <h3>Other Reading</h3>
+    <ul class="list-unstyled">
+      <li><a target="_blank" href="http://corewar.co.uk/cwg.txt">Original Core War Guidelines</a></li>
+      <li><a target="_blank" href="http://vyznev.net/corewar/guide.html">Beginner's guide to Redcode</a></li>
+      <li><a target="_blank" href="http://corewar.co.uk/mintard/index.htm">Paper - Stone - Scissors Trilogy</a></li>
+      <li><a target="_blank" href="http://corewar.co.uk/">http://corewar.co.uk/</a></li>
+      <li><a target="_blank" href="http://corewars.org/information.html">http://corewars.org/information.html</a></li>
+    </ul>
 </section>
 
 </div>

@@ -63,17 +63,14 @@ Content
 - [x] Help Content
   - [x] Index
 - [ ] Reference Content
-  - [ ] Welcome
-  - [ ] Mars
-  - [ ] RedScript Syntax
-  - [ ] Addressing Modes
-  - [ ] Conditionals
-  - [ ] Loops
-  - [ ] Forking
-  - [ ] Rock
-  - [ ] Paper
-  - [ ] Scissors
-  - [ ] CoreWar
+  - [x] Welcome
+  - [x] Mars
+  - [x] RedScript Syntax
+  - [x] Addressing Modes
+  - [x] Rock
+  - [x] Paper
+  - [x] Scissors
+  - [x] CoreWar
   - [ ] RedCode
 
 
