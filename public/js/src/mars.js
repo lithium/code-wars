@@ -395,7 +395,7 @@ _.extend(Mars.MarsCore.prototype, {
             threadNumber: threadCount,
             owner: thread.owner,
           };
-          thread.owner.threads.push(newThread);
+          thread.owner.threads.unshift(newThread);
           thread.owner.runningThreadCount++;
           this.trigger("mars:threadSpawned", newThread);
         }
