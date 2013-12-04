@@ -121,11 +121,12 @@ var updateBoard = function(done) {
     }
 
     // console.log("matches complete\n", championshipBoard)
-    redis.del("queuedScripts");
-    console.log("Hill run complete.")
+    redis.del("queuedScripts", function() {
+      console.log("Hill run complete.")
+      done();
+    });
 
 
-    done();
   })
 
 }
