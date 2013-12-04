@@ -388,15 +388,19 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
         rows.push("jnz "+op1+", "+op2+"\n");
         break;
       case RedAsm.OPCODE_JMP:
-        // rows.push("jmp "+op1+"\n");
-        rows.push("jmp "+op1+", "+op2+"\n");
+        if (RedAsm.signedCast(instruction.operand2)) 
+          rows.push("jmp "+op1+", "+op2+"\n");
+        else
+          rows.push("jmp "+op1+"\n");
         break;
       case RedAsm.OPCODE_FORK:
-        rows.push("fork "+op1+"\n");
+        if (RedAsm.signedCast(instruction.operand2)) 
+          rows.push("fork "+op1+", "+op2+"\n");
+        else
+          rows.push("fork "+op1+"\n");
         break;
       default:
-        rows.push(".data 0x"+RedAsm.hexdump(compiledBytes[i]>>>0, 5)+"\n");
-        // rows.push(RedAsm.mneumonicFromOpcode(instruction.opcode))
+        rows.push(".data 0x"+RedAsm.hexdump(compiledBytes[i]>>>0 & 0x3fffffff, 8)+"\n");
         break;
     }
   }
