@@ -114,12 +114,20 @@ RedAsm.compile = function(assembly_string) {
         return null;
     }
 
-    if (/\(/.test(operand)) { // paren + constant
+    if (/\(/.test(operand)) { // (constant)
       operand = operand.replace(/[()]/g,'')
       ret.value = parseInt(operand);
       return ret;
     } 
-    else 
+
+    if (/\[/.test(operand)) { // [label expression]
+      var expr = operand.replace(/[\[\]]/g,'')
+      var address = Parser.evaluate(expr, symbolTable);
+      console.log("expr", expr, symbolTable, address, lineNumber)
+      ret.value = address - lineNumber;
+      return ret;
+    }
+
     if (operand in symbolTable) {  // relative via label
       var address = symbolTable[operand];
       ret.value = address - lineNumber;

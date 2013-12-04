@@ -29,6 +29,9 @@ require.config({
     'identicon': {
       deps: ['jquery', 'md5'],
     },
+    'parser': {
+      exports: 'Parser',
+    },
     'md5': {
       init: function() {
         return window.md5
@@ -63,7 +66,7 @@ require.config({
 });
 
 
-requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars-console', 'router-help'], 
+requirejs(['text','jquery','ace/ace','bootstrap','underscore','backbone', 'codewars-console', 'router-help', 'parser'], 
   function(text,   $,       ace,      bootstrap,  underscore,  backbone,   CodeWarsConsole,    HelpRouter) {
 
     $(function() {
