@@ -169,8 +169,10 @@ RedAsm.compile = function(assembly_string) {
     var colonIdx = line.indexOf(':');
     if (colonIdx != -1) { // label is present
       var label = line.substring(0, colonIdx).trim()
-      line = line.substring(colonIdx+1);
-      symbolTable[label] = lineNumber;
+      if (label.indexOf(' ') == -1) { // labels cant have spaces in them...
+        line = line.substring(colonIdx+1);
+        symbolTable[label] = lineNumber;
+      }
     }
     line = line.trim()
 
@@ -189,7 +191,9 @@ RedAsm.compile = function(assembly_string) {
     var colonIdx = line.indexOf(':');
     if (colonIdx != -1) { // label is present
       var label = line.substring(0, colonIdx).trim()
-      line = line.substring(colonIdx+1);
+      if (label.indexOf(' ') == -1) { // labels cant have spaces in them...
+        line = line.substring(colonIdx+1);
+      }
     }
     line = line.trim()
 
