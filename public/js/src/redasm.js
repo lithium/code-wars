@@ -300,6 +300,7 @@ RedAsm.compile = function(assembly_string) {
         instruction.mode1 = a.mode;
         instruction.operand1 = a.value;
         instruction.incdec1 = a.incdec;
+        instruction.field1 = a.field;
       } else {
         return {
           'success': false,
@@ -314,6 +315,7 @@ RedAsm.compile = function(assembly_string) {
         instruction.mode2 = b.mode;
         instruction.operand2 = b.value;
         instruction.incdec2 = b.incdec;
+        instruction.field2 = b.field;
       } else {
         return {
           'success': false,
@@ -350,14 +352,14 @@ RedAsm.decompileToRedcode = function(compiledBytes) {
           instruction.opcode == RedAsm.OPCODE_DAT)
       {
         //jmp and fork have conditional "B" fields
-        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1, instruction.field1);
         if (RedAsm.signedCast(instruction.operand2)) {
-          stmt += ", "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2);
+          stmt += ", "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2, instruction.field2);
         }
       }
       else {
-        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2)+",";
-        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2, instruction.field2)+",";
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1, instruction.field1);
       }
     }
     rows.push(stmt);
@@ -369,8 +371,8 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
   var rows=[]
   for (var i=0; i<compiledBytes.length; i++) {
     var instruction = RedAsm.parseInstruction(compiledBytes[i]);
-    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
-    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2);
+    var op1 = RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1, instruction.field1);
+    var op2 = RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2, instruction.field2);
     switch (instruction.opcode) {
       case RedAsm.OPCODE_MOV:
         rows.push(op1+" = "+op2+"\n")
@@ -452,19 +454,21 @@ RedAsm.disassemble = function(compiledBytes) {
 
 /*
 
-  Instructions are 46-bit words packed into a Number .
+  Instructions are 50-bit words packed into a Number .
   Since bitwise operators are 32 bits only, and Number has
   0..+2^52, we pack a 30 bit and 22 bit word into a Number
 
   4-bits:  Instruction
-  6-bits:  Operand1 Mode
-  6-bits:  Operand2 Mode
+  8-bits:  Operand1 Mode/field/incdec
+  8-bits:  Operand2 Mode/field/incdec
   15-bits: Operand1 Value
   15-bits: Operand2 Value
 
 |------ upper 22 bits ------| 
  00 0000 0000 0000 0000 0000   
-         1111                           opcode    0x00f000
+    1111                                opcode    0x0f0000
+         11                             field1    0x00C000
+           11                           field2    0x003000
                111                      incdec1   0x000700
                     111                 incdec2   0x000070
                         11              mode1     0x00000C
@@ -480,7 +484,9 @@ RedAsm.disassemble = function(compiledBytes) {
 RedAsm.parseInstruction = function(instruction) {
   var lo = RedAsm.int52_lo(instruction);
   var hi = RedAsm.int52_hi(instruction);
-  var opcode    = (hi & 0xF000) >>> 12;                    
+  var opcode    = (hi & 0xF0000) >>> 16;                    
+  var field1    = (hi & 0x00C000) >>> 14;
+  var field2    = (hi & 0x003000) >>> 12;
   var incdec1   = (hi & 0x0700) >>> 8;
   var incdec2   = (hi & 0x0070) >>> 4;
   var mode1     = (hi & 0x00C) >>> 2;
@@ -496,13 +502,17 @@ RedAsm.parseInstruction = function(instruction) {
     'operand2': operand2,
     'incdec1': incdec1,
     'incdec2': incdec2,
+    'field1': field1,
+    'field2': field2,
   }
 }
 RedAsm.encodeInstruction = function(instruction) {
   var hi = 0;
   var lo = 0;
 
-  hi |= (instruction.opcode & 0xF) << 12;
+  hi |= (instruction.opcode & 0xF) << 16;
+  hi |= (instruction.field1 & 0x3) << 14;
+  hi |= (instruction.field2 & 0x3) << 12;
   hi |= (instruction.incdec1 & 0x7) << 8;
   hi |= (instruction.incdec2 & 0x7) << 4;
   hi |= (instruction.mode1 & 0x3) << 2;
@@ -533,7 +543,7 @@ RedAsm.hexdump = function(number, padding) {
   return out;
 }
 
-RedAsm.decorateAddressing = function(mode, value, incdec) {
+RedAsm.decorateAddressing = function(mode, value, incdec, field) {
   if (mode == RedAsm.ADDR_MODE_IMMEDIATE)
     return "0x"+parseInt(value).toString(16);
 
@@ -552,6 +562,14 @@ RedAsm.decorateAddressing = function(mode, value, incdec) {
   }
   if (mode == RedAsm.ADDR_MODE_INDIRECT)
     ret = "*"+ret;
+
+  if (field) {
+    if (field == RedAsm.FIELD_MODE_A) 
+      ret += ".a"
+    else if (field == RedAsm.FIELD_MODE_B) 
+      ret += ".b"
+  }
+
   return ret;
 }
 
