@@ -6,6 +6,7 @@ if (typeof exports == "undefined") {
 }
 
 _.extend(RedAsm, {
+  OPCODE_DAT: 0,
   OPCODE_MOV: 1,
   OPCODE_ADD: 2,
   OPCODE_SUB: 3,
@@ -34,6 +35,7 @@ _.extend(RedAsm, {
 
 _.extend(RedAsm, {
   MNEUMONICS: {
+    'DAT': RedAsm.OPCODE_DAT,
     'MOV': RedAsm.OPCODE_MOV,
     'ADD': RedAsm.OPCODE_ADD,
     'SUB': RedAsm.OPCODE_SUB,
@@ -183,30 +185,37 @@ RedAsm.compile = function(assembly_string) {
 
     var token = tokens[0].toLowerCase().trim();
 
+    // all instructions can take two arguments
+    firstOperand = tokens[1];
+    secondOperand = tokens[2];
+
 
     if (token == '.dat' || token == '.data') {
-      var firstOperand = tokens[1].trim().replace(/,$/,'')
-      output.push( parseInt(firstOperand.replace(/^\$/,'')) & 0x7FFF );
+      var firstOperand = firstOperand.trim().replace(/,$/,'')
+      instruction.opcode = RedAsm.OPCODE_DAT;
+      if (secondOperand) {
+        instruction.operand1 = parseInt(firstOperand) & 0x7FFF;
+        instruction.operand2 = parseInt(secondOperand) & 0x7FFF;
+      } else {
+        // if only one argument, its the "B" field (low order bits)
+        instruction.operand1 = 0;
+        instruction.operand2 = parseInt(firstOperand) & 0x7FFF;
+      }
+      output.push( RedAsm.encodeInstruction(instruction) );
       lineNumber++;
       continue;
     }
     else if (token == "jz") {
       instruction.opcode = RedAsm.OPCODE_JZ;
-      firstOperand = tokens[1];
-      secondOperand = tokens[2];
     }
     else if (token == "jnz") {
       instruction.opcode = RedAsm.OPCODE_JNZ;
-      firstOperand = tokens[1];
-      secondOperand = tokens[2];
     }
     else if (token == "jmp") {
       instruction.opcode = RedAsm.OPCODE_JMP;
-      firstOperand = tokens[1];
     }
     else if (token == "fork") {
       instruction.opcode = RedAsm.OPCODE_FORK;
-      firstOperand = tokens[1];
     }
     else if (token == "if") {
       firstOperand = tokens[1]
@@ -315,9 +324,20 @@ RedAsm.decompileToRedcode = function(compiledBytes) {
       stmt = ".DATA 0x"+RedAsm.hexdump(compiledBytes[i]>>>0,5)
     } else {
       //the only ones without operand2 are: JMP(0xB), FORK(0xC)
-      if (instruction.opcode < RedAsm.OPCODE_JMP)
+      if (instruction.opcode == RedAsm.OPCODE_JMP || 
+          instruction.opcode == RedAsm.OPCODE_FORK ||
+          instruction.opcode == RedAsm.OPCODE_DAT)
+      {
+        //jmp and fork have conditional "B" fields
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
+        if (RedAsm.signedCast(instruction.operand2)) {
+          stmt += ", "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2);
+        }
+      }
+      else {
         stmt += " "+RedAsm.decorateAddressing(instruction.mode2, RedAsm.signedCast(instruction.operand2), instruction.incdec2)+",";
-      stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
+        stmt += " "+RedAsm.decorateAddressing(instruction.mode1, RedAsm.signedCast(instruction.operand1), instruction.incdec1);
+      }
     }
     rows.push(stmt);
   }
@@ -368,7 +388,8 @@ RedAsm.decompileToRedscript = function(compiledBytes) {
         rows.push("jnz "+op1+", "+op2+"\n");
         break;
       case RedAsm.OPCODE_JMP:
-        rows.push("jmp "+op1+"\n");
+        // rows.push("jmp "+op1+"\n");
+        rows.push("jmp "+op1+", "+op2+"\n");
         break;
       case RedAsm.OPCODE_FORK:
         rows.push("fork "+op1+"\n");
