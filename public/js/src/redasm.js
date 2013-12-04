@@ -31,6 +31,10 @@ _.extend(RedAsm, {
   ADDR_MODE_PRE_INC:   2,
   ADDR_MODE_POST_DEC:  3,
   ADDR_MODE_POST_INC:  4,
+
+  FIELD_MODE_I: 0,
+  FIELD_MODE_A: 1,
+  FIELD_MODE_B: 2,
 });
 
 _.extend(RedAsm, {
@@ -76,6 +80,7 @@ RedAsm.compile = function(assembly_string) {
     var ret = {
       'incdec': 0,
       'value': null,
+      'field': RedAsm.FIELD_MODE_I,
     }
 
     if (/^--/.test(operand)) {
@@ -95,12 +100,27 @@ RedAsm.compile = function(assembly_string) {
     }
     operand = operand.replace(/[-+]{2}/,'').trim()
 
+    if (/\./.test(operand)) { // field decorator
+      var parts = operand.split('.');
+      var operand = parts[0];
+      var field = parts[1].toLowerCase();
+      if (field == 'a')
+        ret.field = RedAsm.FIELD_MODE_A;
+      else if (field == 'b')
+        ret.field = RedAsm.FIELD_MODE_B;
+      else if (field == 'i')
+        ret.field = RedAsm.FIELD_MODE_I;
+      else
+        return null;
+    }
 
-    if (/\(/.test(operand)) {
+    if (/\(/.test(operand)) { // paren + constant
       operand = operand.replace(/[()]/g,'')
       ret.value = parseInt(operand);
       return ret;
-    } else if (operand in symbolTable) {  // relative via label
+    } 
+    else 
+    if (operand in symbolTable) {  // relative via label
       var address = symbolTable[operand];
       ret.value = address - lineNumber;
       return ret;
@@ -115,6 +135,7 @@ RedAsm.compile = function(assembly_string) {
       'mode': null,
       'incdec': 0,
       'value': null,
+      'field': RedAsm.FIELD_MODE_I,
     }
     var rel;
 
