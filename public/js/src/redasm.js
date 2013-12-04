@@ -123,7 +123,6 @@ RedAsm.compile = function(assembly_string) {
     if (/\[/.test(operand)) { // [label expression]
       var expr = operand.replace(/[\[\]]/g,'')
       var address = Parser.evaluate(expr, symbolTable);
-      console.log("expr", expr, symbolTable, address, lineNumber)
       ret.value = address - lineNumber;
       return ret;
     }
@@ -207,7 +206,7 @@ RedAsm.compile = function(assembly_string) {
 
     if (!line)
       continue;
-    tokens = line.split(/\s+/)
+    var tokens = RedAsm.tokenize(line);
 
 
     var mneumonic = false;
@@ -346,6 +345,34 @@ RedAsm.compile = function(assembly_string) {
     'success': true,
     'compiledBytes': output,
   }
+}
+
+RedAsm.tokenize = function(line) {
+  var tokens = line.split(/\s+/);
+  if (line.indexOf('[') == -1) { // no expression just split on whitespace
+    return tokens;
+  }
+
+  var out = []
+  var i=0; 
+  while (i < tokens.length)
+  {
+    var tok = tokens[i++];
+    if (tok.indexOf('[') != -1 && tok.indexOf(']') == -1) {
+      // join together any tokens insize an expression
+      while (i < tokens.length && tokens[i].indexOf(']') == -1) { 
+        tok += ' '+tokens[i++];
+      }
+      if (i < tokens.length) {
+        tok += ' '+tokens[i++]
+      }
+    }
+    out.push(tok)
+  }
+
+  return out
+
+
 }
 
 
