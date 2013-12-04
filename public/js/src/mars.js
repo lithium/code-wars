@@ -216,8 +216,16 @@ _.extend(Mars.MarsCore.prototype, {
 
   },
 
-  loadMemory: function(address, value, thread) {
-    this.memory[address] = value;
+  loadMemory: function(address, value, thread, field) {
+    if (field == RedAsm.FIELD_MODE_A) {
+      this.memory[address] = ((value & 0x7FFF) << 15) | (this.memory[address] & 0x7FFF);
+    }
+    else
+    if (field == RedAsm.FIELD_MODE_B) {
+      this.memory[address] = (this.memory[address] & 0x3fff8000) | (value & 0x7FFF);
+    } else {
+      this.memory[address] = value;
+    }
     this.trigger("mars:memoryChanged", address, 1, thread);
   },
 
@@ -236,67 +244,67 @@ _.extend(Mars.MarsCore.prototype, {
     switch (instruction.opcode) {
       case RedAsm.OPCODE_MOV:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null || value == null)
           return false
 
-        this.loadMemory(address, value, thread);
+        this.loadMemory(address, value, thread, instruction.field1);
         this.advancePC(thread);
         return true;
 
       case RedAsm.OPCODE_ADD:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null || value == null)
           return false
 
-        this.loadMemory(address, this.memory[address] + value, thread);
+        this.loadMemory(address, this.memory[address] + value, thread, instruction.field1);
         this.advancePC(thread);
         return true;
 
       case RedAsm.OPCODE_SUB:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null || value == null)
           return false
         
-        this.loadMemory(address, this.memory[address] - value, thread);
+        this.loadMemory(address, this.memory[address] - value, thread, instruction.field1);
         this.advancePC(thread);
         return true;
 
       case RedAsm.OPCODE_MUL:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null || value == null)
           return false
         
-        this.loadMemory(address, this.memory[address] * value, thread);
+        this.loadMemory(address, this.memory[address] * value, thread, instruction.field1);
         this.advancePC(thread);
         return true;
 
       case RedAsm.OPCODE_DIV:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null || value == null)
           return false
         
-        this.loadMemory(address, this.memory[address] / value, thread);
+        this.loadMemory(address, this.memory[address] / value, thread, instruction.field1);
         this.advancePC(thread);
         return true;
 
       case RedAsm.OPCODE_MOD:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null || value == null)
           return false
         
-        this.loadMemory(address, this.memory[address] % value, thread);
+        this.loadMemory(address, this.memory[address] % value, thread, instruction.field1);
         this.advancePC(thread);
         return true;
 
       case RedAsm.OPCODE_SEQ:
-        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1, instruction.field1)
+        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (op1 == null || op1 == null)
           return false
 
@@ -308,8 +316,8 @@ _.extend(Mars.MarsCore.prototype, {
         return true;
 
       case RedAsm.OPCODE_SNE:
-        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1, instruction.field1)
+        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (op1 == null || op1 == null)
           return false
 
@@ -321,8 +329,8 @@ _.extend(Mars.MarsCore.prototype, {
         return true;
 
       case RedAsm.OPCODE_SLT:
-        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1, instruction.field1)
+        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (op1 == null || op1 == null)
           return false
 
@@ -334,8 +342,8 @@ _.extend(Mars.MarsCore.prototype, {
         return true;
 
       case RedAsm.OPCODE_SGE:
-        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var op1 = this.resolveValue(thread, instruction.operand1, instruction.mode1, instruction.incdec1, instruction.field1)
+        var op2 = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (op1 == null || op1 == null)
           return false
 
@@ -348,7 +356,7 @@ _.extend(Mars.MarsCore.prototype, {
 
       case RedAsm.OPCODE_JZ:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null)
           return false
 
@@ -362,7 +370,7 @@ _.extend(Mars.MarsCore.prototype, {
 
       case RedAsm.OPCODE_JNZ:
         var address = this.resolveAddress(thread, instruction.operand1, instruction.mode1, instruction.incdec1)
-        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2)
+        var value = this.resolveValue(thread, instruction.operand2, instruction.mode2, instruction.incdec2, instruction.field2)
         if (address == null)
           return false
 
@@ -407,7 +415,7 @@ _.extend(Mars.MarsCore.prototype, {
     return false;
   },
 
-  resolveAddress: function(thread, operand, mode, incdec) {
+  resolveAddress: function(thread, operand, mode, incdec, field) {
     if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {
       return null;
     }
@@ -452,7 +460,7 @@ _.extend(Mars.MarsCore.prototype, {
       addr += this.options.memorySize;
     return addr;
   },
-  resolveValue: function(thread, operand, mode, incdec) {
+  resolveValue: function(thread, operand, mode, incdec, field) {
     if (mode == RedAsm.ADDR_MODE_IMMEDIATE) {
       return (operand);
     }
@@ -479,12 +487,23 @@ _.extend(Mars.MarsCore.prototype, {
         value = this.memory[addr]++;
         this.trigger("mars:memoryChanged", addr, 1, thread);
       }
-      return value;
+      // return value;
     } else if (mode == RedAsm.ADDR_MODE_INDIRECT) {
-      return this.memory[addr];
+      value = this.memory[addr];
+    } else {
+      return null;
     }
 
-    return null;
+    if (field == RedAsm.FIELD_MODE_A) {
+      value = (value & 0x3fff8000) >>> 15;
+    }
+    else 
+    if (field == RedAsm.FIELD_MODE_B) {
+      value = (value & 0x00007FFF) >>> 0;
+    }
+
+
+    return value;
 
   },
 
