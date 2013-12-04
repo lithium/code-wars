@@ -244,8 +244,21 @@ var main = function() {
                   if (iScript && jScript) {
                     console.log(iKey+" vs. "+jKey);
 
+                    var iPlayer = JSON.parse(iScript);
+                    var jPlayer = JSON.parse(jScript);
+                    var iCompiled = RedAsm.compile(iPlayer.source)
+                    var jCompiled = RedAsm.compile(jPlayer.source)
+
+                    if (!(iCompiled && jCompiled && iCompiled.success && jCompiled.success)) {
+                      console.log("failed to compile", iCompiled, jCompiled)
+                      matchDone();
+                    }
+
+                    iPlayer.compiledBytes = iCompiled.compiledBytes
+                    jPlayer.compiledBytes = jCompiled.compiledBytes
+
                     var startTime = Date.now();
-                    results = core.runBattle([JSON.parse(iScript), JSON.parse(jScript)], NUM_ROUNDS);
+                    results = core.runBattle([iPlayer, jPlayer], NUM_ROUNDS);
                     var elapsedTime = Date.now() - startTime;
 
                     var scores = scoresFromResults(results);
