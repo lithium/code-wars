@@ -217,12 +217,15 @@ _.extend(Mars.MarsCore.prototype, {
   },
 
   loadMemory: function(address, value, thread, field) {
+    var lo = RedAsm.int52_lo(this.memory[address]);
+    var hi = RedAsm.int52_hi(this.memory[address]);
+
     if (field == RedAsm.FIELD_MODE_A) {
-      this.memory[address] = ((value & 0x7FFF) << 15) | (this.memory[address] & 0x7FFF);
+      this.memory[address] = RedAsm.int52(((value & 0x7FFF) << 15) | (this.memory[address] & 0x7FFF), hi);
     }
     else
     if (field == RedAsm.FIELD_MODE_B) {
-      this.memory[address] = (this.memory[address] & 0x3fff8000) | (value & 0x7FFF);
+      this.memory[address] = RedAsm.int52((this.memory[address] & 0x3fff8000) | (value & 0x7FFF), hi);
     } else {
       this.memory[address] = value;
     }
